@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F5F7FA">
+<title>我的工作台</title>
+<style>
+  :root {
+    --bg: #F5F7FA;
+    --card-bg: #FFFFFF;
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+    --text-muted: #94A3B8;
+    --border: #E2E8F0;
+    --border-light: #F1F5F9;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --s1: #F59E0B; --s1-bg: #FEF3C7; --s1-text: #B45309;
+    --s2: #3B82F6; --s2-bg: #DBEAFE; --s2-text: #1E40AF;
+    --s3: #10B981; --s3-bg: #D1FAE5; --s3-text: #065F46;
+    --s4: #8B5CF6; --s4-bg: #EDE9FE; --s4-text: #5B21B6;
+    --s5: #06B6D4; --s5-bg: #CFFAFE; --s5-text: #0E7490;
+    --s6: #EC4899; --s6-bg: #FCE7F3; --s6-text: #BE185D;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: calc(72px + var(--safe-bottom));
+  }
+
+  .app {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ═══ Mobile-first: base styles target phone screens ═══ */
+
+  /* ── Sticky Header ── */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(245, 247, 250, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: calc(12px + var(--safe-top)) 16px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-left h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+  }
+
+  .header-left .date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    display: block;
+  }
+
+  .header-search-btn {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .header-search-btn:active {
+    transform: scale(0.92);
+    background: var(--s2);
+    color: white;
+    border-color: var(--s2);
+  }
+
+  /* ── Stats horizontal scroll ── */
+  .stats-scroll {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .stats-scroll::-webkit-scrollbar { display: none; }
+
+  .summary-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+    border: 1px solid var(--border-light);
+  }
+
+  .summary-stat .stat-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .summary-stat .stat-content .stat-num {
+    font-size: 16px;
+    font-weight: 700;
+    display: block;
+    line-height: 1.1;
+  }
+
+  .summary-stat .stat-content .stat-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Search overlay (mobile) ── */
+  .search-overlay {
+    display: none;
+    padding: 12px 16px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search-overlay.open {
+    display: block;
+  }
+
+  .search-box {
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 16px;
+    background: var(--bg);
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: var(--font);
+    -webkit-appearance: none;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--s2);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  }
+
+  .search-box .search-icon {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+
+  /* ── Filter pills (horizontal scroll) ── */
+  .filter-scroll {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filter-scroll::-webkit-scrollbar { display: none; }
+
+  .filter-btn {
+    padding: 7px 16px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .filter-btn:active {
+    transform: scale(0.94);
+  }
+
+  .filter-btn.active {
+    background: var(--s2);
+    color: white;
+    border-color: var(--s2);
+  }
+
+  /* ── Grid (single column on mobile) ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 0 16px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow 0.25s;
+    border: 1px solid var(--border-light);
+  }
+
+  .card.expanded {
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-top-bar {
+    height: 3px;
+    width: 100%;
+  }
+
+  .card-inner {
+    padding: 16px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 8px;
+  }
+
+  .card-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .source-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── Sub-modules ── */
+  .card-section {
+    margin-bottom: 14px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .chip {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 9px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+
+  /* ── Metrics ── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .metrics-grid.cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metric-card {
+    padding: 10px 8px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+  }
+
+  .metric-value {
+    font-size: 19px;
+    font-weight: 700;
+    display: block;
+    line-height: 1.2;
+  }
+
+  .metric-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* ── Progress bars ── */
+  .progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .progress-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    min-width: 50px;
+    white-space: nowrap;
+  }
+
+  .progress-bar-bg {
+    flex: 1;
+    height: 7px;
+    background: var(--border-light);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease-out;
+    width: 0;
+  }
+
+  .progress-pct {
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 34px;
+    text-align: right;
+  }
+
+  /* ── Compact completion grid ── */
+  .completion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .completion-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+  }
+
+  .completion-item .ci-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    flex: 1;
+  }
+
+  .completion-item .ci-bar {
+    width: 32px; height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .completion-item .ci-fill {
+    height: 100%;
+    border-radius: 3px;
+    width: 0;
+    transition: width 1s ease-out;
+  }
+
+  .completion-item .ci-pct {
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 26px;
+    text-align: right;
+  }
+
+  /* ── Card footer ── */
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    margin-top: 4px;
+    border-top: 1px solid var(--border-light);
+  }
+
+  .update-time {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── Expand toggle ── */
+  .detail-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    font-family: var(--font);
+    min-height: 36px;
+  }
+
+  .detail-toggle:active {
+    transform: scale(0.94);
+    background: var(--border-light);
+  }
+
+  .detail-toggle .toggle-arrow {
+    display: inline-block;
+    transition: transform 0.3s;
+    font-size: 11px;
+  }
+
+  .card.expanded .detail-toggle .toggle-arrow {
+    transform: rotate(180deg);
+  }
+
+  /* ── Detail panel ── */
+  .card-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s;
+    padding: 0 16px;
+    background: var(--bg);
+  }
+
+  .card.expanded .card-detail {
+    max-height: 2000px;
+    padding: 16px;
+    border-top: 1px solid var(--border-light);
+  }
+
+  /* ── Detail tabs ── */
+  .detail-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .detail-tabs::-webkit-scrollbar { display: none; }
+
+  .detail-tab {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    font-family: var(--font);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .detail-tab.active {
+    border-color: transparent;
+  }
+
+  .detail-tab:active:not(.active) {
+    background: var(--border-light);
+  }
+
+  .detail-tab-content {
+    display: none;
+  }
+
+  .detail-tab-content.visible {
+    display: block;
+  }
+
+  /* ── Mini tables — horizontal scroll on mobile ── */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 0 -4px;
+    padding: 0 4px;
+  }
+  .table-wrapper::-webkit-scrollbar { display: none; }
+
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 360px;
+  }
+
+  .mini-table th {
+    text-align: left;
+    padding: 7px 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-light);
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    position: sticky;
+    top: 0;
+  }
+
+  .mini-table td {
+    padding: 7px 10px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-light);
+    white-space: nowrap;
+  }
+
+  .mini-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* ── Status chips ── */
+  .status-chip {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+  }
+
+  .status-chip.done { background: #D1FAE5; color: #065F46; }
+  .status-chip.progress { background: #DBEAFE; color: #1E40AF; }
+  .status-chip.pending { background: #FEF3C7; color: #B45309; }
+  .status-chip.blocked { background: #FEE2E2; color: #991B1B; }
+
+  /* ── Checklist ── */
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .check-icon { font-size: 13px; }
+  .check-item.done { color: var(--text-primary); }
+
+  /* ── Timeline ── */
+  .mini-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 14px;
+    border-left: 2px solid var(--border);
+  }
+
+  .timeline-entry {
+    position: relative;
+  }
+
+  .timeline-entry::before {
+    content: '';
+    position: absolute;
+    left: -19px; top: 5px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    border: 2px solid;
+  }
+
+  .timeline-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 1px;
+  }
+
+  .timeline-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Bar chart ── */
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 72px;
+    padding: 0 2px;
+  }
+
+  .bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    transition: height 0.5s ease-out;
+  }
+
+  .bar-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .bar-value {
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  /* ── Job stats row ── */
+  .job-stats-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .job-stats-row::-webkit-scrollbar { display: none; }
+
+  .job-stat {
+    padding: 7px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ── Card visibility ── */
+  .card.hidden, .card.search-hidden { display: none; }
+
+  /* ═══ Bottom Navigation Bar ═══ */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 6px 4px calc(6px + var(--safe-bottom));
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .nav-item:active {
+    transform: scale(0.9);
+  }
+
+  .nav-item .nav-icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .nav-item .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .nav-item.active .nav-label {
+    color: var(--s2);
+    font-weight: 600;
+  }
+
+  .nav-item.active .nav-icon {
+    transform: scale(1.1);
+  }
+
+  /* ── Scroll to top FAB ── */
+  .fab-top {
+    position: fixed;
+    bottom: calc(84px + var(--safe-bottom));
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--s2);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 150;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+  }
+
+  .fab-top.visible {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  .fab-top:active {
+    transform: scale(0.85);
+  }
+
+  /* ── Animation ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-inner { animation: fadeInUp 0.4s ease-out; }
+  .card:nth-child(1) .card-inner { animation-delay: 0s; }
+  .card:nth-child(2) .card-inner { animation-delay: 0.05s; }
+  .card:nth-child(3) .card-inner { animation-delay: 0.1s; }
+  .card:nth-child(4) .card-inner { animation-delay: 0.15s; }
+  .card:nth-child(5) .card-inner { animation-delay: 0.2s; }
+  .card:nth-child(6) .card-inner { animation-delay: 0.25s; }
+
+  /* ═══ Desktop / Tablet enhancements ═══ */
+  @media (min-width: 640px) {
+    .header { padding: 16px 24px 14px; }
+    .header-left h1 { font-size: 26px; }
+    .header-left .date { font-size: 14px; }
+
+    .header-search-btn { display: none; }
+
+    .header-row { align-items: flex-end; }
+    .header-content {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .stats-scroll {
+      margin-top: 0;
+      overflow: visible;
+    }
+    .summary-stat { padding: 10px 16px; }
+    .summary-stat .stat-content .stat-num { font-size: 18px; }
+    .summary-stat .stat-content .stat-label { font-size: 12px; }
+
+    .search-overlay {
+      display: block !important;
+      padding: 0 24px 12px;
+      border: none;
+    }
+
+    .search-box input { font-size: 14px; }
+
+    .filter-scroll {
+      padding: 12px 24px;
+      overflow: visible;
+    }
+
+    .filter-btn { font-size: 13px; }
+
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 0 24px 32px;
+    }
+
+    .card-inner { padding: 20px; }
+    .card-title { font-size: 17px; }
+    .source-badge { font-size: 12px; }
+    .chip { font-size: 12px; padding: 4px 10px; }
+    .metric-value { font-size: 22px; }
+    .metric-label { font-size: 11px; }
+    .section-label { font-size: 12px; }
+
+    .completion-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .completion-item .ci-label { font-size: 12px; }
+    .completion-item .ci-bar { width: 40px; }
+
+    .mini-table { font-size: 12px; min-width: auto; }
+
+    .bottom-nav { display: none; }
+    .fab-top { display: none; }
+
+    body { padding-bottom: 0; }
+  }
+
+  @media (min-width: 1024px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ═══ Sticky Header ═══ -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-row">
+        <div class="header-left">
+          <h1>🛠 我的工作台</h1>
+          <span class="date" id="currentDate"></span>
+        </div>
+        <button class="header-search-btn" onclick="toggleSearch()">🔍</button>
+      </div>
+
+      <!-- Stats (horizontal scroll on mobile) -->
+      <div class="stats-scroll" id="statsScroll">
+        <div class="summary-stat">
+          <div class="stat-icon" style="background:#DBEAFE;color:#3B82F6;">📦</div>
+          <div class="stat-content">
+            <span class="stat-num">6</span>
+            <span class="stat-label">核心板块</span>
+          </div>
+        </div>
+        <div class="summary-stat">
+          <div class="stat-icon" style="background:#EDE9FE;color:#8B5CF6;">⚡</div>
+          <div class="stat-content">
+            <span class="stat-num">27</span>
+            <span class="stat-label">子模块</span>
+          </div>
+        </div>
+        <div class="summary-stat">
+          <div class="stat-icon" style="background:#D1FAE5;color:#10B981;">✅</div>
+          <div class="stat-content">
+            <span class="stat-num" id="avgCompletion">0%</span>
+            <span class="stat-label">平均完成度</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search overlay -->
+    <div class="search-overlay" id="searchOverlay">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="搜索板块、子模块或指标…" oninput="handleSearch()">
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter pills -->
+  <div class="filter-scroll" id="filterScroll">
+    <button class="filter-btn active" onclick="filterCards('all', this)">全部</button>
+    <button class="filter-btn" onclick="filterCards('active', this)">运营类</button>
+    <button class="filter-btn" onclick="filterCards('research', this)">调研类</button>
+    <button class="filter-btn" onclick="filterCards('infra', this)">基建类</button>
+    <button class="filter-btn" onclick="filterCards('personal', this)">个人</button>
+  </div>
+
+  <!-- ═══ Main Grid ═══ -->
+  <main class="grid" id="cardGrid">
+
+    <!-- 1. 探店运营 & 投流 -->
+    <article class="card" id="card-1" data-category="active" data-search="探店运营 投流 Brief撰写 投流策略 ROI复盘 城市限定色 事件营销 探店数 ROI 达人产出">
+      <div class="card-top-bar" style="background:var(--s1);"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-dot" style="background:var(--s1);"></span>
+            <h2 class="card-title">探店运营 & 投流</h2>
+          </div>
+          <span class="source-badge" style="background:var(--s1-bg);color:var(--s1-text);">内部表格</span>
+        </div>
+
+        <div class="card-section">
+          <h3 class="section-label">子模块</h3>
+          <div class="chips">
+            <span class="chip" style="background:var(--s1-bg);color:var(--s1-text);border-color:rgba(245,158,11,0.25);">Brief撰写</span>
+            <span class="chip" style="background:var(--s1-bg);color:var(--s1-text);border-color:rgba(245,158,11,0.25);">投流策略</span>
+            <span class="chip" style="background:var(--s1-bg);color:var(--s1-text);border-color:rgba(245,158,11,0.25);">ROI复盘</span>
+            <span class="chip" style="background:var(--s1-bg);color:var(--s1-text);border-color:rgba(245,158,11,0.25);">城市限定色</span>
+            <span class="chip" style="background:var(--s1-bg);color:var(--s1-text);border-color:rgba(245,158,11,0.25);">事件营销</span>
+          </div>
+        </div>
+
+        <div class="card-section">
+          <h3 class="section-label">关键指标</h3>
+          <div class="metrics-grid">
+            <div class="metric-card" style="background:var(--s1-bg);"><span class="metric-value" style="color:var(--s1);">128</span><span class="metric-label">探店数</span></div>
+            <div class="metric-card" style="background:var(--s1-bg);"><span class="metric-value" style="color:var(--s1);">1:3.5</span><span class="metric-label">ROI</span></div>
+            <div class="metric-card" style="background:var(--s1-bg);"><span class="metric-value" style="color:var(--s1);">42</span><span class="metric-label">达人产出</span></div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span class="update-time">更新于 2 小时前</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="status-dot" style="background:var(--s1);"></span>
+            <button class="detail-toggle" onclick="toggleDetail(this)">展开详情 <span class="toggle-arrow">▼</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-detail" style="--accent:var(--s1);--accent-bg:var(--s1-bg);--accent-text:var(--s1-text);">
+        <div class="detail-tabs">
+          <span class="detail-tab active" style="background:var(--s1-bg);color:var(--s1-text);" onclick="switchTab(this,'tab1-d1')">近期探店</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab1-d2')">ROI对比</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab1-d3')">达人产出</span>
+        </div>
+        <div class="detail-tab-content visible" id="tab1-d1">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>日期</th><th>城市</th><th>达人</th><th>平台</th><th>ROI</th><th>状态</th></tr>
+              <tr><td>07-25</td><td>广州</td><td>美食小K</td><td>抖音</td><td>1:4.2</td><td><span class="status-chip done">已发布</span></td></tr>
+              <tr><td>07-23</td><td>深圳</td><td>探店王</td><td>小红书</td><td>1:3.8</td><td><span class="status-chip done">已发布</span></td></tr>
+              <tr><td>07-20</td><td>成都</td><td>辣妹吃货</td><td>抖音</td><td>1:3.1</td><td><span class="status-chip progress">审核中</span></td></tr>
+              <tr><td>07-18</td><td>上海</td><td>魔都食记</td><td>小红书</td><td>1:2.9</td><td><span class="status-chip pending">Brief待写</span></td></tr>
+              <tr><td>07-15</td><td>杭州</td><td>浙味笔记</td><td>抖音</td><td>1:5.1</td><td><span class="status-chip done">已发布</span></td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="detail-tab-content" id="tab1-d2">
+          <h4 style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;">各渠道 ROI 对比</h4>
+          <div class="bar-chart">
+            <div class="bar-col"><div class="bar-value" style="color:var(--s1);">3.5</div><div class="bar" style="background:var(--s1);height:70%;"></div><div class="bar-label">抖音</div></div>
+            <div class="bar-col"><div class="bar-value" style="color:var(--s1);">3.8</div><div class="bar" style="background:var(--s1);height:76%;"></div><div class="bar-label">小红书</div></div>
+            <div class="bar-col"><div class="bar-value" style="color:var(--s1);">2.1</div><div class="bar" style="background:var(--s1);height:42%;"></div><div class="bar-label">快手</div></div>
+            <div class="bar-col"><div class="bar-value" style="color:var(--s1);">4.5</div><div class="bar" style="background:var(--s1);height:90%;"></div><div class="bar-label">B站</div></div>
+            <div class="bar-col"><div class="bar-value" style="color:var(--s1);">2.8</div><div class="bar" style="background:var(--s1);height:56%;"></div><div class="bar-label">微信</div></div>
+          </div>
+        </div>
+        <div class="detail-tab-content" id="tab1-d3">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>达人</th><th>粉丝量</th><th>产出篇数</th><th>平均互动</th><th>评分</th></tr>
+              <tr><td>美食小K</td><td>12万</td><td>8</td><td>2,300</td><td>⭐⭐⭐⭐⭐</td></tr>
+              <tr><td>探店王</td><td>8万</td><td>6</td><td>1,800</td><td>⭐⭐⭐⭐</td></tr>
+              <tr><td>辣妹吃货</td><td>5万</td><td>4</td><td>950</td><td>⭐⭐⭐</td></tr>
+              <tr><td>魔都食记</td><td>15万</td><td>10</td><td>3,200</td><td>⭐⭐⭐⭐⭐</td></tr>
+              <tr><td>浙味笔记</td><td>3万</td><td>3</td><td>600</td><td>⭐⭐⭐</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2. GEO专项 -->
+    <article class="card" id="card-2" data-category="active" data-search="GEO专项 7平台监测 品牌词覆盖 价格带跃迁 信息源治理 覆盖率 提及率 价格带">
+      <div class="card-top-bar" style="background:var(--s2);"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-dot" style="background:var(--s2);"></span>
+            <h2 class="card-title">GEO专项</h2>
+          </div>
+          <span class="source-badge" style="background:var(--s2-bg);color:var(--s2-text);">监测系统</span>
+        </div>
+        <div class="card-section">
+          <h3 class="section-label">子模块</h3>
+          <div class="chips">
+            <span class="chip" style="background:var(--s2-bg);color:var(--s2-text);border-color:rgba(59,130,246,0.25);">7平台监测</span>
+            <span class="chip" style="background:var(--s2-bg);color:var(--s2-text);border-color:rgba(59,130,246,0.25);">品牌词覆盖</span>
+            <span class="chip" style="background:var(--s2-bg);color:var(--s2-text);border-color:rgba(59,130,246,0.25);">价格带跃迁</span>
+            <span class="chip" style="background:var(--s2-bg);color:var(--s2-text);border-color:rgba(59,130,246,0.25);">信息源治理</span>
+          </div>
+        </div>
+        <div class="card-section">
+          <h3 class="section-label">关键指标</h3>
+          <div class="metrics-grid">
+            <div class="metric-card" style="background:var(--s2-bg);"><span class="metric-value" style="color:var(--s2);">87%</span><span class="metric-label">覆盖率</span></div>
+            <div class="metric-card" style="background:var(--s2-bg);"><span class="metric-value" style="color:var(--s2);">23%</span><span class="metric-label">提及率</span></div>
+            <div class="metric-card" style="background:var(--s2-bg);"><span class="metric-value" style="color:var(--s2);">3档</span><span class="metric-label">价格带</span></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="update-time">更新于 1 小时前</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="status-dot" style="background:var(--s2);"></span>
+            <button class="detail-toggle" onclick="toggleDetail(this)">展开详情 <span class="toggle-arrow">▼</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="card-detail" style="--accent:var(--s2);--accent-bg:var(--s2-bg);--accent-text:var(--s2-text);">
+        <div class="detail-tabs">
+          <span class="detail-tab active" style="background:var(--s2-bg);color:var(--s2-text);" onclick="switchTab(this,'tab2-d1')">7平台覆盖</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab2-d2')">品牌词明细</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab2-d3')">价格带分布</span>
+        </div>
+        <div class="detail-tab-content visible" id="tab2-d1">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>平台</th><th>覆盖率</th><th>提及率</th><th>信息源数</th><th>状态</th></tr>
+              <tr><td>大众点评</td><td>95%</td><td>31%</td><td>48</td><td><span class="status-chip done">稳定</span></td></tr>
+              <tr><td>小红书</td><td>92%</td><td>28%</td><td>35</td><td><span class="status-chip done">稳定</span></td></tr>
+              <tr><td>抖音</td><td>88%</td><td>24%</td><td>22</td><td><span class="status-chip progress">优化中</span></td></tr>
+              <tr><td>百度地图</td><td>85%</td><td>19%</td><td>18</td><td><span class="status-chip progress">优化中</span></td></tr>
+              <tr><td>高德地图</td><td>82%</td><td>16%</td><td>15</td><td><span class="status-chip pending">待治理</span></td></tr>
+              <tr><td>美团</td><td>78%</td><td>14%</td><td>12</td><td><span class="status-chip pending">待治理</span></td></tr>
+              <tr><td>微信搜一搜</td><td>70%</td><td>10%</td><td>8</td><td><span class="status-chip blocked">需介入</span></td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="detail-tab-content" id="tab2-d2">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>品牌词</th><th>搜索排名</th><th>覆盖平台</th><th>最近变动</th></tr>
+              <tr><td>Coco Life 探店</td><td>#3</td><td>6/7平台</td><td>↑ 2位</td></tr>
+              <tr><td>Coco Life 评价</td><td>#5</td><td>5/7平台</td><td>↑ 1位</td></tr>
+              <tr><td>Coco Life 价格</td><td>#8</td><td>4/7平台</td><td>↓ 1位</td></tr>
+              <tr><td>Coco Life 会员</td><td>#12</td><td>3/7平台</td><td>→ 持平</td></tr>
+              <tr><td>Coco Life 事件</td><td>#15</td><td>2/7平台</td><td>↑ 3位</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="detail-tab-content" id="tab2-d3">
+          <h4 style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;">价格带跃迁趋势</h4>
+          <div class="bar-chart">
+            <div class="bar-col"><div class="bar-value" style="color:var(--s2);">15%</div><div class="bar" style="background:var(--s2);height:30%;"></div><div class="bar-label">¥0-30</div></div>
+            <div class="bar-col"><div class="bar-value" style="color:var(--s2);">45%</div><div class="bar" style="background:var(--s2);height:90%;"></div><div class="bar-label">¥30-60</div></div>
+            <div class="bar-col"><div class="bar-value" style="color:var(--s2);">30%</div><div class="bar" style="background:var(--s2);height:60%;"></div><div class="bar-label">¥60-100</div></div>
+            <div class="bar-col"><div class="bar-value" style="color:var(--s2);">10%</div><div class="bar" style="background:var(--s2);height:20%;"></div><div class="bar-label">¥100+</div></div>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">目标：¥30-60 向 ¥60-100 跃迁 ↑</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3. 深圳开店调研 -->
+    <article class="card" id="card-3" data-category="research" data-search="深圳开店调研 商圈考察 选址评估 候选点位 评估进度">
+      <div class="card-top-bar" style="background:var(--s3);"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-dot" style="background:var(--s3);"></span>
+            <h2 class="card-title">深圳开店调研</h2>
+          </div>
+          <span class="source-badge" style="background:var(--s3-bg);color:var(--s3-text);">手动录入</span>
+        </div>
+        <div class="card-section">
+          <h3 class="section-label">子模块</h3>
+          <div class="chips">
+            <span class="chip" style="background:var(--s3-bg);color:var(--s3-text);border-color:rgba(16,185,129,0.25);">商圈考察</span>
+            <span class="chip" style="background:var(--s3-bg);color:var(--s3-text);border-color:rgba(16,185,129,0.25);">选址评估</span>
+          </div>
+        </div>
+        <div class="card-section">
+          <h3 class="section-label">关键指标</h3>
+          <div class="metrics-grid cols-2">
+            <div class="metric-card" style="background:var(--s3-bg);"><span class="metric-value" style="color:var(--s3);">6</span><span class="metric-label">候选点位</span></div>
+            <div class="metric-card" style="background:var(--s3-bg);"><span class="metric-value" style="color:var(--s3);">60%</span><span class="metric-label">评估进度</span></div>
+          </div>
+          <div class="progress-list" style="margin-top:10px;">
+            <div class="progress-item">
+              <span class="progress-label">评估进度</span>
+              <div class="progress-bar-bg"><div class="progress-fill" data-width="60" style="background:var(--s3);"></div></div>
+              <span class="progress-pct" style="color:var(--s3);">60%</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="update-time">更新于 3 天前</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="status-dot" style="background:var(--s3);"></span>
+            <button class="detail-toggle" onclick="toggleDetail(this)">展开详情 <span class="toggle-arrow">▼</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="card-detail" style="--accent:var(--s3);--accent-bg:var(--s3-bg);--accent-text:var(--s3-text);">
+        <div class="detail-tabs">
+          <span class="detail-tab active" style="background:var(--s3-bg);color:var(--s3-text);" onclick="switchTab(this,'tab3-d1')">候选点位</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab3-d2')">评估维度</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab3-d3')">时间线</span>
+        </div>
+        <div class="detail-tab-content visible" id="tab3-d1">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>商圈</th><th>面积m²</th><th>租金/月</th><th>人流量</th><th>评分</th><th>状态</th></tr>
+              <tr><td>南山万象城</td><td>120</td><td>¥18,000</td><td>高</td><td>88</td><td><span class="status-chip done">已评估</span></td></tr>
+              <tr><td>福田星河COCO</td><td>95</td><td>¥22,000</td><td>极高</td><td>92</td><td><span class="status-chip done">已评估</span></td></tr>
+              <tr><td>罗湖东门</td><td>110</td><td>¥12,000</td><td>中</td><td>75</td><td><span class="status-chip done">已评估</span></td></tr>
+              <tr><td>龙华壹方城</td><td>130</td><td>¥15,000</td><td>中高</td><td>82</td><td><span class="status-chip progress">评估中</span></td></tr>
+              <tr><td>宝安海雅</td><td>85</td><td>¥9,500</td><td>中低</td><td>—</td><td><span class="status-chip pending">待评估</span></td></tr>
+              <tr><td>龙岗万达</td><td>140</td><td>¥11,000</td><td>中</td><td>—</td><td><span class="status-chip pending">待评估</span></td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="detail-tab-content" id="tab3-d2">
+          <div class="checklist">
+            <div class="check-item done"><span class="check-icon">✅</span> 交通便利度（地铁/公交直达）</div>
+            <div class="check-item done"><span class="check-icon">✅</span> 竞品密度（3km内同类店铺数）</div>
+            <div class="check-item done"><span class="check-icon">✅</span> 租金性价比（租金/人流量比值）</div>
+            <div class="check-item"><span class="check-icon">⬜</span> 物业配合度（装修/消防/营业时间）</div>
+            <div class="check-item"><span class="check-icon">⬜</span> 目标客群匹配（周边消费画像）</div>
+            <div class="check-item"><span class="check-icon">⬜</span> 外摆空间（是否有户外展示位）</div>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:12px;">权重：交通 20% | 竞品 15% | 租金 25% | 物业 15% | 客群 20% | 外摆 5%</p>
+        </div>
+        <div class="detail-tab-content" id="tab3-d3">
+          <div class="mini-timeline">
+            <div class="timeline-entry" style="--tc:var(--s3);"><div class="timeline-date">07-27</div><div class="timeline-text">龙华壹方城实地考察，采集人流量数据</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s3);background:var(--s3-bg);"></div></div>
+            <div class="timeline-entry"><div class="timeline-date">07-24</div><div class="timeline-text">完成南山、福田、罗湖三处评估报告</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s3);background:var(--s3);"></div></div>
+            <div class="timeline-entry"><div class="timeline-date">07-20</div><div class="timeline-text">首轮商圈筛选，确定 6 个候选点位</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s3);background:var(--s3);"></div></div>
+            <div class="timeline-entry"><div class="timeline-date">07-15</div><div class="timeline-text">深圳市场初步调研启动</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s3);background:var(--s3-bg);"></div></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4. 品牌内容与基建 -->
+    <article class="card" id="card-4" data-category="infra" data-search="品牌内容与基建 SOP体系 会员 陈列 ERP 商标 渠道 营销 工服 完成度">
+      <div class="card-top-bar" style="background:var(--s4);"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-dot" style="background:var(--s4);"></span>
+            <h2 class="card-title">品牌内容与基建</h2>
+          </div>
+          <span class="source-badge" style="background:var(--s4-bg);color:var(--s4-text);">文件+日历</span>
+        </div>
+        <div class="card-section">
+          <h3 class="section-label">子模块 · 各项完成度</h3>
+          <div class="completion-grid">
+            <div class="completion-item"><span class="ci-label">SOP体系</span><div class="ci-bar"><div class="ci-fill" data-width="85" style="background:var(--s4);"></div></div><span class="ci-pct" style="color:var(--s4);">85%</span></div>
+            <div class="completion-item"><span class="ci-label">会员</span><div class="ci-bar"><div class="ci-fill" data-width="70" style="background:var(--s4);"></div></div><span class="ci-pct" style="color:var(--s4);">70%</span></div>
+            <div class="completion-item"><span class="ci-label">陈列</span><div class="ci-bar"><div class="ci-fill" data-width="90" style="background:var(--s4);"></div></div><span class="ci-pct" style="color:var(--s4);">90%</span></div>
+            <div class="completion-item"><span class="ci-label">ERP</span><div class="ci-bar"><div class="ci-fill" data-width="45" style="background:var(--s4);"></div></div><span class="ci-pct" style="color:var(--s4);">45%</span></div>
+            <div class="completion-item"><span class="ci-label">商标</span><div class="ci-bar"><div class="ci-fill" data-width="100" style="background:var(--s4);"></div></div><span class="ci-pct" style="color:var(--s4);">100%</span></div>
+            <div class="completion-item"><span class="ci-label">渠道</span><div class="ci-bar"><div class="ci-fill" data-width="60" style="background:var(--s4);"></div></div><span class="ci-pct" style="color:var(--s4);">60%</span></div>
+            <div class="completion-item"><span class="ci-label">营销</span><div class="ci-bar"><div class="ci-fill" data-width="55" style="background:var(--s4);"></div></div><span class="ci-pct" style="color:var(--s4);">55%</span></div>
+            <div class="completion-item"><span class="ci-label">工服</span><div class="ci-bar"><div class="ci-fill" data-width="80" style="background:var(--s4);"></div></div><span class="ci-pct" style="color:var(--s4);">80%</span></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="update-time">更新于 1 天前</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="status-dot" style="background:var(--s4);"></span>
+            <button class="detail-toggle" onclick="toggleDetail(this)">展开详情 <span class="toggle-arrow">▼</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="card-detail" style="--accent:var(--s4);--accent-bg:var(--s4-bg);--accent-text:var(--s4-text);">
+        <div class="detail-tabs">
+          <span class="detail-tab active" style="background:var(--s4-bg);color:var(--s4-text);" onclick="switchTab(this,'tab4-d1')">各项目明细</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab4-d2')">里程碑</span>
+        </div>
+        <div class="detail-tab-content visible" id="tab4-d1">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>子项</th><th>完成度</th><th>当前阶段</th><th>负责人</th><th>备注</th></tr>
+              <tr><td>SOP体系</td><td>85%</td><td>内部评审</td><td>运营组</td><td>第3版修订中</td></tr>
+              <tr><td>会员体系</td><td>70%</td><td>规则制定</td><td>产品组</td><td>积分方案待定</td></tr>
+              <tr><td>陈列标准</td><td>90%</td><td>门店执行</td><td>陈列组</td><td>3家门店已上线</td></tr>
+              <tr><td>ERP接入</td><td>45%</td><td>需求梳理</td><td>技术组</td><td>供应商选型中</td></tr>
+              <tr><td>商标注册</td><td>100%</td><td>已完成</td><td>法务</td><td>5类商标全部获批 ✅</td></tr>
+              <tr><td>渠道拓展</td><td>60%</td><td>谈判阶段</td><td>商务组</td><td>2家渠道合同签署</td></tr>
+              <tr><td>营销方案</td><td>55%</td><td>策略规划</td><td>市场组</td><td>Q3方案待审批</td></tr>
+              <tr><td>工服定版</td><td>80%</td><td>打样确认</td><td>设计组</td><td>秋款面料已选定</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="detail-tab-content" id="tab4-d2">
+          <div class="mini-timeline">
+            <div class="timeline-entry"><div class="timeline-date">08-01（计划）</div><div class="timeline-text">SOP体系终版发布 · 工服秋款量产下单</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s4);background:var(--s4-bg);"></div></div>
+            <div class="timeline-entry"><div class="timeline-date">07-30（计划）</div><div class="timeline-text">会员积分方案定稿 · ERP供应商定标</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s4);background:var(--s4-bg);"></div></div>
+            <div class="timeline-entry"><div class="timeline-date">07-25</div><div class="timeline-text">陈列标准 3 家门店上线执行</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s4);background:var(--s4);"></div></div>
+            <div class="timeline-entry"><div class="timeline-date">07-15</div><div class="timeline-text">商标注册全部获批 🎉</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s4);background:var(--s4);"></div></div>
+            <div class="timeline-entry"><div class="timeline-date">07-01</div><div class="timeline-text">品牌基建项目组成立</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s4);background:var(--s4-bg);"></div></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 5. Coco Life -->
+    <article class="card" id="card-5" data-category="active" data-search="Coco Life 1688选品 抖店 淘宝 内容 合规 体验分 上新数 质检进度">
+      <div class="card-top-bar" style="background:var(--s5);"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-dot" style="background:var(--s5);"></span>
+            <h2 class="card-title">Coco Life</h2>
+          </div>
+          <span class="source-badge" style="background:var(--s5-bg);color:var(--s5-text);">电商平台</span>
+        </div>
+        <div class="card-section">
+          <h3 class="section-label">子模块</h3>
+          <div class="chips">
+            <span class="chip" style="background:var(--s5-bg);color:var(--s5-text);border-color:rgba(6,182,212,0.25);">1688选品</span>
+            <span class="chip" style="background:var(--s5-bg);color:var(--s5-text);border-color:rgba(6,182,212,0.25);">抖店</span>
+            <span class="chip" style="background:var(--s5-bg);color:var(--s5-text);border-color:rgba(6,182,212,0.25);">淘宝</span>
+            <span class="chip" style="background:var(--s5-bg);color:var(--s5-text);border-color:rgba(6,182,212,0.25);">内容</span>
+            <span class="chip" style="background:var(--s5-bg);color:var(--s5-text);border-color:rgba(6,182,212,0.25);">合规</span>
+          </div>
+        </div>
+        <div class="card-section">
+          <h3 class="section-label">关键指标</h3>
+          <div class="metrics-grid">
+            <div class="metric-card" style="background:var(--s5-bg);"><span class="metric-value" style="color:var(--s5);">4.8</span><span class="metric-label">体验分</span></div>
+            <div class="metric-card" style="background:var(--s5-bg);"><span class="metric-value" style="color:var(--s5);">35</span><span class="metric-label">上新数</span></div>
+            <div class="metric-card" style="background:var(--s5-bg);"><span class="metric-value" style="color:var(--s5);">72%</span><span class="metric-label">质检进度</span></div>
+          </div>
+          <div class="progress-list" style="margin-top:10px;">
+            <div class="progress-item">
+              <span class="progress-label">质检进度</span>
+              <div class="progress-bar-bg"><div class="progress-fill" data-width="72" style="background:var(--s5);"></div></div>
+              <span class="progress-pct" style="color:var(--s5);">72%</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="update-time">更新于 4 小时前</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="status-dot" style="background:var(--s5);"></span>
+            <button class="detail-toggle" onclick="toggleDetail(this)">展开详情 <span class="toggle-arrow">▼</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="card-detail" style="--accent:var(--s5);--accent-bg:var(--s5-bg);--accent-text:var(--s5-text);">
+        <div class="detail-tabs">
+          <span class="detail-tab active" style="background:var(--s5-bg);color:var(--s5-text);" onclick="switchTab(this,'tab5-d1')">平台概览</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab5-d2')">近期上新</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab5-d3')">合规检查</span>
+        </div>
+        <div class="detail-tab-content visible" id="tab5-d1">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>平台</th><th>GMV（月）</th><th>体验分</th><th>上新数</th><th>退货率</th><th>状态</th></tr>
+              <tr><td>抖店</td><td>¥52,000</td><td>4.8</td><td>18</td><td>3.2%</td><td><span class="status-chip done">健康</span></td></tr>
+              <tr><td>淘宝</td><td>¥28,000</td><td>4.7</td><td>12</td><td>4.1%</td><td><span class="status-chip progress">优化</span></td></tr>
+              <tr><td>1688</td><td>—</td><td>—</td><td>5</td><td>—</td><td><span class="status-chip pending">选品</span></td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="detail-tab-content" id="tab5-d2">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>商品</th><th>平台</th><th>定价</th><th>质检</th><th>上架日期</th></tr>
+              <tr><td>夏季果茶套装</td><td>抖店</td><td>¥59</td><td><span class="status-chip done">已通过</span></td><td>07-25</td></tr>
+              <tr><td>冷萃咖啡组合</td><td>抖店</td><td>¥45</td><td><span class="status-chip done">已通过</span></td><td>07-22</td></tr>
+              <tr><td>轻食代餐棒</td><td>淘宝</td><td>¥39</td><td><span class="status-chip progress">送检中</span></td><td>07-28</td></tr>
+              <tr><td>花茶礼盒</td><td>淘宝</td><td>¥88</td><td><span class="status-chip pending">待送检</span></td><td>08-01</td></tr>
+              <tr><td>保温杯联名款</td><td>1688</td><td>¥35</td><td><span class="status-chip pending">待送检</span></td><td>08-05</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="detail-tab-content" id="tab5-d3">
+          <div class="checklist">
+            <div class="check-item done"><span class="check-icon">✅</span> 抖店经营资质齐全</div>
+            <div class="check-item done"><span class="check-icon">✅</span> 淘宝食品经营许可备案</div>
+            <div class="check-item done"><span class="check-icon">✅</span> 1688供应商资质审核</div>
+            <div class="check-item"><span class="check-icon">⬜</span> 新品质检报告（3款送检中）</div>
+            <div class="check-item"><span class="check-icon">⬜</span> 抖店达人带货合规培训</div>
+            <div class="check-item"><span class="check-icon">⬜</span> 淘宝详情页规范更新</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 6. 个人发展 -->
+    <article class="card" id="card-6" data-category="personal" data-search="个人发展 求职 装修IP 母婴号 投递数 内容产出">
+      <div class="card-top-bar" style="background:var(--s6);"></div>
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-dot" style="background:var(--s6);"></span>
+            <h2 class="card-title">个人发展</h2>
+          </div>
+          <span class="source-badge" style="background:var(--s6-bg);color:var(--s6-text);">手动录入</span>
+        </div>
+        <div class="card-section">
+          <h3 class="section-label">子模块</h3>
+          <div class="chips">
+            <span class="chip" style="background:var(--s6-bg);color:var(--s6-text);border-color:rgba(236,72,153,0.25);">求职</span>
+            <span class="chip" style="background:var(--s6-bg);color:var(--s6-text);border-color:rgba(236,72,153,0.25);">装修IP</span>
+            <span class="chip" style="background:var(--s6-bg);color:var(--s6-text);border-color:rgba(236,72,153,0.25);">母婴号</span>
+          </div>
+        </div>
+        <div class="card-section">
+          <h3 class="section-label">关键指标</h3>
+          <div class="metrics-grid cols-2">
+            <div class="metric-card" style="background:var(--s6-bg);"><span class="metric-value" style="color:var(--s6);">18</span><span class="metric-label">投递数</span></div>
+            <div class="metric-card" style="background:var(--s6-bg);"><span class="metric-value" style="color:var(--s6);">12篇</span><span class="metric-label">内容产出</span></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="update-time">更新于 5 小时前</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="status-dot" style="background:var(--s6);"></span>
+            <button class="detail-toggle" onclick="toggleDetail(this)">展开详情 <span class="toggle-arrow">▼</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="card-detail" style="--accent:var(--s6);--accent-bg:var(--s6-bg);--accent-text:var(--s6-text);">
+        <div class="detail-tabs">
+          <span class="detail-tab active" style="background:var(--s6-bg);color:var(--s6-text);" onclick="switchTab(this,'tab6-d1')">求职追踪</span>
+          <span class="detail-tab" onclick="switchTab(this,'tab6-d2')">内容产出</span>
+        </div>
+        <div class="detail-tab-content visible" id="tab6-d1">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>公司</th><th>岗位</th><th>投递日期</th><th>状态</th><th>反馈</th></tr>
+              <tr><td>品牌A</td><td>运营总监</td><td>07-25</td><td><span class="status-chip progress">面试中</span></td><td>二面安排中</td></tr>
+              <tr><td>品牌B</td><td>市场VP</td><td>07-22</td><td><span class="status-chip done">已Offer</span></td><td>薪资谈判阶段</td></tr>
+              <tr><td>品牌C</td><td>品牌总监</td><td>07-20</td><td><span class="status-chip pending">待回复</span></td><td>HR初筛</td></tr>
+              <tr><td>品牌D</td><td>运营经理</td><td>07-18</td><td><span class="status-chip blocked">已拒绝</span></td><td>岗位不符</td></tr>
+              <tr><td>品牌E</td><td>增长负责人</td><td>07-15</td><td><span class="status-chip progress">笔试中</span></td><td>线上测评</td></tr>
+            </table>
+          </div>
+          <div class="job-stats-row">
+            <div class="job-stat" style="background:var(--s6-bg);"><strong style="color:var(--s6);">18</strong> <span style="color:var(--text-muted);">已投递</span></div>
+            <div class="job-stat" style="background:#D1FAE5;"><strong style="color:#065F46;">1</strong> <span style="color:var(--text-muted);">Offer</span></div>
+            <div class="job-stat" style="background:#DBEAFE;"><strong style="color:#1E40AF;">2</strong> <span style="color:var(--text-muted);">进行中</span></div>
+            <div class="job-stat" style="background:#FEE2E2;"><strong style="color:#991B1B;">1</strong> <span style="color:var(--text-muted);">已拒绝</span></div>
+          </div>
+        </div>
+        <div class="detail-tab-content" id="tab6-d2">
+          <div class="table-wrapper">
+            <table class="mini-table">
+              <tr><th>IP/号</th><th>内容类型</th><th>本周产出</th><th>累计粉丝</th><th>互动率</th></tr>
+              <tr><td>装修IP</td><td>图文+视频</td><td>3篇</td><td>2,500</td><td>8.5%</td></tr>
+              <tr><td>母婴号</td><td>图文</td><td>2篇</td><td>1,200</td><td>12.3%</td></tr>
+              <tr><td>求职复盘</td><td>长文</td><td>1篇</td><td>—</td><td>私域</td></tr>
+            </table>
+          </div>
+          <div style="margin-top:12px;">
+            <h4 style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">近期发布</h4>
+            <div class="mini-timeline">
+              <div class="timeline-entry"><div class="timeline-date">07-26</div><div class="timeline-text">装修IP · 「小户型收纳避坑指南」发布</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s6);background:var(--s6);"></div></div>
+              <div class="timeline-entry"><div class="timeline-date">07-24</div><div class="timeline-text">母婴号 · 「宝宝辅食工具评测」发布</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s6);background:var(--s6);"></div></div>
+              <div class="timeline-entry"><div class="timeline-date">07-22</div><div class="timeline-text">装修IP · 「油漆选购全攻略」发布</div><div style="position:absolute;left:-19px;top:5px;width:9px;height:9px;border-radius:50%;border:2px solid var(--s6);background:var(--s6-bg);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </main>
+</div>
+
+<!-- ═══ Bottom Navigation ═══ -->
+<nav class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" onclick="navTo('all', this)">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">全部</span>
+  </div>
+  <div class="nav-item" onclick="navTo('card-1', this)">
+    <span class="nav-icon">📍</span>
+    <span class="nav-label">探店</span>
+  </div>
+  <div class="nav-item" onclick="navTo('card-2', this)">
+    <span class="nav-icon">📊</span>
+    <span class="nav-label">GEO</span>
+  </div>
+  <div class="nav-item" onclick="navTo('card-3', this)">
+    <span class="nav-icon">🏪</span>
+    <span class="nav-label">开店</span>
+  </div>
+  <div class="nav-item" onclick="navTo('card-4', this)">
+    <span class="nav-icon">🔧</span>
+    <span class="nav-label">基建</span>
+  </div>
+  <div class="nav-item" onclick="navTo('card-5', this)">
+    <span class="nav-icon">🛒</span>
+    <span class="nav-label">Coco</span>
+  </div>
+  <div class="nav-item" onclick="navTo('card-6', this)">
+    <span class="nav-icon">🌱</span>
+    <span class="nav-label">个人</span>
+  </div>
+</nav>
+
+<!-- Scroll to top button -->
+<button class="fab-top" id="fabTop" onclick="scrollTop()">↑</button>
+
+<script>
+  // ── Date ──
+  const now = new Date();
+  const weekdays = ['周日','周一','周二','周三','周四','周五','周六'];
+  document.getElementById('currentDate').textContent =
+    `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${weekdays[now.getDay()]}`;
+
+  // ── Progress bars ──
+  function animateProgressBars() {
+    document.querySelectorAll('.progress-fill, .ci-fill').forEach(bar => {
+      const w = bar.dataset.width;
+      if (w) setTimeout(() => { bar.style.width = w + '%'; }, 300);
+    });
+  }
+
+  // ── Avg completion ──
+  function calcAvgCompletion() {
+    const fills = document.querySelectorAll('.ci-fill');
+    if (!fills.length) return;
+    let total = 0;
+    fills.forEach(f => total += parseInt(f.dataset.width || 0));
+    const avg = Math.round(total / fills.length);
+    const el = document.getElementById('avgCompletion');
+    let cur = 0;
+    const step = Math.ceil(avg / 30);
+    function tick() {
+      cur += step;
+      if (cur >= avg) { el.textContent = avg + '%'; return; }
+      el.textContent = cur + '%';
+      requestAnimationFrame(tick);
+    }
+    setTimeout(tick, 500);
+  }
+
+  // ── Search toggle ──
+  function toggleSearch() {
+    const ov = document.getElementById('searchOverlay');
+    ov.classList.toggle('open');
+    if (ov.classList.contains('open')) {
+      setTimeout(() => document.getElementById('searchInput').focus(), 100);
+    }
+  }
+
+  // ── Search ──
+  function handleSearch() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.card').forEach(card => {
+      const sd = card.dataset.search.toLowerCase();
+      card.classList.toggle('search-hidden', q !== '' && !sd.includes(q));
+    });
+  }
+
+  // ── Filter ──
+  function filterCards(category, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.card').forEach(card => {
+      card.classList.toggle('hidden', category !== 'all' && card.dataset.category !== category);
+    });
+  }
+
+  // ── Toggle detail ──
+  function toggleDetail(btn) {
+    const card = btn.closest('.card');
+    const expanded = card.classList.contains('expanded');
+    if (expanded) {
+      card.classList.remove('expanded');
+      btn.innerHTML = '展开详情 <span class="toggle-arrow">▼</span>';
+    } else {
+      card.classList.add('expanded');
+      btn.innerHTML = '收起详情 <span class="toggle-arrow">▼</span>';
+    }
+  }
+
+  // ── Switch tab ──
+  function switchTab(tabEl, tabId) {
+    const detail = tabEl.closest('.card-detail');
+    detail.querySelectorAll('.detail-tab').forEach(t => {
+      t.classList.remove('active');
+      t.style.background = '';
+      t.style.color = '';
+      t.style.borderColor = '';
+    });
+    detail.querySelectorAll('.detail-tab-content').forEach(c => c.classList.remove('visible'));
+    tabEl.classList.add('active');
+    const accent = detail.style.getPropertyValue('--accent');
+    const accentBg = detail.style.getPropertyValue('--accent-bg');
+    const accentText = detail.style.getPropertyValue('--accent-text');
+    tabEl.style.background = accentBg;
+    tabEl.style.color = accentText;
+    tabEl.style.borderColor = 'transparent';
+    document.getElementById(tabId).classList.add('visible');
+  }
+
+  // ── Bottom nav ──
+  function navTo(target, el) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    if (target === 'all') {
+      // Show all cards and scroll to top
+      document.querySelectorAll('.card').forEach(c => {
+        c.classList.remove('hidden');
+        c.classList.remove('search-hidden');
+      });
+      // Reset filters
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.filter-btn').classList.add('active');
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchOverlay').classList.remove('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Show only target card
+      document.querySelectorAll('.card').forEach(c => {
+        c.classList.toggle('hidden', c.id !== target);
+      });
+      // Scroll to the card
+      setTimeout(() => {
+        const card = document.getElementById(target);
+        if (card) {
+          const top = card.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        }
+      }, 50);
+    }
+  }
+
+  // ── Scroll to top ──
+  function scrollTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── FAB visibility on scroll ──
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const fab = document.getElementById('fabTop');
+    const st = window.scrollY;
+    if (st > 400) {
+      fab.classList.add('visible');
+    } else {
+      fab.classList.remove('visible');
+    }
+    lastScroll = st;
+  });
+
+  // ── Init ──
+  window.addEventListener('DOMContentLoaded', () => {
+    animateProgressBars();
+    calcAvgCompletion();
+  });
+</script>
+
+</body>
+</html>
