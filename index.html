@@ -420,6 +420,57 @@
   .todo-add-btn:active { transform: scale(0.92); }
   .todo-empty { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; }
 
+  /* date tag on each todo item */
+  .todo-date-tag {
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    white-space: nowrap;
+    min-width: 42px;
+  }
+
+  /* completed section */
+  .todo-done-section {
+    border-top: 2px dashed var(--border);
+    margin-top: 4px;
+  }
+  .todo-done-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 8px 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+    border-radius: var(--radius-sm);
+  }
+  .todo-done-header:hover { background: var(--bg); }
+  .todo-done-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .todo-done-count {
+    font-size: 11px;
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .todo-done-toggle {
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: transform 0.25s;
+  }
+  .todo-done-toggle.open { transform: rotate(180deg); }
+  .todo-done-list { overflow: hidden; max-height: 0; transition: max-height 0.3s ease-out; }
+  .todo-done-list.open { max-height: 2000px; }
+  .todo-done-list .todo-item { opacity: 0.65; }
+
   /* ═══ CARD GRID ═══ */
   .grid {
     display: grid;
@@ -1163,13 +1214,13 @@
     </div>
   </div>
 
-  <!-- ═══ TODAY'S TODO BOARD (今日待办) ═══ -->
+  <!-- ═══ TODO BOARD (待办事项) ═══ -->
   <div class="todo-board" id="todoBoard">
     <div class="todo-header">
       <div class="todo-title-group">
         <span class="todo-icon">📋</span>
-        <h2 class="todo-title">今日待办</h2>
-        <span class="todo-date" id="todoDate"></span>
+        <h2 class="todo-title">待办事项</h2>
+        <span class="todo-date" id="todoActiveCount">进行中 0</span>
       </div>
       <div class="todo-progress">
         <span class="todo-progress-text" id="todoProgressText">0/0</span>
@@ -1179,6 +1230,13 @@
       </div>
     </div>
     <div class="todo-list" id="todoList"></div>
+    <div class="todo-done-section" id="todoDoneSection" style="display:none;">
+      <div class="todo-done-header" onclick="toggleDoneList()">
+        <span class="todo-done-title">✅ 已完成 <span class="todo-done-count" id="todoDoneCount">0</span></span>
+        <span class="todo-done-toggle" id="todoDoneToggle">▼</span>
+      </div>
+      <div class="todo-done-list" id="todoDoneList"></div>
+    </div>
     <div class="todo-add-row">
       <input type="text" id="todoInput" placeholder="添加新待办…" onkeydown="if(event.key==='Enter')addTodo()">
       <select id="todoStatusSelect">
@@ -1816,12 +1874,8 @@
     setTimeout(tick, 500);
   }
 
-  // ── Today's Todo (今日待办) ──
-  const _today = new Date();
-  const todayStr = `${_today.getFullYear()}-${String(_today.getMonth()+1).padStart(2,'0')}-${String(_today.getDate()).padStart(2,'0')}`;
-  const todoWeekdays = ['周日','周一','周二','周三','周四','周五','周六'];
-  document.getElementById('todoDate').textContent =
-    `${_today.getMonth()+1}月${_today.getDate()}日 ${todoWeekdays[_today.getDay()]}`;
+  // ── Todo Board (待办事项) ──
+  let doneListOpen = false;
 
   const TODO_STATUS = {
     todo:    { label: '待办',   icon: '📝', bg: '#FEF3C7', text: '#B45309' },
@@ -1829,9 +1883,14 @@
     done:    { label: '已完成', icon: '✅', bg: '#D1FAE5', text: '#065F46' },
   };
 
+  function fmtDate(d) {
+    const dt = new Date(d);
+    return `${dt.getMonth()+1}/${String(dt.getDate()).padStart(2,'0')}`;
+  }
+
   let todos = JSON.parse(localStorage.getItem('wb_todos')) || [
-    { id: 1, text: '北京SKP视频', status: 'done', date: '2026-07-29' },
-    { id: 2, text: '5个付款申请 + 2个盖章申请', status: 'done', date: '2026-07-29' },
+    { id: 1, text: '北京SKP视频', status: 'done', date: '2026-07-29', doneDate: '2026-07-29' },
+    { id: 2, text: '5个付款申请 + 2个盖章申请', status: 'done', date: '2026-07-29', doneDate: '2026-07-29' },
     { id: 3, text: '西安质检报告无强检确认', status: 'pending', date: '2026-07-29' },
     { id: 4, text: '西安门店位置确认', status: 'pending', date: '2026-07-29' },
     { id: 5, text: '北京、武汉、杭州Brief', status: 'todo', date: '2026-07-29' },
@@ -1840,32 +1899,73 @@
 
   function saveTodos() { localStorage.setItem('wb_todos', JSON.stringify(todos)); }
 
-  function getTodayTodos() { return todos.filter(t => t.date === todayStr); }
+  function getTodayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
 
   function renderTodos() {
     const list = document.getElementById('todoList');
-    const todayTodos = getTodayTodos();
+    const doneSection = document.getElementById('todoDoneSection');
+    const doneList = document.getElementById('todoDoneList');
+    const activeTodos = todos.filter(t => t.status !== 'done').sort((a,b) => b.date.localeCompare(a.date));
+    const doneTodos = todos.filter(t => t.status === 'done').sort((a,b) => (b.doneDate||b.date).localeCompare(a.doneDate||a.date));
+
+    // Active list
     list.innerHTML = '';
-    if (!todayTodos.length) {
-      list.innerHTML = '<div class="todo-empty">今日暂无待办，添加一个吧 👆</div>';
+    if (!activeTodos.length) {
+      list.innerHTML = '<div class="todo-empty">暂无进行中的待办，添加一个吧 👆</div>';
     } else {
-      todayTodos.forEach(todo => {
+      activeTodos.forEach(todo => {
         const s = TODO_STATUS[todo.status];
         const item = document.createElement('div');
-        item.className = `todo-item ${todo.status === 'done' ? 'done' : ''}`;
+        item.className = 'todo-item';
         item.innerHTML = `
-          <div class="todo-check" onclick="toggleTodo(${todo.id})">${todo.status === 'done' ? '✓' : ''}</div>
+          <div class="todo-check" onclick="toggleTodo(${todo.id})"></div>
           <span class="todo-text">${todo.text}</span>
+          <span class="todo-date-tag">${fmtDate(todo.date)}</span>
           <span class="todo-status-badge" style="background:${s.bg};color:${s.text};" onclick="cycleTodoStatus(${todo.id})">${s.icon} ${s.label}</span>
           <button class="todo-delete" onclick="deleteTodo(${todo.id})">✕</button>
         `;
         list.appendChild(item);
       });
     }
-    const total = todayTodos.length;
-    const done = todayTodos.filter(t => t.status === 'done').length;
+
+    // Done section
+    document.getElementById('todoDoneCount').textContent = doneTodos.length;
+    document.getElementById('todoActiveCount').textContent = `进行中 ${activeTodos.length}`;
+    if (doneTodos.length) {
+      doneSection.style.display = 'block';
+      doneList.innerHTML = '';
+      doneTodos.forEach(todo => {
+        const item = document.createElement('div');
+        item.className = 'todo-item done';
+        item.innerHTML = `
+          <div class="todo-check" onclick="toggleTodo(${todo.id})">✓</div>
+          <span class="todo-text">${todo.text}</span>
+          <span class="todo-date-tag">${fmtDate(todo.doneDate || todo.date)}完成</span>
+          <span class="todo-status-badge" style="background:#D1FAE5;color:#065F46;" onclick="cycleTodoStatus(${todo.id})">✅ 已完成</span>
+          <button class="todo-delete" onclick="deleteTodo(${todo.id})">✕</button>
+        `;
+        doneList.appendChild(item);
+      });
+    } else {
+      doneSection.style.display = 'none';
+    }
+
+    // Progress
+    const total = todos.length;
+    const done = doneTodos.length;
     document.getElementById('todoProgressText').textContent = `${done}/${total}`;
     document.getElementById('todoProgressFill').style.width = total ? `${(done/total)*100}%` : '0%';
+  }
+
+  function toggleDoneList() {
+    doneListOpen = !doneListOpen;
+    const dl = document.getElementById('todoDoneList');
+    const tg = document.getElementById('todoDoneToggle');
+    dl.classList.toggle('open', doneListOpen);
+    tg.classList.toggle('open', doneListOpen);
   }
 
   function addTodo() {
@@ -1873,7 +1973,7 @@
     const statusSelect = document.getElementById('todoStatusSelect');
     const text = input.value.trim();
     if (!text) return;
-    todos.push({ id: Date.now(), text, status: statusSelect.value, date: todayStr });
+    todos.push({ id: Date.now(), text, status: statusSelect.value, date: getTodayStr() });
     saveTodos();
     input.value = '';
     renderTodos();
@@ -1882,7 +1982,13 @@
   function toggleTodo(id) {
     const todo = todos.find(t => t.id === id);
     if (!todo) return;
-    todo.status = todo.status === 'done' ? 'todo' : 'done';
+    if (todo.status === 'done') {
+      todo.status = 'todo';
+      delete todo.doneDate;
+    } else {
+      todo.status = 'done';
+      todo.doneDate = getTodayStr();
+    }
     saveTodos();
     renderTodos();
   }
@@ -1893,6 +1999,11 @@
     const cycle = ['todo', 'pending', 'done'];
     const idx = cycle.indexOf(todo.status);
     todo.status = cycle[(idx + 1) % cycle.length];
+    if (todo.status === 'done') {
+      todo.doneDate = getTodayStr();
+    } else {
+      delete todo.doneDate;
+    }
     saveTodos();
     renderTodos();
   }
