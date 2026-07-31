@@ -1270,6 +1270,109 @@
     color: #BE185D;
   }
 
+  /* ═══ SMART IMPORT (智能录入) ═══ */
+  .fin-add-btns { display: flex; gap: 8px; }
+  .fin-add-btns .fin-add-btn { flex: 1; }
+  .fin-smart-btn {
+    flex-shrink: 0;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    background: #fff;
+    color: #BE185D;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1.5px solid #BE185D;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .fin-smart-btn:hover { background: #FDF2F8; }
+  .fin-smart-btn:active { transform: scale(0.97); }
+
+  .smart-import-textarea {
+    width: 100%;
+    min-height: 180px;
+    max-height: 300px;
+    padding: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    line-height: 1.6;
+    font-family: var(--font);
+    resize: vertical;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    box-sizing: border-box;
+  }
+  .smart-import-textarea:focus {
+    outline: none;
+    border-color: #BE185D;
+  }
+  .smart-import-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .smart-preview {
+    margin-top: 14px;
+    padding: 14px;
+    background: var(--bg-hover, #F9FAFB);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    display: none;
+  }
+  .smart-preview.show { display: block; }
+  .smart-preview-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+  .smart-preview-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 13px;
+  }
+  .smart-preview-row:last-child { border-bottom: none; }
+  .smart-preview-label { color: var(--text-muted); }
+  .smart-preview-value { font-weight: 600; color: var(--text-primary); }
+  .smart-preview-pay {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 13px;
+  }
+  .smart-preview-pay-amt { font-weight: 600; color: #BE185D; }
+  .smart-preview-pay-date { color: var(--text-muted); font-size: 12px; }
+  .smart-preview-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 10px 0;
+  }
+  .smart-parse-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: var(--radius-sm);
+    background: #F3F4F6;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.2s;
+  }
+  .smart-parse-btn:hover { background: #E5E7EB; }
+  .smart-parse-btn:active { transform: scale(0.98); }
+
   /* ═══ ADD CATEGORY MODAL ═══ */
   .modal-overlay {
     display: none;
@@ -1562,6 +1665,27 @@
     <div class="modal-btns">
       <button class="modal-btn secondary" onclick="closeFinModal()">取消</button>
       <button class="modal-btn primary" style="background:#BE185D;" onclick="saveContract()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SMART IMPORT MODAL (智能录入) ═══ -->
+<div class="modal-overlay" id="smartImportModal">
+  <div class="modal" style="max-width:520px;">
+    <h3>📋 智能录入 — 粘贴合同文本自动解析</h3>
+    <div class="fin-modal-field">
+      <label>粘贴合同付款条款（或整段合同文本）</label>
+      <textarea class="smart-import-textarea" id="smartImportText" placeholder="例如：&#10;合同总金额：人民币12万元（¥120,000）&#10;首付款40,000元，于2026年6月20日前支付&#10;第二期款40,000元，于2026年7月15日前支付&#10;尾款40,000元，于2026年8月15日前支付"></textarea>
+      <div class="smart-import-hint">支持识别：总金额、分期笔数、每期金额、打款日期。也支持百分比（如"首付30%"）自动按总额折算。</div>
+    </div>
+    <button class="smart-parse-btn" onclick="parseAndPreview()">🔍 解析合同内容</button>
+    <div class="smart-preview" id="smartPreview">
+      <div class="smart-preview-title">解析结果预览</div>
+      <div id="smartPreviewContent"></div>
+    </div>
+    <div class="modal-btns" id="smartImportBtns" style="display:none;">
+      <button class="modal-btn secondary" onclick="closeSmartImport()">取消</button>
+      <button class="modal-btn primary" style="background:#BE185D;" onclick="fillFormFromParsed()">✓ 填入表单</button>
     </div>
   </div>
 </div>
@@ -2033,7 +2157,10 @@
   <!-- Finance board (财务·合同打款) — separate section -->
   <div class="finance-board" id="financeBoard" style="display:none;">
     <div class="fin-stats" id="finStats"></div>
-    <button class="fin-add-btn" onclick="openFinModal()">＋ 添加合同</button>
+    <div class="fin-add-btns">
+      <button class="fin-add-btn" onclick="openFinModal()">＋ 添加合同</button>
+      <button class="fin-smart-btn" onclick="openSmartImport()">📋 智能录入</button>
+    </div>
     <div class="fin-contract-list" id="finContractList"></div>
   </div>
 
@@ -2805,6 +2932,214 @@
     renderSidebar();
   }
 
+  // ── Smart Import (智能录入) ──
+  let parsedContract = null;
+
+  function openSmartImport() {
+    document.getElementById('smartImportModal').classList.add('open');
+    document.getElementById('smartImportText').value = '';
+    document.getElementById('smartPreview').classList.remove('show');
+    document.getElementById('smartImportBtns').style.display = 'none';
+    setTimeout(() => document.getElementById('smartImportText').focus(), 100);
+  }
+
+  function closeSmartImport() {
+    document.getElementById('smartImportModal').classList.remove('open');
+  }
+
+  // ── 合同文本解析器 ──
+  function parseAmountFromText(text) {
+    if (!text) return 0;
+    const cleaned = text.replace(/\s/g, '');
+    // ¥12,000 / ￥12,000
+    let m = cleaned.match(/[¥￥]([\d,，.]+)/);
+    if (m) { const n = parseFloat(m[1].replace(/[,，]/g, '')); if (!isNaN(n)) return Math.round(n); }
+    // 12万元 / 12万
+    m = cleaned.match(/([\d.]+)万元?/);
+    if (m) { const n = parseFloat(m[1]); if (!isNaN(n)) return Math.round(n * 10000); }
+    // 12,000元 / 12000元
+    m = cleaned.match(/([\d,，.]+)元/);
+    if (m) { const n = parseFloat(m[1].replace(/[,，]/g, '')); if (!isNaN(n)) return Math.round(n); }
+    // standalone number
+    m = cleaned.match(/([\d,，.]+)/);
+    if (m) { const n = parseFloat(m[1].replace(/[,，]/g, '')); if (!isNaN(n)) return Math.round(n); }
+    return 0;
+  }
+
+  function parseDateFromText(text) {
+    if (!text) return '';
+    // 2026年6月20日 / 2026 年 6 月 20 日
+    let m = text.match(/(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/);
+    if (m) return `${m[1]}-${String(m[2]).padStart(2, '0')}-${String(m[3]).padStart(2, '0')}`;
+    // 2026-06-20 / 2026/06/20
+    m = text.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+    if (m) return `${m[1]}-${String(m[2]).padStart(2, '0')}-${String(m[3]).padStart(2, '0')}`;
+    // 6月20日 (assume current year)
+    m = text.match(/(\d{1,2})\s*月\s*(\d{1,2})\s*日/);
+    if (m) { const y = new Date().getFullYear(); return `${y}-${String(m[1]).padStart(2, '0')}-${String(m[2]).padStart(2, '0')}`; }
+    return '';
+  }
+
+  function parseContractText(text) {
+    const result = { name: '', party: '', totalAmount: 0, signDate: '', payments: [] };
+
+    // ── 合同名称 ──
+    let m = text.match(/合同名称[：:]\s*(.+?)[\n。；;\r]/);
+    if (m) result.name = m[1].trim();
+    else {
+      m = text.match(/(.+?)合同/);
+      if (m && m[1].length >= 2 && m[1].length <= 20) result.name = m[1].trim() + '合同';
+    }
+
+    // ── 签约方 ──
+    m = text.match(/(?:签约方|甲方|乙方|委托方|受托方|供应商|服务方|发包方|承包方)[：:]\s*(.+?)[\n。；;\r]/);
+    if (m) result.party = m[1].trim().replace(/[（(].*$/, '').trim();
+
+    // ── 签约日期 ──
+    m = text.match(/(?:签约|签订|签署)日期[：:]?\s*(\S+)/);
+    if (m) result.signDate = parseDateFromText(m[1]);
+
+    // ── 总金额 ──
+    const totalPatterns = [
+      /(?:合同)?(?:总)?金额[为是：:]*\s*(?:人民币)?[¥￥]?\s*([\d,，.]+万?元?)/,
+      /(?:合同)?(?:总)?价[款格]?[为是：:]*\s*(?:人民币)?[¥￥]?\s*([\d,，.]+万?元?)/,
+      /(?:总计|合计)[：:]?\s*(?:人民币)?[¥￥]?\s*([\d,，.]+万?元?)/,
+    ];
+    for (const p of totalPatterns) {
+      const tm = text.match(p);
+      if (tm) { result.totalAmount = parseAmountFromText(tm[1]); if (result.totalAmount > 0) break; }
+    }
+
+    // ── 分期付款解析 ──
+    // Split by line, semicolons, or periods
+    const segments = text.split(/[\n；;。]/).map(s => s.trim()).filter(s => s);
+
+    // Payment keyword regex
+    const payKw = /(首[付期款]|预[付款]|定金|第[一二三四五六七八九十\d]+[期笔次]|进度款?|验收款?|尾款|质保金|保证金|结算款|竣工款|最后一[期笔次]|期[付款])/;
+
+    for (const seg of segments) {
+      if (!payKw.test(seg)) continue;
+
+      let amount = 0;
+      let percentage = 0;
+
+      // Check for percentage: "30%" or "30％"
+      const pctMatch = seg.match(/(\d+(?:\.\d+)?)\s*[%％]/);
+      if (pctMatch) {
+        percentage = parseFloat(pctMatch[1]);
+        if (result.totalAmount > 0) {
+          amount = Math.round(result.totalAmount * percentage / 100);
+        }
+      }
+
+      // If no amount from percentage, try explicit amount
+      if (amount === 0) {
+        // Look for ¥amount or amount元 or amount万
+        const amtMatch = seg.match(/[¥￥]?\s*([\d,，.]+)\s*万?元?/);
+        if (amtMatch) {
+          const parsed = parseAmountFromText(amtMatch[0]);
+          // Only use if it looks like a payment amount (> 0 and reasonable)
+          if (parsed > 0 && parsed !== result.totalAmount) {
+            amount = parsed;
+          } else if (parsed > 0 && parsed === result.totalAmount && result.payments.length === 0) {
+            // Single payment equal to total
+            amount = parsed;
+          }
+        }
+      }
+
+      // Extract date
+      const date = parseDateFromText(seg);
+
+      if (amount > 0) {
+        result.payments.push({ amount, dueDate: date, paidDate: null, status: 'unpaid' });
+      }
+    }
+
+    // If no payment milestones found but total exists, create single payment
+    if (result.payments.length === 0 && result.totalAmount > 0) {
+      result.payments.push({
+        amount: result.totalAmount,
+        dueDate: result.signDate || '',
+        paidDate: null,
+        status: 'unpaid'
+      });
+    }
+
+    return result;
+  }
+
+  function parseAndPreview() {
+    const text = document.getElementById('smartImportText').value.trim();
+    if (!text) { alert('请先粘贴合同文本'); return; }
+
+    parsedContract = parseContractText(text);
+    const preview = document.getElementById('smartPreview');
+    const content = document.getElementById('smartPreviewContent');
+    const btns = document.getElementById('smartImportBtns');
+
+    if (parsedContract.totalAmount === 0 && parsedContract.payments.length === 0) {
+      content.innerHTML = '<div class="smart-preview-empty">未能识别到金额或付款信息，请检查文本格式或手动添加合同。</div>';
+    } else {
+      let html = '';
+      if (parsedContract.name) {
+        html += `<div class="smart-preview-row"><span class="smart-preview-label">合同名称</span><span class="smart-preview-value">${parsedContract.name}</span></div>`;
+      }
+      if (parsedContract.party) {
+        html += `<div class="smart-preview-row"><span class="smart-preview-label">签约方</span><span class="smart-preview-value">${parsedContract.party}</span></div>`;
+      }
+      if (parsedContract.totalAmount > 0) {
+        html += `<div class="smart-preview-row"><span class="smart-preview-label">总金额</span><span class="smart-preview-value">¥${parsedContract.totalAmount.toLocaleString()}</span></div>`;
+      }
+      if (parsedContract.signDate) {
+        html += `<div class="smart-preview-row"><span class="smart-preview-label">签约日期</span><span class="smart-preview-value">${parsedContract.signDate}</span></div>`;
+      }
+      if (parsedContract.payments.length > 0) {
+        html += `<div class="smart-preview-row"><span class="smart-preview-label">分期笔数</span><span class="smart-preview-value">${parsedContract.payments.length} 笔</span></div>`;
+        html += '<div style="margin-top:8px;">';
+        parsedContract.payments.forEach((p, i) => {
+          const dateStr = p.dueDate || '<span style="color:#EF4444;">需手动填写</span>';
+          html += `<div class="smart-preview-pay"><span class="smart-preview-pay-amt">第${i + 1}笔：¥${p.amount.toLocaleString()}</span><span class="smart-preview-pay-date">${dateStr}</span></div>`;
+        });
+        html += '</div>';
+      }
+      content.innerHTML = html;
+    }
+
+    preview.classList.add('show');
+    btns.style.display = 'flex';
+  }
+
+  function fillFormFromParsed() {
+    if (!parsedContract) { closeSmartImport(); return; }
+
+    closeSmartImport();
+    openFinModal();
+
+    if (parsedContract.name) document.getElementById('finName').value = parsedContract.name;
+    if (parsedContract.party) document.getElementById('finParty').value = parsedContract.party;
+    if (parsedContract.totalAmount > 0) document.getElementById('finTotal').value = parsedContract.totalAmount;
+    if (parsedContract.signDate) document.getElementById('finSignDate').value = parsedContract.signDate;
+
+    // Fill payment rows
+    if (parsedContract.payments.length > 0) {
+      const container = document.getElementById('finPayRows');
+      container.innerHTML = '';
+      parsedContract.payments.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'fin-pay-row';
+        const idx = container.children.length + 1;
+        row.innerHTML = `
+          <span class="fin-pay-num">${idx}</span>
+          <input type="number" placeholder="金额" class="fin-pay-amount-input" value="${p.amount}">
+          <input type="date" class="fin-pay-date-input" value="${p.dueDate}">
+          <button class="fin-pay-del" onclick="this.parentElement.remove();renumberFinPayRows();">✕</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+  }
+
   // ── Init ──
   renderSidebar();
   renderIdeas();
@@ -2828,6 +3163,7 @@
       closeAddModal();
       closeFinModal();
       closeSyncModal();
+      closeSmartImport();
       closeSidebar();
       document.getElementById('mobileSearchOverlay').classList.remove('open');
     }
