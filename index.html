@@ -1231,6 +1231,21 @@
     min-width: 0;
   }
 
+  .fin-pay-row input.fin-pay-amount-input {
+    flex: 0 0 90px;
+    max-width: 90px;
+  }
+
+  .fin-pay-row input.fin-pay-milestone-input {
+    flex: 2;
+    min-width: 120px;
+  }
+
+  .fin-pay-row input.fin-pay-date-input {
+    flex: 1;
+    min-width: 110px;
+  }
+
   .fin-pay-row input:focus {
     outline: none;
     border-color: #BE185D;
@@ -1579,6 +1594,10 @@
     .fin-stat-card { padding: 10px 12px; }
     .fin-stat-card .fin-stat-value { font-size: 16px; }
     .fin-contract { padding: 14px; }
+    .fin-pay-row { flex-wrap: wrap; }
+    .fin-pay-row input.fin-pay-amount-input { flex: 1 1 80px; max-width: none; }
+    .fin-pay-row input.fin-pay-milestone-input { flex: 2 1 140px; }
+    .fin-pay-row input.fin-pay-date-input { flex: 1 1 120px; }
     .todo-board { margin: 0 16px 12px; }
     .todo-add-row select { display: none; }
     .todo-delete { opacity: 1; }
@@ -1675,8 +1694,8 @@
     <h3>📋 智能录入 — 粘贴合同文本自动解析</h3>
     <div class="fin-modal-field">
       <label>粘贴合同付款条款（或整段合同文本）</label>
-      <textarea class="smart-import-textarea" id="smartImportText" placeholder="例如：&#10;合同总金额：人民币12万元（¥120,000）&#10;首付款40,000元，于2026年6月20日前支付&#10;第二期款40,000元，于2026年7月15日前支付&#10;尾款40,000元，于2026年8月15日前支付"></textarea>
-      <div class="smart-import-hint">支持识别：总金额、分期笔数、每期金额、打款日期。也支持百分比（如"首付30%"）自动按总额折算。</div>
+      <textarea class="smart-import-textarea" id="smartImportText" placeholder="例如：&#10;合同总金额：人民币12万元（¥120,000）&#10;首付款40,000元，于2026年6月20日前支付&#10;第二期款40,000元，验收合格后支付&#10;尾款40,000元，质保期满后支付"></textarea>
+      <div class="smart-import-hint">支持识别：总金额、分期笔数、每期金额、节点关键词、打款日期（可选）。节点可以是"首付款/验收合格/质保期满"等。也支持百分比（如"首付30%"）自动按总额折算。</div>
     </div>
     <button class="smart-parse-btn" onclick="parseAndPreview()">🔍 解析合同内容</button>
     <div class="smart-preview" id="smartPreview">
@@ -2725,26 +2744,26 @@
   let contracts = JSON.parse(localStorage.getItem('wb_contracts')) || [
     { id: 1, name: '北京SKP探店拍摄服务', party: '星图传媒', totalAmount: 120000, signDate: '2026-06-15',
       payments: [
-        { amount: 40000, dueDate: '2026-06-20', paidDate: '2026-06-18', status: 'paid' },
-        { amount: 40000, dueDate: '2026-07-15', paidDate: null, status: 'unpaid' },
-        { amount: 40000, dueDate: '2026-08-15', paidDate: null, status: 'unpaid' },
+        { amount: 40000, milestone: '首付款', dueDate: '2026-06-20', paidDate: '2026-06-18', status: 'paid' },
+        { amount: 40000, milestone: '第二期', dueDate: '2026-07-15', paidDate: null, status: 'unpaid' },
+        { amount: 40000, milestone: '尾款', dueDate: '2026-08-15', paidDate: null, status: 'unpaid' },
       ] },
     { id: 2, name: '武汉门店装修工程', party: '华中装饰', totalAmount: 80000, signDate: '2026-06-28',
       payments: [
-        { amount: 40000, dueDate: '2026-07-01', paidDate: '2026-06-30', status: 'paid' },
-        { amount: 40000, dueDate: '2026-08-05', paidDate: null, status: 'unpaid' },
+        { amount: 40000, milestone: '预付款', dueDate: '2026-07-01', paidDate: '2026-06-30', status: 'paid' },
+        { amount: 40000, milestone: '竣工验收款', dueDate: '2026-08-05', paidDate: null, status: 'unpaid' },
       ] },
     { id: 3, name: '杭州Brief制作', party: '创意工坊', totalAmount: 45000, signDate: '2026-07-10',
       payments: [
-        { amount: 15000, dueDate: '2026-07-12', paidDate: '2026-07-11', status: 'paid' },
-        { amount: 15000, dueDate: '2026-07-25', paidDate: '2026-07-24', status: 'paid' },
-        { amount: 10000, dueDate: '2026-08-10', paidDate: null, status: 'unpaid' },
-        { amount: 5000, dueDate: '2026-09-10', paidDate: null, status: 'unpaid' },
+        { amount: 15000, milestone: '启动款', dueDate: '2026-07-12', paidDate: '2026-07-11', status: 'paid' },
+        { amount: 15000, milestone: '初稿确认款', dueDate: '2026-07-25', paidDate: '2026-07-24', status: 'paid' },
+        { amount: 10000, milestone: '终稿款', dueDate: '2026-08-10', paidDate: null, status: 'unpaid' },
+        { amount: 5000, milestone: '质保金', dueDate: '2026-09-10', paidDate: null, status: 'unpaid' },
       ] },
     { id: 4, name: 'GEO内容代运营', party: '搜客科技', totalAmount: 60000, signDate: '2026-05-20',
       payments: [
-        { amount: 30000, dueDate: '2026-05-25', paidDate: '2026-05-24', status: 'paid' },
-        { amount: 30000, dueDate: '2026-06-25', paidDate: '2026-06-23', status: 'paid' },
+        { amount: 30000, milestone: '第一季度服务费', dueDate: '2026-05-25', paidDate: '2026-05-24', status: 'paid' },
+        { amount: 30000, milestone: '第二季度服务费', dueDate: '2026-06-25', paidDate: '2026-06-23', status: 'paid' },
       ] },
   ];
 
@@ -2752,6 +2771,7 @@
 
   function getPayStatus(payment) {
     if (payment.status === 'paid') return 'paid';
+    if (!payment.dueDate) return 'unpaid'; // 无日期节点仅显示待付，不判定逾期
     const today = new Date(); today.setHours(0,0,0,0);
     const due = new Date(payment.dueDate); due.setHours(0,0,0,0);
     const diff = (due - today) / 86400000;
@@ -2811,13 +2831,15 @@
         const st = getPayStatus(p);
         const stLabels = { paid:'已付', unpaid:'待付', overdue:'逾期', 'due-soon':'即将到期' };
         const stClass = p.status === 'paid' ? 'paid' : st;
+        const nodeText = p.milestone ? p.milestone : (p.dueDate ? `应付 ${p.dueDate}` : '节点未指定');
+        const dateHint = p.milestone && p.dueDate ? `（应付 ${p.dueDate}）` : '';
         return `
           <div class="fin-payment ${p.status === 'paid' ? 'paid' : st}" onclick="togglePayment(${c.id}, ${i})">
             <div class="fin-pay-check">${p.status === 'paid' ? '✓' : ''}</div>
             <div class="fin-pay-info">
               <div class="fin-pay-line">
                 <span class="fin-pay-amount">¥${p.amount.toLocaleString()}</span>
-                <span class="fin-pay-date">应付 ${p.dueDate}</span>
+                <span class="fin-pay-date">${nodeText}${dateHint}</span>
                 <span class="fin-pay-status ${stClass}">${stLabels[stClass]}</span>
               </div>
               ${p.paidDate ? `<div class="fin-pay-paid-date">已于 ${p.paidDate} 打款 ✓</div>` : ''}
@@ -2869,7 +2891,8 @@
     row.innerHTML = `
       <span class="fin-pay-num">${idx}</span>
       <input type="number" placeholder="金额" class="fin-pay-amount-input">
-      <input type="date" class="fin-pay-date-input">
+      <input type="text" placeholder="节点关键词" class="fin-pay-milestone-input">
+      <input type="date" class="fin-pay-date-input" title="日期（可选）">
       <button class="fin-pay-del" onclick="this.parentElement.remove();renumberFinPayRows();">✕</button>
     `;
     container.appendChild(row);
@@ -2892,13 +2915,14 @@
     const payments = [];
     document.querySelectorAll('#finPayRows .fin-pay-row').forEach(row => {
       const amt = parseInt(row.querySelector('.fin-pay-amount-input').value) || 0;
+      const milestone = row.querySelector('.fin-pay-milestone-input').value.trim();
       const dt = row.querySelector('.fin-pay-date-input').value;
-      if (amt > 0 && dt) payments.push({ amount: amt, dueDate: dt, paidDate: null, status: 'unpaid' });
+      if (amt > 0) payments.push({ amount: amt, milestone, dueDate: dt, paidDate: null, status: 'unpaid' });
     });
 
     contracts.push({
       id: Date.now(), name, party, totalAmount: total, signDate,
-      payments: payments.length ? payments : [{ amount: total, dueDate: signDate, paidDate: null, status: 'unpaid' }]
+      payments: payments.length ? payments : [{ amount: total, milestone: '', dueDate: signDate, paidDate: null, status: 'unpaid' }]
     });
     saveContracts();
     closeFinModal();
@@ -3017,6 +3041,20 @@
     // Payment keyword regex
     const payKw = /(首[付期款]|预[付款]|定金|第[一二三四五六七八九十\d]+[期笔次]|进度款?|验收款?|尾款|质保金|保证金|结算款|竣工款|最后一[期笔次]|期[付款])/;
 
+    function extractMilestone(seg) {
+      const kwMatch = seg.match(payKw);
+      if (!kwMatch) return '';
+      const kw = kwMatch[1];
+      const afterKw = seg.slice(kwMatch.index + kwMatch[0].length);
+      // 尝试提取条件/时间短语，如"首付款，于签约后3天内支付" → "首付款：签约后3天内"
+      const condMatch = afterKw.match(/[于，,：:]\s*(.+?)(?:支付|付款|打款|结清)/);
+      if (condMatch) {
+        const cond = condMatch[1].trim();
+        if (cond && cond.length >= 2 && cond.length <= 20) return `${kw}：${cond}`;
+      }
+      return kw;
+    }
+
     for (const seg of segments) {
       if (!payKw.test(seg)) continue;
 
@@ -3048,11 +3086,12 @@
         }
       }
 
-      // Extract date
+      // Extract date and milestone
       const date = parseDateFromText(seg);
+      const milestone = extractMilestone(seg);
 
       if (amount > 0) {
-        result.payments.push({ amount, dueDate: date, paidDate: null, status: 'unpaid' });
+        result.payments.push({ amount, milestone, dueDate: date, paidDate: null, status: 'unpaid' });
       }
     }
 
@@ -3060,6 +3099,7 @@
     if (result.payments.length === 0 && result.totalAmount > 0) {
       result.payments.push({
         amount: result.totalAmount,
+        milestone: '',
         dueDate: result.signDate || '',
         paidDate: null,
         status: 'unpaid'
@@ -3098,8 +3138,9 @@
         html += `<div class="smart-preview-row"><span class="smart-preview-label">分期笔数</span><span class="smart-preview-value">${parsedContract.payments.length} 笔</span></div>`;
         html += '<div style="margin-top:8px;">';
         parsedContract.payments.forEach((p, i) => {
-          const dateStr = p.dueDate || '<span style="color:#EF4444;">需手动填写</span>';
-          html += `<div class="smart-preview-pay"><span class="smart-preview-pay-amt">第${i + 1}笔：¥${p.amount.toLocaleString()}</span><span class="smart-preview-pay-date">${dateStr}</span></div>`;
+          const nodeText = p.milestone || (p.dueDate ? `应付 ${p.dueDate}` : '节点未指定');
+          const dateHint = p.milestone && p.dueDate ? `（${p.dueDate}）` : '';
+          html += `<div class="smart-preview-pay"><span class="smart-preview-pay-amt">第${i + 1}笔：¥${p.amount.toLocaleString()}</span><span class="smart-preview-pay-date">${nodeText}${dateHint}</span></div>`;
         });
         html += '</div>';
       }
@@ -3132,7 +3173,8 @@
         row.innerHTML = `
           <span class="fin-pay-num">${idx}</span>
           <input type="number" placeholder="金额" class="fin-pay-amount-input" value="${p.amount}">
-          <input type="date" class="fin-pay-date-input" value="${p.dueDate}">
+          <input type="text" placeholder="节点关键词" class="fin-pay-milestone-input" value="${p.milestone || ''}">
+          <input type="date" class="fin-pay-date-input" value="${p.dueDate}" title="日期（可选）">
           <button class="fin-pay-del" onclick="this.parentElement.remove();renumberFinPayRows();">✕</button>
         `;
         container.appendChild(row);
