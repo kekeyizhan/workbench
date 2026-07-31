@@ -350,6 +350,15 @@
   .todo-icon { font-size: 18px; }
   .todo-title { font-size: 15px; font-weight: 700; }
   .todo-date { font-size: 12px; opacity: 0.8; margin-left: 4px; }
+  .sync-indicator {
+    font-size: 11px; padding: 3px 8px; border-radius: 10px; cursor: pointer;
+    margin-left: 6px; transition: all 0.2s; user-select: none;
+    background: rgba(255,255,255,0.15);
+  }
+  .sync-indicator:hover { background: rgba(255,255,255,0.25); }
+  .sync-indicator.syncing { background: rgba(245,158,11,0.3); }
+  .sync-indicator.synced { background: rgba(16,185,129,0.3); }
+  .sync-indicator.offline { background: rgba(107,114,128,0.25); }
   .todo-progress { display: flex; align-items: center; gap: 8px; }
   .todo-progress-text { font-size: 13px; font-weight: 600; }
   .todo-progress-bar { width: 80px; height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; overflow: hidden; }
@@ -1557,6 +1566,25 @@
   </div>
 </div>
 
+<!-- ═══ SYNC MODAL (跨设备同步设置) ═══ -->
+<div class="modal-overlay" id="syncModal">
+  <div class="modal" style="max-width:420px;">
+    <h3>☁️ 跨设备同步</h3>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;">
+      输入同步密钥后，待办数据将通过 GitHub 云端同步，手机和电脑看到同一份数据。<br>
+      每个设备只需输入一次。
+    </p>
+    <div class="fin-modal-field">
+      <label>同步密钥</label>
+      <input type="password" id="syncTokenInput" placeholder="ghp_..." style="font-family:monospace;">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closeSyncModal()">取消</button>
+      <button class="modal-btn primary" style="background:#3B82F6;" onclick="saveSyncToken()">保存并同步</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ MAIN CONTENT ═══ -->
 <div class="main" id="mainContent">
 
@@ -1620,6 +1648,7 @@
         <span class="todo-icon">📋</span>
         <h2 class="todo-title">待办事项</h2>
         <span class="todo-date" id="todoActiveCount">进行中 0</span>
+        <span class="sync-indicator" id="syncIndicator" onclick="openSyncModal()">📱 离线</span>
       </div>
       <div class="todo-progress">
         <span class="todo-progress-text" id="todoProgressText">0/0</span>
@@ -2314,6 +2343,128 @@
     return `${dt.getMonth()+1}/${String(dt.getDate()).padStart(2,'0')}`;
   }
 
+  // ── GitHub Cloud Sync (跨设备同步) ──
+  const GH_SYNC = {
+    owner: 'kekeyizhan', repo: 'workbench', path: 'data/todos.json', branch: 'main'
+  };
+  let ghTodosSha = '';
+  let isSyncing = false;
+  let syncDebounceTimer = null;
+
+  function getSyncToken() { return localStorage.getItem('gh_sync_token') || ''; }
+  function hasSyncToken() { return !!getSyncToken(); }
+
+  function updateSyncIndicator(status) {
+    const el = document.getElementById('syncIndicator');
+    if (!el) return;
+    el.className = 'sync-indicator ' + status;
+    const map = {
+      syncing: '🔄 同步中',
+      synced:  '☁️ 已同步',
+      offline: '📱 离线',
+      notoken: '🔗 点击同步'
+    };
+    el.textContent = map[status] || '📱 离线';
+  }
+
+  async function ghFetchTodos() {
+    const token = getSyncToken();
+    if (!token) { updateSyncIndicator('notoken'); return null; }
+    try {
+      const url = `https://api.github.com/repos/${GH_SYNC.owner}/${GH_SYNC.repo}/contents/${GH_SYNC.path}?ref=${GH_SYNC.branch}&t=${Date.now()}`;
+      const resp = await fetch(url, {
+        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
+      });
+      if (resp.status === 404) { ghTodosSha = ''; return []; }
+      if (!resp.ok) { updateSyncIndicator('offline'); return null; }
+      const data = await resp.json();
+      ghTodosSha = data.sha;
+      const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+      return JSON.parse(content);
+    } catch (e) { updateSyncIndicator('offline'); return null; }
+  }
+
+  async function ghPushTodos() {
+    const token = getSyncToken();
+    if (!token) return false;
+    updateSyncIndicator('syncing');
+    try {
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(todos))));
+      const url = `https://api.github.com/repos/${GH_SYNC.owner}/${GH_SYNC.repo}/contents/${GH_SYNC.path}`;
+      const body = {
+        message: `sync: 待办更新 ${new Date().toLocaleString('zh-CN')}`,
+        content: content,
+        branch: GH_SYNC.branch
+      };
+      if (ghTodosSha) body.sha = ghTodosSha;
+      const resp = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!resp.ok) {
+        const errBody = await resp.json().catch(() => ({}));
+        if (errBody.message && errBody.message.includes('conflict')) {
+          // SHA 过期，重新拉取再推
+          await syncFromGitHub(true);
+          body.sha = ghTodosSha;
+          const resp2 = await fetch(url, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          if (resp2.ok) { const r2 = await resp2.json(); ghTodosSha = r2.content.sha; updateSyncIndicator('synced'); return true; }
+        }
+        updateSyncIndicator('offline');
+        return false;
+      }
+      const result = await resp.json();
+      ghTodosSha = result.content ? result.content.sha : '';
+      updateSyncIndicator('synced');
+      return true;
+    } catch (e) { updateSyncIndicator('offline'); return false; }
+  }
+
+  function scheduleSync() {
+    if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+    syncDebounceTimer = setTimeout(() => { ghPushTodos(); }, 1500);
+  }
+
+  async function syncFromGitHub(skipRender) {
+    if (isSyncing) return;
+    isSyncing = true;
+    updateSyncIndicator('syncing');
+    const cloudTodos = await ghFetchTodos();
+    if (cloudTodos !== null && cloudTodos !== undefined) {
+      if (JSON.stringify(cloudTodos) !== JSON.stringify(todos)) {
+        todos = cloudTodos;
+        localStorage.setItem('wb_todos', JSON.stringify(todos));
+        if (!skipRender) renderTodos();
+      }
+      updateSyncIndicator('synced');
+    }
+    isSyncing = false;
+  }
+
+  function openSyncModal() {
+    if (hasSyncToken()) {
+      // 已有 token，手动触发同步
+      syncFromGitHub();
+    } else {
+      document.getElementById('syncModal').classList.add('open');
+    }
+  }
+  function closeSyncModal() { document.getElementById('syncModal').classList.remove('open'); }
+  function saveSyncToken() {
+    const token = document.getElementById('syncTokenInput').value.trim();
+    if (!token) return;
+    localStorage.setItem('gh_sync_token', token);
+    closeSyncModal();
+    document.getElementById('syncTokenInput').value = '';
+    syncFromGitHub();
+  }
+
+  // ── Todos Data ──
   let todos = JSON.parse(localStorage.getItem('wb_todos')) || [
     { id: 1, text: '北京SKP视频', status: 'done', date: '2026-07-29', doneDate: '2026-07-29' },
     { id: 2, text: '5个付款申请 + 2个盖章申请', status: 'done', date: '2026-07-29', doneDate: '2026-07-29' },
@@ -2323,7 +2474,10 @@
     { id: 6, text: '费减提交 → 外观专利', status: 'todo', date: '2026-07-29' },
   ];
 
-  function saveTodos() { localStorage.setItem('wb_todos', JSON.stringify(todos)); }
+  function saveTodos() {
+    localStorage.setItem('wb_todos', JSON.stringify(todos));
+    if (hasSyncToken()) scheduleSync();
+  }
 
   function getTodayStr() {
     const d = new Date();
@@ -2658,11 +2812,22 @@
   animateProgressBars();
   calcAvgCompletion();
 
+  // ── Cloud sync on load ──
+  if (hasSyncToken()) {
+    // 本地先渲染（上面已做），后台静默从云端拉取最新
+    setTimeout(() => syncFromGitHub(), 500);
+  } else {
+    updateSyncIndicator('notoken');
+  }
+  // 每 30 秒自动拉取一次云端更新（如果有 token）
+  setInterval(() => { if (hasSyncToken() && !isSyncing) syncFromGitHub(); }, 30000);
+
   // ── Keyboard shortcut: close modal on Escape ──
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeAddModal();
       closeFinModal();
+      closeSyncModal();
       closeSidebar();
       document.getElementById('mobileSearchOverlay').classList.remove('open');
     }
