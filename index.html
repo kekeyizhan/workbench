@@ -899,6 +899,368 @@
     color: #EF4444;
   }
 
+  /* ═══ FINANCE BOARD (财务·合同打款) ═══ */
+  .finance-board {
+    padding: 0 24px;
+  }
+
+  .fin-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .fin-stat-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--fin-c, var(--s7));
+  }
+
+  .fin-stat-card .fin-stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .fin-stat-card .fin-stat-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  .fin-stat-card .fin-stat-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .fin-add-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, #BE185D, #9D174D);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font);
+    margin-bottom: 16px;
+    transition: all 0.2s;
+    min-height: 40px;
+  }
+
+  .fin-add-btn:active { transform: scale(0.97); }
+
+  .fin-contract-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .fin-contract {
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    animation: fadeInUp 0.3s ease-out;
+  }
+
+  .fin-contract.overdue-alert {
+    border-color: #FCA5A5;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.12);
+  }
+
+  .fin-contract-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .fin-contract-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .fin-contract-del {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fin-contract-del:hover {
+    background: #FEE2E2;
+    color: #EF4444;
+  }
+
+  .fin-contract-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .fin-contract-meta span { white-space: nowrap; }
+
+  .fin-contract-meta .fin-amount {
+    font-weight: 700;
+    color: #BE185D;
+  }
+
+  .fin-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .fin-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: #F3F4F6;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .fin-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #BE185D, #EC4899);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .fin-progress-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .fin-payments {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .fin-payment {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .fin-payment:hover { background: var(--bg-hover, #FAFAFA); }
+
+  .fin-payment.paid {
+    opacity: 0.55;
+  }
+
+  .fin-payment.overdue {
+    border-color: #FCA5A5;
+    background: #FEF2F2;
+  }
+
+  .fin-payment.due-soon {
+    border-color: #FCD34D;
+    background: #FFFBEB;
+  }
+
+  .fin-pay-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid #D1D5DB;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #fff;
+    transition: all 0.2s;
+  }
+
+  .fin-payment.paid .fin-pay-check {
+    background: #10B981;
+    border-color: #10B981;
+  }
+
+  .fin-pay-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .fin-pay-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .fin-pay-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .fin-pay.paid .fin-pay-amount {
+    text-decoration: line-through;
+    color: var(--text-muted);
+  }
+
+  .fin-pay-date {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .fin-pay-status {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  .fin-pay-status.paid   { background: #D1FAE5; color: #065F46; }
+  .fin-pay-status.unpaid { background: #F3F4F6; color: #6B7280; }
+  .fin-pay-status.overdue { background: #FEE2E2; color: #B91C1C; }
+  .fin-pay-status.due-soon { background: #FEF3C7; color: #B45309; }
+
+  .fin-pay-paid-date {
+    font-size: 11px;
+    color: #10B981;
+    margin-top: 2px;
+  }
+
+  /* Finance modal */
+  .fin-modal-field {
+    margin-bottom: 12px;
+  }
+
+  .fin-modal-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .fin-modal-field input,
+  .fin-modal-field select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: var(--font);
+    background: var(--card-bg);
+    color: var(--text-primary);
+  }
+
+  .fin-modal-field input:focus,
+  .fin-modal-field select:focus {
+    outline: none;
+    border-color: #BE185D;
+    box-shadow: 0 0 0 3px rgba(190,24,93,0.15);
+  }
+
+  .fin-pay-rows {
+    max-height: 280px;
+    overflow-y: auto;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  .fin-pay-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .fin-pay-row .fin-pay-num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    width: 18px;
+    flex-shrink: 0;
+  }
+
+  .fin-pay-row input {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: var(--font);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    min-width: 0;
+  }
+
+  .fin-pay-row input:focus {
+    outline: none;
+    border-color: #BE185D;
+  }
+
+  .fin-pay-row .fin-pay-del {
+    width: 26px; height: 26px;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 50%;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  .fin-pay-row .fin-pay-del:hover {
+    background: #FEE2E2;
+    color: #EF4444;
+  }
+
+  .fin-add-pay-btn {
+    width: 100%;
+    padding: 8px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.2s;
+  }
+
+  .fin-add-pay-btn:hover {
+    border-color: #BE185D;
+    color: #BE185D;
+  }
+
   /* ═══ ADD CATEGORY MODAL ═══ */
   .modal-overlay {
     display: none;
@@ -1100,6 +1462,11 @@
       padding: 0 16px;
     }
     .idea-board { padding: 0 16px; }
+    .finance-board { padding: 0 16px; }
+    .fin-stats { gap: 8px; }
+    .fin-stat-card { padding: 10px 12px; }
+    .fin-stat-card .fin-stat-value { font-size: 16px; }
+    .fin-contract { padding: 14px; }
     .todo-board { margin: 0 16px 12px; }
     .todo-add-row select { display: none; }
     .todo-delete { opacity: 1; }
@@ -1154,6 +1521,38 @@
     <div class="modal-btns">
       <button class="modal-btn secondary" onclick="closeAddModal()">取消</button>
       <button class="modal-btn primary" onclick="addCategory()">添加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Finance modal (添加合同) -->
+<div class="modal-overlay" id="financeModal">
+  <div class="modal" style="max-width:460px;">
+    <h3>添加合同</h3>
+    <div class="fin-modal-field">
+      <label>合同名称</label>
+      <input type="text" id="finName" placeholder="例如：北京SKP探店拍摄服务">
+    </div>
+    <div class="fin-modal-field">
+      <label>签约方</label>
+      <input type="text" id="finParty" placeholder="例如：XX传媒">
+    </div>
+    <div class="fin-modal-field">
+      <label>总金额（元）</label>
+      <input type="number" id="finTotal" placeholder="例如：120000">
+    </div>
+    <div class="fin-modal-field">
+      <label>签约日期</label>
+      <input type="date" id="finSignDate">
+    </div>
+    <div class="fin-modal-field">
+      <label>分期打款计划</label>
+      <div class="fin-pay-rows" id="finPayRows"></div>
+      <button class="fin-add-pay-btn" onclick="addFinPayRow()">＋ 添加一笔</button>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closeFinModal()">取消</button>
+      <button class="modal-btn primary" style="background:#BE185D;" onclick="saveContract()">保存</button>
     </div>
   </div>
 </div>
@@ -1602,6 +2001,13 @@
     <div class="idea-list" id="ideaList"></div>
   </div>
 
+  <!-- Finance board (财务·合同打款) — separate section -->
+  <div class="finance-board" id="financeBoard" style="display:none;">
+    <div class="fin-stats" id="finStats"></div>
+    <button class="fin-add-btn" onclick="openFinModal()">＋ 添加合同</button>
+    <div class="fin-contract-list" id="finContractList"></div>
+  </div>
+
 </div>
 
 <script>
@@ -1612,11 +2018,20 @@
     { id: 'brand', icon: '🔧', label: '品牌基建内容', fixed: false, count: 1 },
     { id: 'geo',  icon: '📊', label: 'GEO内容',  fixed: false, count: 1 },
     { id: 'home', icon: '🏠', label: '家居账号',  fixed: false, count: 1 },
+    { id: 'finance', icon: '💰', label: '财务',   fixed: false, count: 0 },
     { id: 'ideas', icon: '💡', label: '选题灵感', fixed: false, count: 0 },
   ];
 
   // Load categories from localStorage or use defaults
   let categories = JSON.parse(localStorage.getItem('wb_categories')) || DEFAULT_CATEGORIES;
+  // Backward compat: ensure 'finance' category exists
+  if (!categories.find(c => c.id === 'finance')) {
+    const ideasIdx = categories.findIndex(c => c.id === 'ideas');
+    const finCat = { id: 'finance', icon: '💰', label: '财务', fixed: false, count: 0 };
+    if (ideasIdx >= 0) categories.splice(ideasIdx, 0, finCat);
+    else categories.push(finCat);
+    localStorage.setItem('wb_categories', JSON.stringify(categories));
+  }
   let currentCategory = 'all';
   let ideas = JSON.parse(localStorage.getItem('wb_ideas')) || [
     { text: '小红书家居号转型：从纯装修内容转向「装修+生活方式」', tags: ['家居','小红书'], date: '07-26' },
@@ -1635,6 +2050,7 @@
   function countCards(catId) {
     if (catId === 'all') return document.querySelectorAll('.card').length;
     if (catId === 'ideas') return ideas.length;
+    if (catId === 'finance') return contracts.length;
     return document.querySelectorAll(`.card[data-category="${catId}"]`).length;
   }
 
@@ -1669,16 +2085,26 @@
     // Show/hide content
     const cardGrid = document.getElementById('cardGrid');
     const ideaBoard = document.getElementById('ideaBoard');
+    const finBoard = document.getElementById('financeBoard');
+    const todoBoard = document.getElementById('todoBoard');
 
     if (catId === 'ideas') {
       cardGrid.style.display = 'none';
       ideaBoard.style.display = 'block';
-      document.getElementById('todoBoard').style.display = 'none';
+      finBoard.style.display = 'none';
+      todoBoard.style.display = 'none';
       renderIdeas();
+    } else if (catId === 'finance') {
+      cardGrid.style.display = 'none';
+      ideaBoard.style.display = 'none';
+      finBoard.style.display = 'block';
+      todoBoard.style.display = 'none';
+      renderFinance();
     } else {
       cardGrid.style.display = 'grid';
       ideaBoard.style.display = 'none';
-      document.getElementById('todoBoard').style.display = 'block';
+      finBoard.style.display = 'none';
+      todoBoard.style.display = 'block';
       document.querySelectorAll('.card').forEach(card => {
         card.classList.remove('hidden');
         card.classList.remove('search-hidden');
@@ -2014,6 +2440,217 @@
     renderTodos();
   }
 
+  // ── Finance (财务·合同打款) ──
+  let contracts = JSON.parse(localStorage.getItem('wb_contracts')) || [
+    { id: 1, name: '北京SKP探店拍摄服务', party: '星图传媒', totalAmount: 120000, signDate: '2026-06-15',
+      payments: [
+        { amount: 40000, dueDate: '2026-06-20', paidDate: '2026-06-18', status: 'paid' },
+        { amount: 40000, dueDate: '2026-07-15', paidDate: null, status: 'unpaid' },
+        { amount: 40000, dueDate: '2026-08-15', paidDate: null, status: 'unpaid' },
+      ] },
+    { id: 2, name: '武汉门店装修工程', party: '华中装饰', totalAmount: 80000, signDate: '2026-06-28',
+      payments: [
+        { amount: 40000, dueDate: '2026-07-01', paidDate: '2026-06-30', status: 'paid' },
+        { amount: 40000, dueDate: '2026-08-05', paidDate: null, status: 'unpaid' },
+      ] },
+    { id: 3, name: '杭州Brief制作', party: '创意工坊', totalAmount: 45000, signDate: '2026-07-10',
+      payments: [
+        { amount: 15000, dueDate: '2026-07-12', paidDate: '2026-07-11', status: 'paid' },
+        { amount: 15000, dueDate: '2026-07-25', paidDate: '2026-07-24', status: 'paid' },
+        { amount: 10000, dueDate: '2026-08-10', paidDate: null, status: 'unpaid' },
+        { amount: 5000, dueDate: '2026-09-10', paidDate: null, status: 'unpaid' },
+      ] },
+    { id: 4, name: 'GEO内容代运营', party: '搜客科技', totalAmount: 60000, signDate: '2026-05-20',
+      payments: [
+        { amount: 30000, dueDate: '2026-05-25', paidDate: '2026-05-24', status: 'paid' },
+        { amount: 30000, dueDate: '2026-06-25', paidDate: '2026-06-23', status: 'paid' },
+      ] },
+  ];
+
+  function saveContracts() { localStorage.setItem('wb_contracts', JSON.stringify(contracts)); }
+
+  function getPayStatus(payment) {
+    if (payment.status === 'paid') return 'paid';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const due = new Date(payment.dueDate); due.setHours(0,0,0,0);
+    const diff = (due - today) / 86400000;
+    if (diff < 0) return 'overdue';
+    if (diff <= 7) return 'due-soon';
+    return 'unpaid';
+  }
+
+  function renderFinance() {
+    let totalUnpaid = 0, totalOverdue = 0, totalDueSoon = 0, unpaidCount = 0;
+    contracts.forEach(c => {
+      c.payments.forEach(p => {
+        if (p.status !== 'paid') {
+          const st = getPayStatus(p);
+          totalUnpaid += p.amount;
+          unpaidCount++;
+          if (st === 'overdue') totalOverdue++;
+          if (st === 'due-soon') totalDueSoon++;
+        }
+      });
+    });
+
+    document.getElementById('finStats').innerHTML = `
+      <div class="fin-stat-card" style="--fin-c:#BE185D;">
+        <div class="fin-stat-label">待付总额</div>
+        <div class="fin-stat-value">¥${totalUnpaid.toLocaleString()}</div>
+        <div class="fin-stat-sub">${unpaidCount} 笔待付</div>
+      </div>
+      <div class="fin-stat-card" style="--fin-c:#EF4444;">
+        <div class="fin-stat-label">逾期</div>
+        <div class="fin-stat-value">${totalOverdue}</div>
+        <div class="fin-stat-sub">笔已超应付日期</div>
+      </div>
+      <div class="fin-stat-card" style="--fin-c:#F59E0B;">
+        <div class="fin-stat-label">7天内到期</div>
+        <div class="fin-stat-value">${totalDueSoon}</div>
+        <div class="fin-stat-sub">笔需尽快安排</div>
+      </div>
+    `;
+
+    const listEl = document.getElementById('finContractList');
+    listEl.innerHTML = '';
+    if (!contracts.length) {
+      listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">暂无合同，点击上方「添加合同」开始记录</div>';
+      return;
+    }
+
+    contracts.forEach(c => {
+      const paidAmount = c.payments.filter(p => p.status === 'paid').reduce((s,p) => s + p.amount, 0);
+      const paidCount = c.payments.filter(p => p.status === 'paid').length;
+      const hasOverdue = c.payments.some(p => p.status !== 'paid' && getPayStatus(p) === 'overdue');
+      const pct = c.totalAmount ? Math.round(paidAmount / c.totalAmount * 100) : 0;
+      const card = document.createElement('div');
+      card.className = `fin-contract${hasOverdue ? ' overdue-alert' : ''}`;
+
+      const payRowsHtml = c.payments.map((p, i) => {
+        const st = getPayStatus(p);
+        const stLabels = { paid:'已付', unpaid:'待付', overdue:'逾期', 'due-soon':'即将到期' };
+        const stClass = p.status === 'paid' ? 'paid' : st;
+        return `
+          <div class="fin-payment ${p.status === 'paid' ? 'paid' : st}" onclick="togglePayment(${c.id}, ${i})">
+            <div class="fin-pay-check">${p.status === 'paid' ? '✓' : ''}</div>
+            <div class="fin-pay-info">
+              <div class="fin-pay-line">
+                <span class="fin-pay-amount">¥${p.amount.toLocaleString()}</span>
+                <span class="fin-pay-date">应付 ${p.dueDate}</span>
+                <span class="fin-pay-status ${stClass}">${stLabels[stClass]}</span>
+              </div>
+              ${p.paidDate ? `<div class="fin-pay-paid-date">已于 ${p.paidDate} 打款 ✓</div>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
+      card.innerHTML = `
+        <div class="fin-contract-header">
+          <span class="fin-contract-name">${c.name}</span>
+          <button class="fin-contract-del" onclick="deleteContract(${c.id})">✕</button>
+        </div>
+        <div class="fin-contract-meta">
+          <span>🤝 ${c.party || '—'}</span>
+          <span>📅 签约 ${c.signDate || '—'}</span>
+          <span class="fin-amount">💰 ¥${c.totalAmount.toLocaleString()}</span>
+          <span>📝 ${c.payments.length} 笔分期</span>
+        </div>
+        <div class="fin-progress-row">
+          <div class="fin-progress-bar"><div class="fin-progress-fill" style="width:${pct}%;"></div></div>
+          <span class="fin-progress-text">已付 ${paidCount}/${c.payments.length} · ¥${paidAmount.toLocaleString()}</span>
+        </div>
+        <div class="fin-payments">${payRowsHtml}</div>
+      `;
+      listEl.appendChild(card);
+    });
+  }
+
+  function openFinModal() {
+    document.getElementById('financeModal').classList.add('open');
+    document.getElementById('finName').value = '';
+    document.getElementById('finParty').value = '';
+    document.getElementById('finTotal').value = '';
+    document.getElementById('finSignDate').value = new Date().toISOString().slice(0,10);
+    document.getElementById('finPayRows').innerHTML = '';
+    addFinPayRow();
+    setTimeout(() => document.getElementById('finName').focus(), 100);
+  }
+
+  function closeFinModal() {
+    document.getElementById('financeModal').classList.remove('open');
+  }
+
+  function addFinPayRow() {
+    const container = document.getElementById('finPayRows');
+    const row = document.createElement('div');
+    row.className = 'fin-pay-row';
+    const idx = container.children.length + 1;
+    row.innerHTML = `
+      <span class="fin-pay-num">${idx}</span>
+      <input type="number" placeholder="金额" class="fin-pay-amount-input">
+      <input type="date" class="fin-pay-date-input">
+      <button class="fin-pay-del" onclick="this.parentElement.remove();renumberFinPayRows();">✕</button>
+    `;
+    container.appendChild(row);
+  }
+
+  function renumberFinPayRows() {
+    document.querySelectorAll('#finPayRows .fin-pay-row').forEach((row, i) => {
+      row.querySelector('.fin-pay-num').textContent = i + 1;
+    });
+  }
+
+  function saveContract() {
+    const name = document.getElementById('finName').value.trim();
+    const party = document.getElementById('finParty').value.trim();
+    const total = parseInt(document.getElementById('finTotal').value) || 0;
+    const signDate = document.getElementById('finSignDate').value;
+    if (!name) { alert('请输入合同名称'); return; }
+    if (!total) { alert('请输入总金额'); return; }
+
+    const payments = [];
+    document.querySelectorAll('#finPayRows .fin-pay-row').forEach(row => {
+      const amt = parseInt(row.querySelector('.fin-pay-amount-input').value) || 0;
+      const dt = row.querySelector('.fin-pay-date-input').value;
+      if (amt > 0 && dt) payments.push({ amount: amt, dueDate: dt, paidDate: null, status: 'unpaid' });
+    });
+
+    contracts.push({
+      id: Date.now(), name, party, totalAmount: total, signDate,
+      payments: payments.length ? payments : [{ amount: total, dueDate: signDate, paidDate: null, status: 'unpaid' }]
+    });
+    saveContracts();
+    closeFinModal();
+    renderFinance();
+    renderSidebar();
+  }
+
+  function togglePayment(contractId, payIdx) {
+    const c = contracts.find(c => c.id === contractId);
+    if (!c) return;
+    const p = c.payments[payIdx];
+    if (!p) return;
+    if (p.status === 'paid') {
+      p.status = 'unpaid';
+      p.paidDate = null;
+    } else {
+      p.status = 'paid';
+      p.paidDate = new Date().toISOString().slice(0,10);
+    }
+    saveContracts();
+    renderFinance();
+  }
+
+  function deleteContract(id) {
+    const c = contracts.find(c => c.id === id);
+    if (!c) return;
+    if (!confirm(`确定删除合同「${c.name}」吗？此操作不可撤销。`)) return;
+    contracts = contracts.filter(c => c.id !== id);
+    saveContracts();
+    renderFinance();
+    renderSidebar();
+  }
+
   // ── Init ──
   renderSidebar();
   renderIdeas();
@@ -2025,6 +2662,7 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeAddModal();
+      closeFinModal();
       closeSidebar();
       document.getElementById('mobileSearchOverlay').classList.remove('open');
     }
