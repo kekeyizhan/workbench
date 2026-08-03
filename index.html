@@ -1088,6 +1088,23 @@
     opacity: 0.55;
   }
 
+  .fin-payment.submitted {
+    background: #EFF6FF;
+    border-color: #93C5FD;
+  }
+
+  .fin-payment.submitted .fin-pay-check {
+    background: #3B82F6;
+    border-color: #3B82F6;
+    color: #fff;
+  }
+
+  .fin-payment.submitted .fin-pay-check::after {
+    content: '◐';
+    font-size: 14px;
+    color: #fff;
+  }
+
   .fin-payment.overdue {
     border-color: #FCA5A5;
     background: #FEF2F2;
@@ -1154,6 +1171,7 @@
 
   .fin-pay-status.paid   { background: #D1FAE5; color: #065F46; }
   .fin-pay-status.unpaid { background: #F3F4F6; color: #6B7280; }
+  .fin-pay-status.submitted { background: #DBEAFE; color: #1D4ED8; }
   .fin-pay-status.overdue { background: #FEE2E2; color: #B91C1C; }
   .fin-pay-status.due-soon { background: #FEF3C7; color: #B45309; }
 
@@ -1161,6 +1179,57 @@
     font-size: 11px;
     color: #10B981;
     margin-top: 2px;
+  }
+
+  .fin-pay-submitted-date {
+    font-size: 11px;
+    color: #3B82F6;
+    margin-top: 2px;
+  }
+
+  /* ── 发票状态按钮 ── */
+  .fin-pay-invoice {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1.5px solid #D1D5DB;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    margin-left: 4px;
+    padding: 0;
+    line-height: 1;
+  }
+  .fin-pay-invoice:hover {
+    border-color: #BE185D;
+    transform: scale(1.08);
+  }
+  .fin-pay-invoice.uploaded {
+    background: #D1FAE5;
+    border-color: #10B981;
+    color: #065F46;
+  }
+  .fin-pay-invoice:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+  }
+  .fin-pay-invoice:disabled:hover {
+    transform: none;
+    border-color: #D1D5DB;
+  }
+
+  .fin-invoice-stat {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #F9FAFB;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
   }
 
   /* Finance modal */
@@ -2744,26 +2813,26 @@
   let contracts = JSON.parse(localStorage.getItem('wb_contracts')) || [
     { id: 1, name: '北京SKP探店拍摄服务', party: '星图传媒', totalAmount: 120000, signDate: '2026-06-15',
       payments: [
-        { amount: 40000, milestone: '首付款', dueDate: '2026-06-20', paidDate: '2026-06-18', status: 'paid' },
-        { amount: 40000, milestone: '第二期', dueDate: '2026-07-15', paidDate: null, status: 'unpaid' },
-        { amount: 40000, milestone: '尾款', dueDate: '2026-08-15', paidDate: null, status: 'unpaid' },
+        { amount: 40000, milestone: '首付款', dueDate: '2026-06-20', paidDate: '2026-06-18', submittedDate: '2026-06-17', invoice: 'uploaded', status: 'paid' },
+        { amount: 40000, milestone: '第二期', dueDate: '2026-07-15', paidDate: null, submittedDate: '2026-07-14', invoice: 'none', status: 'submitted' },
+        { amount: 40000, milestone: '尾款', dueDate: '2026-08-15', paidDate: null, submittedDate: null, invoice: 'none', status: 'unpaid' },
       ] },
     { id: 2, name: '武汉门店装修工程', party: '华中装饰', totalAmount: 80000, signDate: '2026-06-28',
       payments: [
-        { amount: 40000, milestone: '预付款', dueDate: '2026-07-01', paidDate: '2026-06-30', status: 'paid' },
-        { amount: 40000, milestone: '竣工验收款', dueDate: '2026-08-05', paidDate: null, status: 'unpaid' },
+        { amount: 40000, milestone: '预付款', dueDate: '2026-07-01', paidDate: '2026-06-30', submittedDate: '2026-06-29', invoice: 'uploaded', status: 'paid' },
+        { amount: 40000, milestone: '竣工验收款', dueDate: '2026-08-05', paidDate: null, submittedDate: null, invoice: 'none', status: 'unpaid' },
       ] },
     { id: 3, name: '杭州Brief制作', party: '创意工坊', totalAmount: 45000, signDate: '2026-07-10',
       payments: [
-        { amount: 15000, milestone: '启动款', dueDate: '2026-07-12', paidDate: '2026-07-11', status: 'paid' },
-        { amount: 15000, milestone: '初稿确认款', dueDate: '2026-07-25', paidDate: '2026-07-24', status: 'paid' },
-        { amount: 10000, milestone: '终稿款', dueDate: '2026-08-10', paidDate: null, status: 'unpaid' },
-        { amount: 5000, milestone: '质保金', dueDate: '2026-09-10', paidDate: null, status: 'unpaid' },
+        { amount: 15000, milestone: '启动款', dueDate: '2026-07-12', paidDate: '2026-07-11', submittedDate: '2026-07-10', invoice: 'uploaded', status: 'paid' },
+        { amount: 15000, milestone: '初稿确认款', dueDate: '2026-07-25', paidDate: '2026-07-24', submittedDate: '2026-07-22', invoice: 'uploaded', status: 'paid' },
+        { amount: 10000, milestone: '终稿款', dueDate: '2026-08-10', paidDate: null, submittedDate: '2026-08-02', invoice: 'none', status: 'submitted' },
+        { amount: 5000, milestone: '质保金', dueDate: '2026-09-10', paidDate: null, submittedDate: null, invoice: 'none', status: 'unpaid' },
       ] },
     { id: 4, name: 'GEO内容代运营', party: '搜客科技', totalAmount: 60000, signDate: '2026-05-20',
       payments: [
-        { amount: 30000, milestone: '第一季度服务费', dueDate: '2026-05-25', paidDate: '2026-05-24', status: 'paid' },
-        { amount: 30000, milestone: '第二季度服务费', dueDate: '2026-06-25', paidDate: '2026-06-23', status: 'paid' },
+        { amount: 30000, milestone: '第一季度服务费', dueDate: '2026-05-25', paidDate: '2026-05-24', submittedDate: '2026-05-23', invoice: 'uploaded', status: 'paid' },
+        { amount: 30000, milestone: '第二季度服务费', dueDate: '2026-06-25', paidDate: '2026-06-23', submittedDate: '2026-06-22', invoice: 'uploaded', status: 'paid' },
       ] },
   ];
 
@@ -2771,6 +2840,7 @@
 
   function getPayStatus(payment) {
     if (payment.status === 'paid') return 'paid';
+    if (payment.status === 'submitted') return 'submitted';  // 已提交待付，不算逾期
     if (!payment.dueDate) return 'unpaid'; // 无日期节点仅显示待付，不判定逾期
     const today = new Date(); today.setHours(0,0,0,0);
     const due = new Date(payment.dueDate); due.setHours(0,0,0,0);
@@ -2781,9 +2851,12 @@
   }
 
   function renderFinance() {
-    let totalUnpaid = 0, totalOverdue = 0, totalDueSoon = 0, unpaidCount = 0;
+    let totalUnpaid = 0, totalOverdue = 0, totalDueSoon = 0, unpaidCount = 0, submittedCount = 0, invoiceUploaded = 0, invoiceMissing = 0;
     contracts.forEach(c => {
       c.payments.forEach(p => {
+        if (p.status === 'submitted') submittedCount++;
+        if (p.invoice === 'uploaded') invoiceUploaded++;
+        if ((p.status === 'submitted' || p.status === 'paid') && p.invoice !== 'uploaded') invoiceMissing++;
         if (p.status !== 'paid') {
           const st = getPayStatus(p);
           totalUnpaid += p.amount;
@@ -2798,7 +2871,7 @@
       <div class="fin-stat-card" style="--fin-c:#BE185D;">
         <div class="fin-stat-label">待付总额</div>
         <div class="fin-stat-value">¥${totalUnpaid.toLocaleString()}</div>
-        <div class="fin-stat-sub">${unpaidCount} 笔待付</div>
+        <div class="fin-stat-sub">${unpaidCount} 笔待付${submittedCount ? ' · '+submittedCount+' 已提交' : ''}</div>
       </div>
       <div class="fin-stat-card" style="--fin-c:#EF4444;">
         <div class="fin-stat-label">逾期</div>
@@ -2809,6 +2882,11 @@
         <div class="fin-stat-label">7天内到期</div>
         <div class="fin-stat-value">${totalDueSoon}</div>
         <div class="fin-stat-sub">笔需尽快安排</div>
+      </div>
+      <div class="fin-stat-card" style="--fin-c:#10B981;">
+        <div class="fin-stat-label">发票上传</div>
+        <div class="fin-stat-value">${invoiceUploaded}/${invoiceUploaded + invoiceMissing}</div>
+        <div class="fin-stat-sub">${invoiceMissing ? invoiceMissing+' 笔待上传' : '已全部上传 ✓'}</div>
       </div>
     `;
 
@@ -2822,19 +2900,26 @@
     contracts.forEach(c => {
       const paidAmount = c.payments.filter(p => p.status === 'paid').reduce((s,p) => s + p.amount, 0);
       const paidCount = c.payments.filter(p => p.status === 'paid').length;
-      const hasOverdue = c.payments.some(p => p.status !== 'paid' && getPayStatus(p) === 'overdue');
+      const submittedCount = c.payments.filter(p => p.status === 'submitted').length;
+      const invoiceUploaded = c.payments.filter(p => p.invoice === 'uploaded').length;
+      const invoiceNeeded = c.payments.filter(p => p.status === 'submitted' || p.status === 'paid').length;
+      const hasOverdue = c.payments.some(p => p.status !== 'paid' && p.status !== 'submitted' && getPayStatus(p) === 'overdue');
       const pct = c.totalAmount ? Math.round(paidAmount / c.totalAmount * 100) : 0;
       const card = document.createElement('div');
       card.className = `fin-contract${hasOverdue ? ' overdue-alert' : ''}`;
 
       const payRowsHtml = c.payments.map((p, i) => {
         const st = getPayStatus(p);
-        const stLabels = { paid:'已付', unpaid:'待付', overdue:'逾期', 'due-soon':'即将到期' };
-        const stClass = p.status === 'paid' ? 'paid' : st;
+        const stLabels = { paid:'已付', unpaid:'待付', submitted:'已提交', overdue:'逾期', 'due-soon':'即将到期' };
+        const stClass = st;
         const nodeText = p.milestone ? p.milestone : (p.dueDate ? `应付 ${p.dueDate}` : '节点未指定');
         const dateHint = p.milestone && p.dueDate ? `（应付 ${p.dueDate}）` : '';
+        const invoice = p.invoice || 'none';
+        const invoiceIcon = invoice === 'uploaded' ? '🧾' : '📄';
+        const invoiceTitle = invoice === 'uploaded' ? '发票已上传（点击撤销）' : '点击标记发票已上传';
+        const invoiceDisabled = p.status === 'unpaid' ? 'disabled' : '';
         return `
-          <div class="fin-payment ${p.status === 'paid' ? 'paid' : st}" onclick="togglePayment(${c.id}, ${i})">
+          <div class="fin-payment ${stClass}" onclick="togglePayment(${c.id}, ${i})">
             <div class="fin-pay-check">${p.status === 'paid' ? '✓' : ''}</div>
             <div class="fin-pay-info">
               <div class="fin-pay-line">
@@ -2843,7 +2928,12 @@
                 <span class="fin-pay-status ${stClass}">${stLabels[stClass]}</span>
               </div>
               ${p.paidDate ? `<div class="fin-pay-paid-date">已于 ${p.paidDate} 打款 ✓</div>` : ''}
+              ${p.submittedDate ? `<div class="fin-pay-submitted-date">已于 ${p.submittedDate} 提交付款申请 ◐</div>` : ''}
             </div>
+            <button class="fin-pay-invoice ${invoice === 'uploaded' ? 'uploaded' : ''}"
+                    ${invoiceDisabled}
+                    title="${invoiceTitle}"
+                    onclick="event.stopPropagation();toggleInvoice(${c.id}, ${i});">${invoiceIcon}</button>
           </div>`;
       }).join('');
 
@@ -2860,9 +2950,10 @@
         </div>
         <div class="fin-progress-row">
           <div class="fin-progress-bar"><div class="fin-progress-fill" style="width:${pct}%;"></div></div>
-          <span class="fin-progress-text">已付 ${paidCount}/${c.payments.length} · ¥${paidAmount.toLocaleString()}</span>
+          <span class="fin-progress-text">已付 ${paidCount}/${c.payments.length}${submittedCount ? ' · '+submittedCount+' 已提交' : ''} · ¥${paidAmount.toLocaleString()}</span>
         </div>
         <div class="fin-payments">${payRowsHtml}</div>
+        ${invoiceNeeded > 0 ? `<div class="fin-invoice-stat">🧾 发票：${invoiceUploaded}/${invoiceNeeded} 已上传${invoiceUploaded < invoiceNeeded ? ' · <span style="color:#B91C1C;">'+(invoiceNeeded-invoiceUploaded)+' 笔待补</span>' : ' ✓'}</div>` : ''}
       `;
       listEl.appendChild(card);
     });
@@ -2917,12 +3008,12 @@
       const amt = parseInt(row.querySelector('.fin-pay-amount-input').value) || 0;
       const milestone = row.querySelector('.fin-pay-milestone-input').value.trim();
       const dt = row.querySelector('.fin-pay-date-input').value;
-      if (amt > 0) payments.push({ amount: amt, milestone, dueDate: dt, paidDate: null, status: 'unpaid' });
+      if (amt > 0) payments.push({ amount: amt, milestone, dueDate: dt, paidDate: null, submittedDate: null, invoice: 'none', status: 'unpaid' });
     });
 
     contracts.push({
       id: Date.now(), name, party, totalAmount: total, signDate,
-      payments: payments.length ? payments : [{ amount: total, milestone: '', dueDate: signDate, paidDate: null, status: 'unpaid' }]
+      payments: payments.length ? payments : [{ amount: total, milestone: '', dueDate: signDate, paidDate: null, submittedDate: null, invoice: 'none', status: 'unpaid' }]
     });
     saveContracts();
     closeFinModal();
@@ -2935,13 +3026,33 @@
     if (!c) return;
     const p = c.payments[payIdx];
     if (!p) return;
+    // 三态循环：未付 → 已提交 → 已付 → 未付
     if (p.status === 'paid') {
       p.status = 'unpaid';
       p.paidDate = null;
-    } else {
+      p.submittedDate = null;
+    } else if (p.status === 'submitted') {
       p.status = 'paid';
       p.paidDate = new Date().toISOString().slice(0,10);
+    } else {
+      p.status = 'submitted';
+      p.submittedDate = new Date().toISOString().slice(0,10);
     }
+    saveContracts();
+    renderFinance();
+  }
+
+  function toggleInvoice(contractId, payIdx) {
+    const c = contracts.find(c => c.id === contractId);
+    if (!c) return;
+    const p = c.payments[payIdx];
+    if (!p) return;
+    // 只有"已提交"或"已付"状态才能标记发票
+    if (p.status === 'unpaid') {
+      alert('请先提交付款申请，再标记发票上传。');
+      return;
+    }
+    p.invoice = (p.invoice === 'uploaded') ? 'none' : 'uploaded';
     saveContracts();
     renderFinance();
   }
@@ -3091,7 +3202,7 @@
       const milestone = extractMilestone(seg);
 
       if (amount > 0) {
-        result.payments.push({ amount, milestone, dueDate: date, paidDate: null, status: 'unpaid' });
+        result.payments.push({ amount, milestone, dueDate: date, paidDate: null, submittedDate: null, invoice: 'none', status: 'unpaid' });
       }
     }
 
@@ -3102,6 +3213,8 @@
         milestone: '',
         dueDate: result.signDate || '',
         paidDate: null,
+        submittedDate: null,
+        invoice: 'none',
         status: 'unpaid'
       });
     }
