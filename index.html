@@ -1374,6 +1374,117 @@
   .fin-smart-btn:hover { background: #FDF2F8; }
   .fin-smart-btn:active { transform: scale(0.97); }
 
+  /* ═══ FINANCE SEARCH + TABS ═══ */
+  .fin-toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .fin-search {
+    flex: 1;
+    min-width: 160px;
+    position: relative;
+  }
+  .fin-search input {
+    width: 100%;
+    padding: 9px 12px 9px 32px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-family: var(--font);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    box-sizing: border-box;
+  }
+  .fin-search input:focus {
+    outline: none;
+    border-color: #BE185D;
+  }
+  .fin-search::before {
+    content: '🔍';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .fin-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-hover, #F3F4F6);
+    padding: 3px;
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+  }
+  .fin-tab {
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font);
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .fin-tab.active {
+    background: var(--card-bg);
+    color: #BE185D;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .fin-tab .fin-tab-count {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 10px;
+    opacity: 0.7;
+  }
+
+  /* ═══ DATE EDIT (可编辑的打款/提交日期) ═══ */
+  .fin-pay-date-edit {
+    background: transparent;
+    border: 1px dashed transparent;
+    color: inherit;
+    font-size: 11px;
+    font-family: var(--font);
+    padding: 1px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    width: auto;
+  }
+  .fin-pay-date-edit:hover {
+    border-color: #BE185D;
+    background: #FDF2F8;
+  }
+
+  /* ═══ ARCHIVE BUTTON ═══ */
+  .fin-contract-archive-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--font);
+    margin-left: 6px;
+  }
+  .fin-contract-archive-btn:hover {
+    border-color: #BE185D;
+    color: #BE185D;
+  }
+  .fin-contract.archived {
+    opacity: 0.65;
+  }
+  .fin-contract.completed {
+    border-left: 3px solid #10B981;
+  }
+
   .smart-import-textarea {
     width: 100%;
     min-height: 180px;
@@ -2249,6 +2360,16 @@
       <button class="fin-add-btn" onclick="openFinModal()">＋ 添加合同</button>
       <button class="fin-smart-btn" onclick="openSmartImport()">📋 智能录入</button>
     </div>
+    <div class="fin-toolbar">
+      <div class="fin-search">
+        <input type="text" id="finSearchInput" placeholder="搜索合同名称 / 签约方…" oninput="renderFinance()">
+      </div>
+      <div class="fin-tabs" id="finTabs">
+        <button class="fin-tab active" data-filter="active" onclick="setFinFilter('active')">进行中<span class="fin-tab-count" id="finCntActive"></span></button>
+        <button class="fin-tab" data-filter="completed" onclick="setFinFilter('completed')">已完结<span class="fin-tab-count" id="finCntCompleted"></span></button>
+        <button class="fin-tab" data-filter="archived" onclick="setFinFilter('archived')">已归档<span class="fin-tab-count" id="finCntArchived"></span></button>
+      </div>
+    </div>
     <div class="fin-contract-list" id="finContractList"></div>
   </div>
 
@@ -2838,6 +2959,24 @@
 
   function saveContracts() { localStorage.setItem('wb_contracts', JSON.stringify(contracts)); }
 
+  // ── 合同过滤状态 ──
+  let finFilter = 'active';  // 'active' | 'completed' | 'archived'
+
+  function setFinFilter(f) {
+    finFilter = f;
+    document.querySelectorAll('#finTabs .fin-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.filter === f);
+    });
+    renderFinance();
+  }
+
+  // 判断合同状态：已归档 > 已完结（所有分期已付）> 进行中
+  function getContractStatus(c) {
+    if (c.archived) return 'archived';
+    const allPaid = c.payments.length > 0 && c.payments.every(p => p.status === 'paid');
+    return allPaid ? 'completed' : 'active';
+  }
+
   function getPayStatus(payment) {
     if (payment.status === 'paid') return 'paid';
     if (payment.status === 'submitted') return 'submitted';  // 已提交待付，不算逾期
@@ -2892,12 +3031,38 @@
 
     const listEl = document.getElementById('finContractList');
     listEl.innerHTML = '';
+
+    // ── 计算各分类计数 ──
+    const cntByStatus = { active: 0, completed: 0, archived: 0 };
+    contracts.forEach(c => { cntByStatus[getContractStatus(c)]++; });
+    document.getElementById('finCntActive').textContent = cntByStatus.active ? `(${cntByStatus.active})` : '';
+    document.getElementById('finCntCompleted').textContent = cntByStatus.completed ? `(${cntByStatus.completed})` : '';
+    document.getElementById('finCntArchived').textContent = cntByStatus.archived ? `(${cntByStatus.archived})` : '';
+
+    // ── 搜索 + 过滤 ──
+    const searchTerm = (document.getElementById('finSearchInput').value || '').trim().toLowerCase();
+    let filtered = contracts.filter(c => {
+      if (getContractStatus(c) !== finFilter) return false;
+      if (!searchTerm) return true;
+      return (c.name || '').toLowerCase().includes(searchTerm) ||
+             (c.party || '').toLowerCase().includes(searchTerm);
+    });
+
     if (!contracts.length) {
       listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">暂无合同，点击上方「添加合同」开始记录</div>';
       return;
     }
+    if (!filtered.length) {
+      const emptyMsg = {
+        active: '进行中的合同都已付清，去「已完结」查看',
+        completed: '暂无已完结合同（所有分期付清后自动归入）',
+        archived: '暂无已归档合同'
+      };
+      listEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">${searchTerm ? '未找到匹配「'+searchTerm+'」的合同' : emptyMsg[finFilter]}</div>`;
+      return;
+    }
 
-    contracts.forEach(c => {
+    filtered.forEach(c => {
       const paidAmount = c.payments.filter(p => p.status === 'paid').reduce((s,p) => s + p.amount, 0);
       const paidCount = c.payments.filter(p => p.status === 'paid').length;
       const submittedCount = c.payments.filter(p => p.status === 'submitted').length;
@@ -2905,8 +3070,9 @@
       const invoiceNeeded = c.payments.filter(p => p.status === 'submitted' || p.status === 'paid').length;
       const hasOverdue = c.payments.some(p => p.status !== 'paid' && p.status !== 'submitted' && getPayStatus(p) === 'overdue');
       const pct = c.totalAmount ? Math.round(paidAmount / c.totalAmount * 100) : 0;
+      const cStatus = getContractStatus(c);
       const card = document.createElement('div');
-      card.className = `fin-contract${hasOverdue ? ' overdue-alert' : ''}`;
+      card.className = `fin-contract${hasOverdue ? ' overdue-alert' : ''}${cStatus === 'completed' ? ' completed' : ''}${cStatus === 'archived' ? ' archived' : ''}`;
 
       const payRowsHtml = c.payments.map((p, i) => {
         const st = getPayStatus(p);
@@ -2918,6 +3084,13 @@
         const invoiceIcon = invoice === 'uploaded' ? '🧾' : '📄';
         const invoiceTitle = invoice === 'uploaded' ? '发票已上传（点击撤销）' : '点击标记发票已上传';
         const invoiceDisabled = p.status === 'unpaid' ? 'disabled' : '';
+        // 可编辑的打款/提交日期
+        const paidDateHtml = p.status === 'paid'
+          ? `<div class="fin-pay-paid-date">打款于 <input type="date" class="fin-pay-date-edit" value="${p.paidDate || ''}" onchange="updatePayDate(${c.id}, ${i}, 'paidDate', this.value)" onclick="event.stopPropagation()"> ✓</div>`
+          : (p.paidDate ? `<div class="fin-pay-paid-date">已于 ${p.paidDate} 打款 ✓</div>` : '');
+        const submittedDateHtml = p.status === 'submitted'
+          ? `<div class="fin-pay-submitted-date">提交于 <input type="date" class="fin-pay-date-edit" value="${p.submittedDate || ''}" onchange="updatePayDate(${c.id}, ${i}, 'submittedDate', this.value)" onclick="event.stopPropagation()"> ◐</div>`
+          : (p.submittedDate ? `<div class="fin-pay-submitted-date">已于 ${p.submittedDate} 提交付款申请 ◐</div>` : '');
         return `
           <div class="fin-payment ${stClass}" onclick="togglePayment(${c.id}, ${i})">
             <div class="fin-pay-check">${p.status === 'paid' ? '✓' : ''}</div>
@@ -2927,8 +3100,8 @@
                 <span class="fin-pay-date">${nodeText}${dateHint}</span>
                 <span class="fin-pay-status ${stClass}">${stLabels[stClass]}</span>
               </div>
-              ${p.paidDate ? `<div class="fin-pay-paid-date">已于 ${p.paidDate} 打款 ✓</div>` : ''}
-              ${p.submittedDate ? `<div class="fin-pay-submitted-date">已于 ${p.submittedDate} 提交付款申请 ◐</div>` : ''}
+              ${paidDateHtml}
+              ${submittedDateHtml}
             </div>
             <button class="fin-pay-invoice ${invoice === 'uploaded' ? 'uploaded' : ''}"
                     ${invoiceDisabled}
@@ -2937,10 +3110,21 @@
           </div>`;
       }).join('');
 
+      // 归档/恢复按钮
+      let archiveBtnHtml = '';
+      if (cStatus === 'completed') {
+        archiveBtnHtml = `<button class="fin-contract-archive-btn" onclick="archiveContract(${c.id})" title="归档后从主列表移除，可在「已归档」tab 查看">📦 归档</button>`;
+      } else if (cStatus === 'archived') {
+        archiveBtnHtml = `<button class="fin-contract-archive-btn" onclick="unarchiveContract(${c.id})" title="恢复到进行中">↩️ 恢复</button>`;
+      }
+
       card.innerHTML = `
         <div class="fin-contract-header">
-          <span class="fin-contract-name">${c.name}</span>
-          <button class="fin-contract-del" onclick="deleteContract(${c.id})">✕</button>
+          <span class="fin-contract-name">${c.name}${cStatus === 'completed' ? ' <span style="font-size:11px;color:#10B981;font-weight:600;">✓ 已完结</span>' : ''}${cStatus === 'archived' ? ' <span style="font-size:11px;color:#6B7280;font-weight:600;">📦 已归档</span>' : ''}</span>
+          <div>
+            ${archiveBtnHtml}
+            <button class="fin-contract-del" onclick="deleteContract(${c.id})">✕</button>
+          </div>
         </div>
         <div class="fin-contract-meta">
           <span>🤝 ${c.party || '—'}</span>
@@ -2957,6 +3141,33 @@
       `;
       listEl.appendChild(card);
     });
+  }
+
+  // ── 更新打款/提交日期 ──
+  function updatePayDate(contractId, payIdx, field, value) {
+    const c = contracts.find(c => c.id === contractId);
+    if (!c) return;
+    const p = c.payments[payIdx];
+    if (!p) return;
+    p[field] = value;
+    saveContracts();
+  }
+
+  // ── 归档/恢复 ──
+  function archiveContract(id) {
+    const c = contracts.find(c => c.id === id);
+    if (!c) return;
+    if (!confirm(`确定归档合同「${c.name}」吗？\n归档后可在「已归档」tab 查看，可随时恢复。`)) return;
+    c.archived = true;
+    saveContracts();
+    renderFinance();
+  }
+  function unarchiveContract(id) {
+    const c = contracts.find(c => c.id === id);
+    if (!c) return;
+    c.archived = false;
+    saveContracts();
+    renderFinance();
   }
 
   function openFinModal() {
