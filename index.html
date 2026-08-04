@@ -329,6 +329,248 @@
     color: var(--text-secondary);
   }
 
+  /* ═══ HOME WELCOME (首页欢迎区) ═══ */
+  .home-welcome {
+    margin: 0 24px 16px;
+    background: linear-gradient(135deg, #FFF8F0 0%, #FFEFE2 50%, #FFF5EE 100%);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(245, 158, 11, 0.12);
+    overflow: hidden;
+    position: relative;
+    padding: 28px 24px 24px;
+  }
+  .home-welcome::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -30px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .home-welcome-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+  .home-avatar {
+    width: 72px; height: 72px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FDE68A 0%, #FCD34D 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    box-shadow: 0 4px 16px rgba(245,158,11,0.2);
+    border: 3px solid #fff;
+  }
+  .home-greeting {
+    font-size: 18px;
+    font-weight: 600;
+    color: #92400E;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  .home-subtitle {
+    font-size: 14px;
+    color: #B45309;
+    opacity: 0.85;
+    margin-bottom: 20px;
+  }
+  .home-clock {
+    font-size: 48px;
+    font-weight: 200;
+    color: #78350F;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    font-family: "SF Mono", "SF Pro Display", -apple-system, sans-serif;
+  }
+  .home-date {
+    font-size: 13px;
+    color: #A16207;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .home-lunar {
+    font-size: 12px;
+    color: #CA8A04;
+    opacity: 0.7;
+  }
+  .home-tag {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(245,158,11,0.12);
+    border: 1.5px solid rgba(245,158,11,0.25);
+    border-radius: 20px;
+    font-size: 12px;
+    color: #B45309;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  /* ═══ QUOTE CARD (今日金句) ═══ */
+  .quote-card {
+    margin: 0 24px 16px;
+    background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(16, 185, 129, 0.12);
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .quote-card::before {
+    content: '"';
+    position: absolute;
+    top: 4px; left: 12px;
+    font-size: 48px;
+    color: rgba(16,185,129,0.12);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+  .quote-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .quote-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #065F46;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .quote-refresh {
+    font-size: 11px;
+    color: #10B981;
+    background: rgba(16,185,129,0.1);
+    padding: 3px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-family: var(--font);
+  }
+  .quote-refresh:hover { background: rgba(16,185,129,0.2); }
+  .quote-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1E293B;
+    line-height: 1.7;
+    padding-left: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .quote-author {
+    font-size: 12px;
+    color: #6B7280;
+    margin-top: 8px;
+    text-align: right;
+    padding-right: 4px;
+  }
+
+  /* ═══ TODO TYPE TABS (长期/临时) ═══ */
+  .todo-type-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 0 12px 8px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .todo-type-tab {
+    padding: 5px 14px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font);
+  }
+  .todo-type-tab.active {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #fff;
+  }
+  .todo-type-tab:hover:not(.active) {
+    background: var(--bg);
+    color: var(--text-secondary);
+  }
+  .todo-time-row {
+    display: flex;
+    gap: 8px;
+    padding: 0 12px 10px;
+    align-items: center;
+  }
+  .todo-time-row label {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .todo-time-row input[type="date"] {
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+  }
+  .todo-type-select {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .todo-meta-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .todo-time-tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 8px;
+    background: #FEF3C7;
+    color: #B45309;
+    white-space: nowrap;
+  }
+  .todo-time-tag.overdue {
+    background: #FEE2E2;
+    color: #B91C1C;
+  }
+  .todo-time-tag.due-soon {
+    background: #FEF3C7;
+    color: #B45309;
+  }
+  .todo-type-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 8px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .todo-type-badge.long {
+    background: #DBEAFE;
+    color: #1E40AF;
+  }
+  .todo-type-badge.temp {
+    background: #FCE7F3;
+    color: #BE185D;
+  }
+
   /* ═══ TODO BOARD (今日待办) ═══ */
   .todo-board {
     margin: 0 24px 16px;
@@ -1964,6 +2206,29 @@
     </div>
   </div>
 
+  <!-- ═══ HOME WELCOME (首页欢迎区) ═══ -->
+  <div class="home-welcome" id="homeWelcome">
+    <div class="home-welcome-inner">
+      <div class="home-avatar" id="homeAvatar">🍎</div>
+      <div class="home-greeting" id="homeGreeting">Hi，你好婷阿婷 🍎</div>
+      <div class="home-subtitle" id="homeSubtitle">今天还没有成为富婆吗？💰🌻</div>
+      <div class="home-tag">🏠 工作台 · 每天进步一点点</div>
+      <div class="home-clock" id="homeClock">00:00:00</div>
+      <div class="home-date" id="homeDate">--</div>
+      <div class="home-lunar" id="homeLunar">--</div>
+    </div>
+  </div>
+
+  <!-- ═══ QUOTE CARD (今日金句) ═══ -->
+  <div class="quote-card" id="quoteCard">
+    <div class="quote-header">
+      <span class="quote-label">💬 今日金句</span>
+      <button class="quote-refresh" onclick="refreshQuote()">✨ 每日更新</button>
+    </div>
+    <div class="quote-text" id="quoteText"> loading... </div>
+    <div class="quote-author" id="quoteAuthor"></div>
+  </div>
+
   <!-- ═══ TODO BOARD (待办事项) ═══ -->
   <div class="todo-board" id="todoBoard">
     <div class="todo-header">
@@ -1980,6 +2245,11 @@
         </div>
       </div>
     </div>
+    <div class="todo-type-tabs" id="todoTypeTabs">
+      <button class="todo-type-tab active" data-type="all" onclick="setTodoTypeFilter('all')">全部</button>
+      <button class="todo-type-tab" data-type="temp" onclick="setTodoTypeFilter('temp')">📝 临时任务</button>
+      <button class="todo-type-tab" data-type="long" onclick="setTodoTypeFilter('long')">📌 长期任务</button>
+    </div>
     <div class="todo-list" id="todoList"></div>
     <div class="todo-done-section" id="todoDoneSection" style="display:none;">
       <div class="todo-done-header" onclick="toggleDoneList()">
@@ -1987,6 +2257,16 @@
         <span class="todo-done-toggle" id="todoDoneToggle">▼</span>
       </div>
       <div class="todo-done-list" id="todoDoneList"></div>
+    </div>
+    <div class="todo-time-row">
+      <select class="todo-type-select" id="todoTypeSelect">
+        <option value="temp">📝 临时任务</option>
+        <option value="long">📌 长期任务</option>
+      </select>
+      <label>开始</label>
+      <input type="date" id="todoStartDate">
+      <label>结束</label>
+      <input type="date" id="todoEndDate">
     </div>
     <div class="todo-add-row">
       <input type="text" id="todoInput" placeholder="添加新待办…" onkeydown="if(event.key==='Enter')addTodo()">
@@ -2470,6 +2750,14 @@
       ideaBoard.style.display = 'none';
       finBoard.style.display = 'none';
       todoBoard.style.display = 'block';
+
+      // Home welcome & quote only on "all" category
+      const homeEl = document.getElementById('homeWelcome');
+      const quoteEl = document.getElementById('quoteCard');
+      const isAll = catId === 'all';
+      if (homeEl) homeEl.style.display = isAll ? '' : 'none';
+      if (quoteEl) quoteEl.style.display = isAll ? '' : 'none';
+
       document.querySelectorAll('.card').forEach(card => {
         card.classList.remove('hidden');
         card.classList.remove('search-hidden');
@@ -2665,8 +2953,141 @@
     setTimeout(tick, 500);
   }
 
+  // ── Home Welcome (首页欢迎区) ──
+  const QUOTES = [
+    { text: '人生没有白走的路，每一步都算数。', author: '' },
+    { text: '种一棵树最好的时间是十年前，其次是现在。', author: '' },
+    { text: '星光不问赶路人，时光不负有心人。', author: '' },
+    { text: '你只管努力，剩下的交给时间。', author: '' },
+    { text: '熬过无人问津的日子，才有诗和远方。', author: '' },
+    { text: '行动是治愈恐惧的良药，犹豫拖延将不断滋养恐惧。', author: '' },
+    { text: '再微小的光也是光，再平凡的人也有高光时刻。', author: '' },
+    { text: '生活原本沉闷，但跑起来就有风。', author: '' },
+    { text: '你若盛开，清风自来。', author: '' },
+    { text: '乾坤未定，你我皆是黑马。', author: '' },
+    { text: '道阻且长，行则将至；行而不辍，未来可期。', author: '' },
+    { text: '每一次努力，都是幸运的伏笔。', author: '' },
+    { text: '要么出众，要么出局。', author: '' },
+    { text: '成功的路上并不拥挤，因为坚持的人不多。', author: '' },
+    { text: '你的负担将变成礼物，你受的苦将照亮你的路。', author: '' },
+    { text: '越努力，越幸运。', author: '' },
+    { text: '不要假装努力，结果不会陪你演戏。', author: '' },
+    { text: '最好的时光，是你在我身边。', author: '' },
+    { text: '愿你的生活常温暖，日子总是温柔又闪光。', author: '' },
+    { text: '所有的为时已晚，其实是恰逢其时。', author: '' },
+    { text: '你未来的样子，藏在现在的努力里。', author: '' },
+    { text: '温柔且坚定，知足且上进。', author: '' },
+    { text: '自律给我自由。', author: '' },
+    { text: '慢慢来，比较快。', author: '' },
+    { text: '今天很残酷，明天更残酷，后天很美好。', author: '' },
+    { text: '活成自己喜欢的样子，才是最大的成功。', author: '' },
+    { text: '去做你害怕的事，害怕自然会消失。', author: '' },
+    { text: '既然选择了远方，便只顾风雨兼程。', author: '' },
+    { text: '没有人会嘲笑你的梦想，他们只是嘲笑你的实力。', author: '' },
+    { text: '保持热爱，奔赴山海。', author: '' },
+  ];
+
+  function getDailyQuote() {
+    const today = new Date();
+    const dayIndex = (today.getFullYear() * 366 + today.getMonth() * 31 + today.getDate()) % QUOTES.length;
+    return QUOTES[dayIndex];
+  }
+
+  function renderQuote() {
+    const q = getDailyQuote();
+    document.getElementById('quoteText').textContent = q.text;
+    document.getElementById('quoteAuthor').textContent = q.author ? `— ${q.author}` : '';
+  }
+
+  function refreshQuote() {
+    renderQuote();
+    // subtle animation
+    const card = document.getElementById('quoteCard');
+    card.style.transform = 'scale(0.98)';
+    setTimeout(() => card.style.transform = '', 200);
+  }
+
+  // Simplified lunar date (using a pre-computed table for 2024-2030)
+  const LUNAR_MONTHS = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
+  const LUNAR_DAYS = ['初一','初二','初三','初四','初五','初六','初七','初八','初九','初十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+  const LUNAR_INFO = {
+    2026: [0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6],
+  };
+
+  function getLunarDate(d) {
+    // Simplified approximation for 2026-2028 using base offsets
+    const base = new Date('2026-01-01');
+    const diffDays = Math.floor((d - base) / 86400000);
+    // Approximate lunar mapping: 2026 starts at lunar 2025年十一月十二
+    // This is a simplified version - will show approximate lunar info
+    const lunarDays2026 = [
+      '十一月十二','十一月十三','十一月十四','十一月十五','十一月十六','十一月十七','十一月十八','十一月十九','十一月二十','十一月廿一',
+      '十一月廿二','十一月廿三','十一月廿四','十一月廿五','十一月廿六','十一月廿七','十一月廿八','十一月廿九','十一月三十','腊月初一',
+      '腊月初二','腊月初三','腊月初四','腊月初五','腊月初六','腊月初七','腊月初八','腊月初九','腊月初十','腊月十一',
+      '腊月十二','腊月十三','腊月十四','腊月十五','腊月十六','腊月十七','腊月十八','腊月十九','腊月二十','腊月廿一',
+      '腊月廿二','腊月廿三','腊月廿四','腊月廿五','腊月廿六','腊月廿七','腊月廿八','腊月廿九','腊月三十','正月初一',
+      '正月初二','正月初三','正月初四','正月初五','正月初六','正月初七','正月初八','正月初九','正月初十','正月十一',
+      '正月十二','正月十三','正月十四','正月十五','正月十六','正月十七','正月十八','正月十九','正月二十','正月廿一',
+      '正月廿二','正月廿三','正月廿四','正月廿五','正月廿六','正月廿七','正月廿八','正月廿九','二月初一','二月初二',
+      '二月初三','二月初四','二月初五','二月初六','二月初七','二月初八','二月初九','二月初十','二月十一','二月十二',
+      '二月十三','二月十四','二月十五','二月十六','二月十七','二月十八','二月十九','二月二十','二月廿一','二月廿二',
+      '二月廿三','二月廿四','二月廿五','二月廿六','二月廿七','二月廿八','二月廿九','三月初一','三月初二','三月初三',
+      '三月初四','三月初五','三月初六','三月初七','三月初八','三月初九','三月初十','三月十一','三月十二','三月十三',
+      '三月十四','三月十五','三月十六','三月十七','三月十八','三月十九','三月二十','三月廿一','三月廿二','三月廿三',
+      '三月廿四','三月廿五','三月廿六','三月廿七','三月廿八','三月廿九','三月三十','四月初一','四月初二','四月初三',
+      '四月初四','四月初五','四月初六','四月初七','四月初八','四月初九','四月初十','四月十一','四月十二','四月十三',
+      '四月十四','四月十五','四月十六','四月十七','四月十八','四月十九','四月二十','四月廿一','四月廿二','四月廿三',
+      '四月廿四','四月廿五','四月廿六','四月廿七','四月廿八','四月廿九','四月三十','五月初一','五月初二','五月初三',
+      '五月初四','五月初五','五月初六','五月初七','五月初八','五月初九','五月初十','五月十一','五月十二','五月十三',
+      '五月十四','五月十五','五月十六','五月十七','五月十八','五月十九','五月二十','五月廿一','五月廿二','五月廿三',
+      '五月廿四','五月廿五','五月廿六','五月廿七','五月廿八','五月廿九','五月三十','六月初一','六月初二','六月初三',
+      '六月初四','六月初五','六月初六','六月初七','六月初八','六月初九','六月初十','六月十一','六月十二','六月十三',
+      '六月十四','六月十五','六月十六','六月十七','六月十八','六月十九','六月二十','六月廿一','六月廿二','六月廿三',
+      '六月廿四','六月廿五','六月廿六','六月廿七','六月廿八','六月廿九','六月三十','七月初一','七月初二','七月初三',
+      '七月初四','七月初五','七月初六','七月初七','七月初八','七月初九','七月初十','七月十一','七月十二','七月十三',
+      '七月十四','七月十五','七月十六','七月十七','七月十八','七月十九','七月二十','七月廿一','七月廿二','七月廿三',
+      '七月廿四','七月廿五','七月廿六','七月廿七','七月廿八','七月廿九','七月三十','八月初一','八月初二','八月初三',
+      '八月初四','八月初五','八月初六','八月初七','八月初八','八月初九','八月初十','八月十一','八月十二','八月十三',
+      '八月十四','八月十五','八月十六','八月十七','八月十八','八月十九','八月二十','八月廿一','八月廿二','八月廿三',
+      '八月廿四','八月廿五','八月廿六','八月廿七','八月廿八','八月廿九','八月三十','九月初一','九月初二','九月初三',
+      '九月初四','九月初五','九月初六','九月初七','九月初八','九月初九','九月初十','九月十一','九月十二','九月十三',
+      '九月十四','九月十五','九月十六','九月十七','九月十八','九月十九','九月二十','九月廿一','九月廿二','九月廿三',
+      '九月廿四','九月廿五','九月廿六','九月廿七','九月廿八','九月廿九','九月三十','十月初一','十月初二','十月初三',
+      '十月初四','十月初五','十月初六','十月初七','十月初八','十月初九','十月初十','十月十一','十月十二','十月十三',
+      '十月十四','十月十五','十月十六','十月十七','十月十八','十月十九','十月二十','十月廿一','十月廿二','十月廿三',
+      '十月廿四','十月廿五','十月廿六','十月廿七','十月廿八','十月廿九','十月三十'
+    ];
+    if (d.getFullYear() === 2026) {
+      const idx = Math.max(0, Math.min(diffDays, lunarDays2026.length - 1));
+      return lunarDays2026[idx];
+    }
+    return '';
+  }
+
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    const clockEl = document.getElementById('homeClock');
+    if (clockEl) clockEl.textContent = `${h}:${m}:${s}`;
+
+    const weekdays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+    const dateStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${weekdays[now.getDay()]}`;
+    const dateEl = document.getElementById('homeDate');
+    if (dateEl) dateEl.textContent = dateStr;
+
+    const lunar = getLunarDate(now);
+    const lunarEl = document.getElementById('homeLunar');
+    if (lunarEl) lunarEl.textContent = lunar ? `农历 ${lunar}` : '';
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+  renderQuote();
+
   // ── Todo Board (待办事项) ──
   let doneListOpen = false;
+  let todoTypeFilter = 'all';
 
   const TODO_STATUS = {
     todo:    { label: '待办',   icon: '📝', bg: '#FEF3C7', text: '#B45309' },
@@ -2802,12 +3223,13 @@
 
   // ── Todos Data ──
   let todos = JSON.parse(localStorage.getItem('wb_todos')) || [
-    { id: 1, text: '北京SKP视频', status: 'done', date: '2026-07-29', doneDate: '2026-07-29' },
-    { id: 2, text: '5个付款申请 + 2个盖章申请', status: 'done', date: '2026-07-29', doneDate: '2026-07-29' },
-    { id: 3, text: '西安质检报告无强检确认', status: 'pending', date: '2026-07-29' },
-    { id: 4, text: '西安门店位置确认', status: 'pending', date: '2026-07-29' },
-    { id: 5, text: '北京、武汉、杭州Brief', status: 'todo', date: '2026-07-29' },
-    { id: 6, text: '费减提交 → 外观专利', status: 'todo', date: '2026-07-29' },
+    { id: 1, text: '北京SKP视频', status: 'done', date: '2026-07-29', doneDate: '2026-07-29', type: 'temp' },
+    { id: 2, text: '5个付款申请 + 2个盖章申请', status: 'done', date: '2026-07-29', doneDate: '2026-07-29', type: 'temp' },
+    { id: 3, text: '西安质检报告无强检确认', status: 'pending', date: '2026-07-29', type: 'temp', startDate: '2026-07-29', endDate: '2026-08-02' },
+    { id: 4, text: '西安门店位置确认', status: 'pending', date: '2026-07-29', type: 'temp', endDate: '2026-08-01' },
+    { id: 5, text: '北京、武汉、杭州Brief', status: 'todo', date: '2026-07-29', type: 'temp', startDate: '2026-07-30', endDate: '2026-08-05' },
+    { id: 6, text: '费减提交 → 外观专利', status: 'todo', date: '2026-07-29', type: 'long', startDate: '2026-07-01', endDate: '2026-12-31' },
+    { id: 7, text: '家居号转型：装修+生活方式内容', status: 'todo', date: '2026-08-01', type: 'long', startDate: '2026-08-01', endDate: '2026-10-31' },
   ];
 
   function saveTodos() {
@@ -2824,22 +3246,75 @@
     const list = document.getElementById('todoList');
     const doneSection = document.getElementById('todoDoneSection');
     const doneList = document.getElementById('todoDoneList');
-    const activeTodos = todos.filter(t => t.status !== 'done').sort((a,b) => b.date.localeCompare(a.date));
+    let activeTodos = todos.filter(t => t.status !== 'done').sort((a,b) => b.date.localeCompare(a.date));
     const doneTodos = todos.filter(t => t.status === 'done').sort((a,b) => (b.doneDate||b.date).localeCompare(a.doneDate||a.date));
+
+    // Apply type filter
+    if (todoTypeFilter !== 'all') {
+      activeTodos = activeTodos.filter(t => (t.type || 'temp') === todoTypeFilter);
+    }
+
+    // Update tab counts
+    const allCount = todos.filter(t => t.status !== 'done').length;
+    const tempCount = todos.filter(t => t.status !== 'done' && (t.type || 'temp') === 'temp').length;
+    const longCount = todos.filter(t => t.status !== 'done' && t.type === 'long').length;
+    const tabs = document.querySelectorAll('.todo-type-tab');
+    if (tabs[0]) tabs[0].textContent = `全部 ${allCount}`;
+    if (tabs[1]) tabs[1].textContent = `📝 临时任务 ${tempCount}`;
+    if (tabs[2]) tabs[2].textContent = `📌 长期任务 ${longCount}`;
+
+    // Active tab highlight
+    tabs.forEach(t => {
+      t.classList.toggle('active', t.dataset.type === todoTypeFilter);
+    });
 
     // Active list
     list.innerHTML = '';
     if (!activeTodos.length) {
-      list.innerHTML = '<div class="todo-empty">暂无进行中的待办，添加一个吧 👆</div>';
+      const filterLabel = todoTypeFilter === 'long' ? '长期任务' : (todoTypeFilter === 'temp' ? '临时任务' : '');
+      const hint = filterLabel ? `暂无进行中的${filterLabel}，添加一个吧 👆` : '暂无进行中的待办，添加一个吧 👆';
+      list.innerHTML = `<div class="todo-empty">${hint}</div>`;
     } else {
       activeTodos.forEach(todo => {
         const s = TODO_STATUS[todo.status];
+        const todoType = todo.type || 'temp';
         const item = document.createElement('div');
         item.className = 'todo-item';
+
+        // Time tag logic
+        let timeHTML = '';
+        const today = new Date(); today.setHours(0,0,0,0);
+        if (todo.endDate) {
+          const endD = new Date(todo.endDate + 'T00:00:00');
+          const diff = (endD - today) / 86400000;
+          let cls = '';
+          if (diff < 0) cls = 'overdue';
+          else if (diff <= 3) cls = 'due-soon';
+          timeHTML = `<span class="todo-time-tag ${cls}">截止 ${fmtDate(todo.endDate)}</span>`;
+        }
+        if (todo.startDate && todo.endDate) {
+          timeHTML = `<span class="todo-time-tag">${fmtDate(todo.startDate)} → ${fmtDate(todo.endDate)}</span>`;
+          const endD = new Date(todo.endDate + 'T00:00:00');
+          const diff = (endD - today) / 86400000;
+          if (diff < 0) timeHTML = `<span class="todo-time-tag overdue">${fmtDate(todo.startDate)} → ${fmtDate(todo.endDate)} 已逾期</span>`;
+          else if (diff <= 3) timeHTML = `<span class="todo-time-tag due-soon">${fmtDate(todo.startDate)} → ${fmtDate(todo.endDate)} 快到期</span>`;
+        } else if (todo.startDate) {
+          timeHTML = `<span class="todo-time-tag">开始 ${fmtDate(todo.startDate)}</span>`;
+        }
+
+        const typeLabel = todoType === 'long' ? '长期' : '临时';
+        const typeCls = todoType === 'long' ? 'long' : 'temp';
+
         item.innerHTML = `
           <div class="todo-check" onclick="toggleTodo(${todo.id})"></div>
-          <span class="todo-text">${todo.text}</span>
-          <span class="todo-date-tag">${fmtDate(todo.date)}</span>
+          <div class="todo-meta-row" style="flex:1;min-width:0;">
+            <span class="todo-text">${todo.text}</span>
+            <span style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
+              <span class="todo-type-badge ${typeCls}">${typeLabel}</span>
+              <span class="todo-date-tag">${fmtDate(todo.date)}</span>
+              ${timeHTML}
+            </span>
+          </div>
           <span class="todo-status-badge" style="background:${s.bg};color:${s.text};" onclick="cycleTodoStatus(${todo.id})">${s.icon} ${s.label}</span>
           <button class="todo-delete" onclick="deleteTodo(${todo.id})">✕</button>
         `;
@@ -2849,17 +3324,25 @@
 
     // Done section
     document.getElementById('todoDoneCount').textContent = doneTodos.length;
-    document.getElementById('todoActiveCount').textContent = `进行中 ${activeTodos.length}`;
+    document.getElementById('todoActiveCount').textContent = `进行中 ${todos.filter(t => t.status !== 'done').length}`;
     if (doneTodos.length) {
       doneSection.style.display = 'block';
       doneList.innerHTML = '';
       doneTodos.forEach(todo => {
+        const todoType = todo.type || 'temp';
+        const typeLabel = todoType === 'long' ? '长期' : '临时';
+        const typeCls = todoType === 'long' ? 'long' : 'temp';
         const item = document.createElement('div');
         item.className = 'todo-item done';
         item.innerHTML = `
           <div class="todo-check" onclick="toggleTodo(${todo.id})">✓</div>
-          <span class="todo-text">${todo.text}</span>
-          <span class="todo-date-tag">${fmtDate(todo.doneDate || todo.date)}完成</span>
+          <div class="todo-meta-row" style="flex:1;min-width:0;">
+            <span class="todo-text">${todo.text}</span>
+            <span style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
+              <span class="todo-type-badge ${typeCls}">${typeLabel}</span>
+              <span class="todo-date-tag">${fmtDate(todo.doneDate || todo.date)}完成</span>
+            </span>
+          </div>
           <span class="todo-status-badge" style="background:#D1FAE5;color:#065F46;" onclick="cycleTodoStatus(${todo.id})">✅ 已完成</span>
           <button class="todo-delete" onclick="deleteTodo(${todo.id})">✕</button>
         `;
@@ -2876,6 +3359,11 @@
     document.getElementById('todoProgressFill').style.width = total ? `${(done/total)*100}%` : '0%';
   }
 
+  function setTodoTypeFilter(type) {
+    todoTypeFilter = type;
+    renderTodos();
+  }
+
   function toggleDoneList() {
     doneListOpen = !doneListOpen;
     const dl = document.getElementById('todoDoneList');
@@ -2887,11 +3375,22 @@
   function addTodo() {
     const input = document.getElementById('todoInput');
     const statusSelect = document.getElementById('todoStatusSelect');
+    const typeSelect = document.getElementById('todoTypeSelect');
+    const startInput = document.getElementById('todoStartDate');
+    const endInput = document.getElementById('todoEndDate');
     const text = input.value.trim();
     if (!text) return;
-    todos.push({ id: Date.now(), text, status: statusSelect.value, date: getTodayStr() });
+    const todo = {
+      id: Date.now(), text, status: statusSelect.value, date: getTodayStr(),
+      type: typeSelect ? typeSelect.value : 'temp',
+      startDate: startInput ? startInput.value : '',
+      endDate: endInput ? endInput.value : ''
+    };
+    todos.push(todo);
     saveTodos();
     input.value = '';
+    if (startInput) startInput.value = '';
+    if (endInput) endInput.value = '';
     renderTodos();
   }
 
