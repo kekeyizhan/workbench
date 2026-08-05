@@ -965,6 +965,57 @@
   }
   .todo-item:hover .todo-delete { opacity: 1; }
   .todo-delete:hover { background: #FEE2E2; color: #EF4444; }
+  .todo-edit {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: none; border: none;
+    color: var(--text-muted); font-size: 15px;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; opacity: 0;
+  }
+  .todo-item:hover .todo-edit { opacity: 1; }
+  .todo-edit:hover { background: #EDE9FE; color: #6D28D9; }
+  .todo-editor {
+    margin: 0 8px 10px 40px;
+    padding: 12px;
+    border: 1px solid #DDD6FE;
+    border-radius: var(--radius-sm);
+    background: #FAFAFF;
+    display: grid;
+    gap: 9px;
+  }
+  .todo-editor input, .todo-editor select {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 13px;
+  }
+  .todo-editor input:focus, .todo-editor select:focus {
+    outline: none;
+    border-color: #8B5CF6;
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+  }
+  .todo-editor-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .todo-editor-field { display: grid; gap: 3px; }
+  .todo-editor-field label { font-size: 11px; color: var(--text-secondary); }
+  .todo-editor-actions { display: flex; justify-content: flex-end; gap: 8px; }
+  .todo-editor-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .todo-editor-btn.primary { background: #6366F1; border-color: #6366F1; color: #fff; }
   .todo-add-row {
     display: flex; gap: 8px;
     padding: 10px 12px 14px;
@@ -2345,7 +2396,9 @@
     .fin-pay-row input.fin-pay-date-input { flex: 1 1 120px; }
     .todo-board { margin: 0 16px 12px; }
     .todo-add-row select { display: none; }
-    .todo-delete { opacity: 1; }
+    .todo-delete, .todo-edit { opacity: 1; }
+    .todo-editor { margin-left: 8px; }
+    .todo-editor-fields { grid-template-columns: 1fr; }
 
     body { padding-bottom: calc(24px + var(--safe-bottom)); }
   }
@@ -3755,7 +3808,7 @@
         item.innerHTML = `
           <div class="todo-check" onclick="toggleTodo(${todo.id})"></div>
           <div class="todo-meta-row" style="flex:1;min-width:0;">
-            <span class="todo-text">${todo.text}</span>
+            <span class="todo-text">${escapeHtml(todo.text)}</span>
             <span style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
               <span class="todo-type-badge ${typeCls}">${typeLabel}</span>
               <span class="todo-date-tag">${fmtDate(todo.date)}</span>
@@ -3763,7 +3816,8 @@
             </span>
           </div>
           <span class="todo-status-badge" style="background:${s.bg};color:${s.text};" onclick="cycleTodoStatus(${todo.id})">${s.icon} ${s.label}</span>
-          <button class="todo-delete" onclick="deleteTodo(${todo.id})">✕</button>
+          <button class="todo-edit" title="编辑待办" onclick="openTodoEditor(${todo.id})">✎</button>
+          <button class="todo-delete" title="删除待办" onclick="deleteTodo(${todo.id})">✕</button>
         `;
         list.appendChild(item);
       });
@@ -3784,14 +3838,15 @@
         item.innerHTML = `
           <div class="todo-check" onclick="toggleTodo(${todo.id})">✓</div>
           <div class="todo-meta-row" style="flex:1;min-width:0;">
-            <span class="todo-text">${todo.text}</span>
+            <span class="todo-text">${escapeHtml(todo.text)}</span>
             <span style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
               <span class="todo-type-badge ${typeCls}">${typeLabel}</span>
               <span class="todo-date-tag">${fmtDate(todo.doneDate || todo.date)}完成</span>
             </span>
           </div>
           <span class="todo-status-badge" style="background:#D1FAE5;color:#065F46;" onclick="cycleTodoStatus(${todo.id})">✅ 已完成</span>
-          <button class="todo-delete" onclick="deleteTodo(${todo.id})">✕</button>
+          <button class="todo-edit" title="编辑待办" onclick="openTodoEditor(${todo.id})">✎</button>
+          <button class="todo-delete" title="删除待办" onclick="deleteTodo(${todo.id})">✕</button>
         `;
         doneList.appendChild(item);
       });
@@ -3872,6 +3927,88 @@
 
   function deleteTodo(id) {
     todos = todos.filter(t => t.id !== id);
+    saveTodos();
+    renderTodos();
+  }
+
+  function openTodoEditor(id) {
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
+    const existing = document.getElementById('todoEditor');
+    if (existing) existing.remove();
+
+    const editor = document.createElement('form');
+    editor.id = 'todoEditor';
+    editor.className = 'todo-editor';
+    editor.innerHTML = `
+      <input id="todoEditText" type="text" value="${escapeHtml(todo.text)}" aria-label="待办内容" required>
+      <div class="todo-editor-fields">
+        <div class="todo-editor-field">
+          <label for="todoEditType">任务类型</label>
+          <select id="todoEditType">
+            <option value="temp" ${todo.type !== 'long' ? 'selected' : ''}>临时任务</option>
+            <option value="long" ${todo.type === 'long' ? 'selected' : ''}>长期任务</option>
+          </select>
+        </div>
+        <div class="todo-editor-field">
+          <label for="todoEditStatus">当前状态</label>
+          <select id="todoEditStatus">
+            <option value="todo" ${todo.status === 'todo' ? 'selected' : ''}>待办</option>
+            <option value="pending" ${todo.status === 'pending' ? 'selected' : ''}>待确认</option>
+            <option value="done" ${todo.status === 'done' ? 'selected' : ''}>已完成</option>
+          </select>
+        </div>
+        <div class="todo-editor-field">
+          <label for="todoEditStart">开始时间</label>
+          <input id="todoEditStart" type="date" value="${todo.startDate || ''}">
+        </div>
+        <div class="todo-editor-field">
+          <label for="todoEditEnd">结束时间</label>
+          <input id="todoEditEnd" type="date" value="${todo.endDate || ''}">
+        </div>
+      </div>
+      <div class="todo-editor-actions">
+        <button class="todo-editor-btn" type="button" onclick="closeTodoEditor()">取消</button>
+        <button class="todo-editor-btn primary" type="submit">保存修改</button>
+      </div>
+    `;
+    editor.addEventListener('submit', event => {
+      event.preventDefault();
+      saveTodoEdit(id);
+    });
+
+    const item = [...document.querySelectorAll('.todo-item')].find(el => el.querySelector(`[onclick="openTodoEditor(${id})"]`));
+    if (item) item.insertAdjacentElement('afterend', editor);
+    document.getElementById('todoEditText').focus();
+  }
+
+  function closeTodoEditor() {
+    const editor = document.getElementById('todoEditor');
+    if (editor) editor.remove();
+  }
+
+  function saveTodoEdit(id) {
+    const todo = todos.find(t => t.id === id);
+    const text = document.getElementById('todoEditText').value.trim();
+    const startDate = document.getElementById('todoEditStart').value;
+    const endDate = document.getElementById('todoEditEnd').value;
+    if (!todo || !text) return;
+    if (startDate && endDate && startDate > endDate) {
+      alert('结束时间不能早于开始时间');
+      return;
+    }
+
+    const status = document.getElementById('todoEditStatus').value;
+    todo.text = text;
+    todo.type = document.getElementById('todoEditType').value;
+    todo.startDate = startDate;
+    todo.endDate = endDate;
+    todo.status = status;
+    if (status === 'done') {
+      if (!todo.doneDate) todo.doneDate = getTodayStr();
+    } else {
+      delete todo.doneDate;
+    }
     saveTodos();
     renderTodos();
   }
