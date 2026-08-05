@@ -434,6 +434,285 @@
     margin-bottom: 16px;
   }
 
+  /* ═══ DASHBOARD (工作台总览) ═══ */
+  .dashboard-board {
+    margin: 0 24px 24px;
+  }
+  .db-header {
+    text-align: left;
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #FFF0F5 0%, #FBEAF0 100%);
+    border-radius: var(--radius-lg);
+    border: 1.5px solid #F4C0D1;
+    position: relative;
+    overflow: hidden;
+  }
+  .db-header::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -20px;
+    width: 90px; height: 90px;
+    background: radial-gradient(circle, rgba(212,83,126,0.10) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .db-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #FBEAF0;
+    border: 1.5px solid #F4C0D1;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #993556;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .db-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #4B1528;
+    margin: 0 0 6px;
+    letter-spacing: 0.3px;
+  }
+  .db-subtitle {
+    font-size: 13px;
+    color: #993556;
+    opacity: 0.85;
+    margin: 0 0 12px;
+  }
+  .db-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #F4C0D1;
+    color: #fff;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(212,83,126,0.2);
+  }
+
+  /* 顶部 4 张数据卡 */
+  .db-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .db-stat {
+    background: #fff;
+    border: 1.5px solid #F4C0D1;
+    border-radius: var(--radius-lg);
+    padding: 16px 14px;
+    text-align: center;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .db-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(212,83,126,0.12);
+  }
+  .db-stat-value {
+    font-size: 26px;
+    font-weight: 600;
+    color: #72243E;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .db-stat-label {
+    font-size: 12px;
+    color: #993556;
+    font-weight: 500;
+  }
+  .db-stat-sub {
+    font-size: 11px;
+    color: #D4537E;
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+  .db-stat.accent { border-color: #F4C0D1; background: linear-gradient(135deg, #FFFBFC 0%, #FBEAF0 100%); }
+  .db-stat.success { border-color: #A7F3D0; }
+  .db-stat.success .db-stat-value { color: #047857; }
+  .db-stat.warn { border-color: #FED7AA; }
+  .db-stat.warn .db-stat-value { color: #C2410C; }
+
+  /* 通用卡片 */
+  .db-card {
+    background: #fff;
+    border: 1.5px solid #F4C0D1;
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    margin-bottom: 18px;
+  }
+  .db-card.db-week {
+    border-color: #F4C0D1;
+  }
+  .db-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #F4C0D1;
+  }
+  .db-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #72243E;
+  }
+  .db-card-meta {
+    font-size: 11px;
+    color: #993556;
+    opacity: 0.7;
+    padding: 2px 8px;
+    background: #FBEAF0;
+    border-radius: 10px;
+  }
+  .db-card-body {
+    min-height: 50px;
+  }
+
+  /* 双栏布局 */
+  .db-col2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 0;
+  }
+  .db-col2 .db-card { margin-bottom: 0; }
+
+  @media (max-width: 900px) {
+    .db-stats { grid-template-columns: repeat(2, 1fr); }
+    .db-col2 { grid-template-columns: 1fr; }
+  }
+
+  /* 今日待办条目 */
+  .db-todo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 4px;
+    font-size: 13px;
+    color: #4B1528;
+    border-bottom: 1px solid #FCE7F0;
+  }
+  .db-todo:last-child { border-bottom: none; }
+  .db-todo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #F4C0D1;
+  }
+  .db-todo-dot.done { background: #10B981; }
+  .db-todo-dot.long { background: #F59E0B; }
+  .db-todo-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .db-todo-text.done { text-decoration: line-through; opacity: 0.5; }
+  .db-todo-time { font-size: 11px; color: #993556; opacity: 0.7; }
+  .db-empty {
+    color: #D4537E;
+    opacity: 0.6;
+    font-size: 12px;
+    padding: 12px 0;
+    text-align: center;
+  }
+
+  /* 分类进度条 */
+  .db-cat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 13px;
+    color: #4B1528;
+  }
+  .db-cat-name {
+    flex: 0 0 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #72243E;
+    font-weight: 500;
+  }
+  .db-cat-bar {
+    flex: 1;
+    height: 8px;
+    background: #FBEAF0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .db-cat-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #F4C0D1, #D4537E);
+    border-radius: 4px;
+    transition: width 0.4s;
+  }
+  .db-cat-fill.high { background: linear-gradient(90deg, #6EE7B7, #10B981); }
+  .db-cat-pct {
+    flex: 0 0 50px;
+    text-align: right;
+    font-size: 11px;
+    color: #993556;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 本周概览 */
+  .db-week-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .db-week-cell {
+    background: linear-gradient(135deg, #FFFBFC 0%, #FBEAF0 100%);
+    border-radius: 12px;
+    padding: 12px 10px;
+    text-align: center;
+    border: 1px solid #F4C0D1;
+  }
+  .db-week-cell-val {
+    font-size: 20px;
+    font-weight: 600;
+    color: #72243E;
+    line-height: 1.1;
+  }
+  .db-week-cell-val.danger { color: #C2410C; }
+  .db-week-cell-val.ok { color: #047857; }
+  .db-week-cell-label {
+    font-size: 11px;
+    color: #993556;
+    margin-top: 4px;
+  }
+
+  /* 合同 + 灵感 */
+  .db-mini-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    font-size: 13px;
+    color: #4B1528;
+    border-bottom: 1px solid #FCE7F0;
+  }
+  .db-mini-row:last-child { border-bottom: none; }
+  .db-mini-label { color: #72243E; }
+  .db-mini-val { font-weight: 600; color: #993556; font-variant-numeric: tabular-nums; }
+  .db-mini-val.danger { color: #C2410C; }
+  .db-mini-val.ok { color: #047857; }
+
+  .db-footer-note {
+    margin-top: 18px;
+    text-align: center;
+    padding: 14px;
+    background: linear-gradient(135deg, #FBEAF0 0%, #FCE7F0 100%);
+    border-radius: var(--radius-lg);
+    font-size: 13px;
+    color: #993556;
+    border: 1.5px dashed #F4C0D1;
+  }
+
   /* ═══ QUOTE CARD (今日金句) ═══ */
   .quote-card {
     margin: 0 24px 16px;
@@ -2227,6 +2506,68 @@
     </div>
   </div>
 
+  <!-- ═══ DASHBOARD (工作台总览) ═══ -->
+  <div class="dashboard-board" id="dashboardBoard" style="display:none;">
+    <!-- 标题区 -->
+    <div class="db-header">
+      <span class="db-tag">📊 个人工作台</span>
+      <h1 class="db-title">个人工作台我终于搭出来了</h1>
+      <p class="db-subtitle">把任务、合同、选题和分类进度放进了一个工作台</p>
+      <span class="db-badge">✨ 成果持续沉淀</span>
+    </div>
+
+    <!-- 顶部 4 张数据卡 -->
+    <div class="db-stats" id="dbStats"></div>
+
+    <!-- 今日待办 + 分类进度 双栏 -->
+    <div class="db-col2">
+      <div class="db-card">
+        <div class="db-card-head">
+          <span class="db-card-title">🎯 今日待办</span>
+          <span class="db-card-meta" id="dbTodayCount">--</span>
+        </div>
+        <div class="db-card-body" id="dbTodayList"></div>
+      </div>
+      <div class="db-card">
+        <div class="db-card-head">
+          <span class="db-card-title">📁 分类项目进度</span>
+          <span class="db-card-meta">已完成 / 总计</span>
+        </div>
+        <div class="db-card-body" id="dbCategoryProgress"></div>
+      </div>
+    </div>
+
+    <!-- 本周概览 -->
+    <div class="db-card db-week">
+      <div class="db-card-head">
+        <span class="db-card-title">📅 本周概览</span>
+        <span class="db-card-meta" id="dbWeekRange">--</span>
+      </div>
+      <div class="db-card-body" id="dbWeekOverview"></div>
+    </div>
+
+    <!-- 项目进度 + 灵感 双栏 -->
+    <div class="db-col2">
+      <div class="db-card">
+        <div class="db-card-head">
+          <span class="db-card-title">💰 合同 & 财务</span>
+          <span class="db-card-meta" id="dbFinMeta">--</span>
+        </div>
+        <div class="db-card-body" id="dbFinanceProgress"></div>
+      </div>
+      <div class="db-card">
+        <div class="db-card-head">
+          <span class="db-card-title">💡 灵感与选题</span>
+          <span class="db-card-meta" id="dbIdeaMeta">--</span>
+        </div>
+        <div class="db-card-body" id="dbIdeaStats"></div>
+      </div>
+    </div>
+
+    <!-- 底部说明 -->
+    <div class="db-footer-note">把每天做过的事，变成可复盘、可汇报、可沉淀的工作记录</div>
+  </div>
+
   <!-- ═══ HOME WELCOME (首页欢迎区) ═══ -->
   <div class="home-welcome" id="homeWelcome">
     <div class="home-welcome-inner">
@@ -2696,6 +3037,7 @@
   // ── Categories data ──
   const DEFAULT_CATEGORIES = [
     { id: 'all',  icon: '🏠', img: 1, label: '全部板块', fixed: true },
+    { id: 'dashboard', icon: '📊', img: 8, label: '工作台', fixed: true },
     { id: 'ops',  icon: '📍', img: 2, label: '运营类',   fixed: false, count: 3 },
     { id: 'brand', icon: '🔧', img: 3, label: '品牌基建内容', fixed: false, count: 1 },
     { id: 'geo',  icon: '📊', img: 4, label: 'GEO内容',  fixed: false, count: 1 },
@@ -2740,6 +3082,7 @@
 
   function countCards(catId) {
     if (catId === 'all') return document.querySelectorAll('.card').length;
+    if (catId === 'dashboard') return '·';
     if (catId === 'ideas') return ideas.length;
     if (catId === 'finance') return contracts.length;
     return document.querySelectorAll(`.card[data-category="${catId}"]`).length;
@@ -2794,6 +3137,18 @@
       finBoard.style.display = 'block';
       todoBoard.style.display = 'none';
       renderFinance();
+    } else if (catId === 'dashboard') {
+      cardGrid.style.display = 'none';
+      ideaBoard.style.display = 'none';
+      finBoard.style.display = 'none';
+      todoBoard.style.display = 'none';
+      const dashBoard = document.getElementById('dashboardBoard');
+      if (dashBoard) dashBoard.style.display = '';
+      const homeEl = document.getElementById('homeWelcome');
+      const quoteEl = document.getElementById('quoteCard');
+      if (homeEl) homeEl.style.display = 'none';
+      if (quoteEl) quoteEl.style.display = 'none';
+      renderDashboard();
     } else {
       cardGrid.style.display = 'grid';
       ideaBoard.style.display = 'none';
@@ -3535,6 +3890,194 @@
     if (diff < 0) return 'overdue';
     if (diff <= 7) return 'due-soon';
     return 'unpaid';
+  }
+
+  function renderDashboard() {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+    const weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
+    const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+    const weekStartStr = `${weekStart.getMonth()+1}/${weekStart.getDate()}`;
+    const weekEndStr = `${weekEnd.getMonth()+1}/${weekEnd.getDate()}`;
+    document.getElementById('dbWeekRange').textContent = `${weekStartStr} - ${weekEndStr}`;
+
+    // ── 今日待办：所有 endDate == today 的任务（含已完成） + 长期任务未完成 ──
+    const todaysTodos = todos.filter(t => {
+      if (t.endDate === todayStr) return true;
+      if (t.type === 'long' && t.status !== 'done') return true;
+      return false;
+    }).slice(0, 10);
+
+    const doneToday = todaysTodos.filter(t => t.status === 'done').length;
+    document.getElementById('dbTodayCount').textContent = `进行中 ${todaysTodos.length - doneToday} · 已完成 ${doneToday}`;
+
+    const todoListHtml = todaysTodos.length === 0
+      ? '<div class="db-empty">🎉 今天没有待办，享受轻松一天</div>'
+      : todaysTodos.map(t => {
+        const isDone = t.status === 'done';
+        const isLong = t.type === 'long';
+        const dotClass = isDone ? 'done' : (isLong ? 'long' : '');
+        const timeText = t.endDate ? t.endDate.slice(5) : (isLong ? '长期任务' : '今日');
+        return `<div class="db-todo">
+          <span class="db-todo-dot ${dotClass}"></span>
+          <span class="db-todo-text ${isDone ? 'done' : ''}">${escapeHtml(t.text)}</span>
+          <span class="db-todo-time">${timeText}${isLong ? ' · 📌' : ''}</span>
+        </div>`;
+      }).join('');
+    document.getElementById('dbTodayList').innerHTML = todoListHtml;
+
+    // ── 顶部数据卡 ──
+    const activeTodos = todos.filter(t => t.status !== 'done').length;
+    const totalContracts = contracts.length;
+    let totalUnpaid = 0, overdueCount = 0, dueSoonCount = 0;
+    contracts.forEach(c => {
+      c.payments.forEach(p => {
+        if (p.status !== 'paid') {
+          totalUnpaid += p.amount;
+          const st = getPayStatus(p);
+          if (st === 'overdue') overdueCount++;
+          if (st === 'due-soon') dueSoonCount++;
+        }
+      });
+    });
+    const ideaCount = ideas.length;
+    // 本周完成 = weekStart 之后 doneDate 的 todo 数量
+    const weekDoneCount = todos.filter(t => t.status === 'done' && t.doneDate && new Date(t.doneDate) >= weekStart).length;
+    // 本周目标 = 当周全部长期任务（粗略估算）
+    const weekGoal = Math.max(todos.filter(t => t.type === 'long' && t.status !== 'done').length + 5, 8);
+    const weekPct = Math.min(100, Math.round(weekDoneCount / weekGoal * 100));
+
+    document.getElementById('dbStats').innerHTML = `
+      <div class="db-stat accent">
+        <div class="db-stat-value">${activeTodos}</div>
+        <div class="db-stat-label">进行中待办</div>
+        <div class="db-stat-sub">${doneToday} 项今日已完成</div>
+      </div>
+      <div class="db-stat success">
+        <div class="db-stat-value">${weekDoneCount}/${weekGoal}</div>
+        <div class="db-stat-label">本周完成</div>
+        <div class="db-stat-sub">完成度 ${weekPct}%</div>
+      </div>
+      <div class="db-stat warn">
+        <div class="db-stat-value">¥${(totalUnpaid/1000).toFixed(1)}k</div>
+        <div class="db-stat-label">待付金额</div>
+        <div class="db-stat-sub">${overdueCount} 笔逾期 · ${dueSoonCount} 笔7天内</div>
+      </div>
+      <div class="db-stat">
+        <div class="db-stat-value">${ideaCount}</div>
+        <div class="db-stat-label">选题灵感</div>
+        <div class="db-stat-sub">已积累 ${ideaCount} 条</div>
+      </div>
+    `;
+
+    // ── 分类项目进度（基于卡片）──
+    const catProgressHtml = categories
+      .filter(c => c.id !== 'all' && c.id !== 'dashboard' && c.id !== 'ideas' && c.id !== 'finance' && c.id !== 'todos')
+      .map(c => {
+        const cards = document.querySelectorAll(`.card[data-category="${c.id}"]`);
+        let totalTasks = 0, doneTasks = 0;
+        cards.forEach(card => {
+          const checks = card.querySelectorAll('.check-item');
+          checks.forEach(item => {
+            totalTasks++;
+            if (item.classList.contains('done')) doneTasks++;
+          });
+          // 也把 metric 进度作为权重
+          const fills = card.querySelectorAll('.progress-fill');
+          fills.forEach(fill => {
+            const w = parseInt(fill.dataset.width || '0');
+            if (w > 0) totalTasks += 1;
+            if (w >= 100) doneTasks += 1;
+          });
+        });
+        if (totalTasks === 0) return '';
+        const pct = Math.round(doneTasks / totalTasks * 100);
+        const fillCls = pct >= 80 ? 'high' : '';
+        return `<div class="db-cat-row">
+          <span class="db-cat-name">${c.icon} ${escapeHtml(c.label)}</span>
+          <div class="db-cat-bar"><div class="db-cat-fill ${fillCls}" style="width:${pct}%"></div></div>
+          <span class="db-cat-pct">${doneTasks}/${totalTasks} (${pct}%)</span>
+        </div>`;
+      }).filter(Boolean).join('');
+    document.getElementById('dbCategoryProgress').innerHTML = catProgressHtml || '<div class="db-empty">暂无分类进度数据</div>';
+
+    // ── 本周概览 4 格统计 ──
+    const activeCounts = {
+      newTodos: todos.filter(t => t.date >= weekStartStr && t.date <= todayStr).length,
+      weekDone: weekDoneCount,
+      longActive: todos.filter(t => t.type === 'long' && t.status !== 'done').length,
+      overdue: overdueCount,
+      dueSoon: dueSoonCount,
+      contracts: contracts.length
+    };
+    document.getElementById('dbWeekOverview').innerHTML = `
+      <div class="db-week-grid">
+        <div class="db-week-cell">
+          <div class="db-week-cell-val">${activeCounts.newTodos}</div>
+          <div class="db-week-cell-label">本周新增待办</div>
+        </div>
+        <div class="db-week-cell">
+          <div class="db-week-cell-val ok">${activeCounts.weekDone}</div>
+          <div class="db-week-cell-label">本周完成</div>
+        </div>
+        <div class="db-week-cell">
+          <div class="db-week-cell-val">${activeCounts.longActive}</div>
+          <div class="db-week-cell-label">长期任务进行中</div>
+        </div>
+        <div class="db-week-cell">
+          <div class="db-week-cell-val ${overdueCount > 0 ? 'danger' : 'ok'}">${overdueCount + dueSoonCount}</div>
+          <div class="db-week-cell-label">紧急财务事项</div>
+        </div>
+      </div>
+    `;
+
+    // ── 合同 & 财务 ──
+    let totalContractAmount = 0, totalPaid = 0, activeContracts = 0, completedContracts = 0;
+    contracts.forEach(c => {
+      totalContractAmount += c.totalAmount || 0;
+      c.payments.forEach(p => {
+        if (p.status === 'paid') totalPaid += p.amount;
+      });
+      const st = getContractStatus(c);
+      if (st === 'active') activeContracts++;
+      if (st === 'completed') completedContracts++;
+    });
+    const invoiceUploaded = contracts.reduce((s,c) => s + c.payments.filter(p => p.invoice === 'uploaded').length, 0);
+    const invoiceNeeded = contracts.reduce((s,c) => s + c.payments.filter(p => p.status === 'submitted' || p.status === 'paid').length, 0);
+
+    document.getElementById('dbFinMeta').textContent = `共 ${totalContracts} 个合同`;
+    document.getElementById('dbFinanceProgress').innerHTML = `
+      <div class="db-mini-row"><span class="db-mini-label">📑 合同总数</span><span class="db-mini-val">${totalContracts}</span></div>
+      <div class="db-mini-row"><span class="db-mini-label">🟢 进行中</span><span class="db-mini-val">${activeContracts}</span></div>
+      <div class="db-mini-row"><span class="db-mini-label">✅ 已完结</span><span class="db-mini-val ok">${completedContracts}</span></div>
+      <div class="db-mini-row"><span class="db-mini-label">💵 总金额</span><span class="db-mini-val">¥${totalContractAmount.toLocaleString()}</span></div>
+      <div class="db-mini-row"><span class="db-mini-label">💰 已付款</span><span class="db-mini-val ok">¥${totalPaid.toLocaleString()}</span></div>
+      <div class="db-mini-row"><span class="db-mini-label">⏰ 待付总额</span><span class="db-mini-val ${totalUnpaid>0?'danger':''}">¥${totalUnpaid.toLocaleString()}</span></div>
+      <div class="db-mini-row"><span class="db-mini-label">⚠️ 逾期 / 7天内</span><span class="db-mini-val ${overdueCount>0?'danger':''}">${overdueCount} / ${dueSoonCount}</span></div>
+      <div class="db-mini-row"><span class="db-mini-label">🧾 发票上传</span><span class="db-mini-val">${invoiceUploaded}/${invoiceNeeded}</span></div>
+    `;
+
+    // ── 灵感统计 ──
+    const thisMonth = todayStr.slice(0, 7);
+    const monthIdeas = ideas.filter(i => i.date && i.date.startsWith(thisMonth) || (i.date && i.date.includes('-' + today.getMonth()+1 + '-'))).length;
+    const recentIdeas = ideas.slice(0, 3);
+    document.getElementById('dbIdeaMeta').textContent = `共 ${ideaCount} 条`;
+    const recentHtml = recentIdeas.length === 0
+      ? '<div class="db-empty">还没有灵感，去选题灵感区记录一个</div>'
+      : recentIdeas.map(i => `<div class="db-mini-row"><span class="db-mini-label">💡 ${escapeHtml(i.text.length > 18 ? i.text.slice(0, 18) + '…' : i.text)}</span><span class="db-mini-val">${i.date || '近期'}</span></div>`).join('');
+    document.getElementById('dbIdeaStats').innerHTML = `
+      <div class="db-mini-row"><span class="db-mini-label">📚 灵感总数</span><span class="db-mini-val">${ideaCount}</span></div>
+      <div class="db-mini-row"><span class="db-mini-label">📅 本月新增</span><span class="db-mini-val">${monthIdeas}</span></div>
+      <div class="db-mini-row" style="font-size:11px;opacity:0.6;"><span class="db-mini-label">最近灵感</span></div>
+      ${recentHtml}
+    `;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
   }
 
   function renderFinance() {
