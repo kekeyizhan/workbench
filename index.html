@@ -713,6 +713,29 @@
     border: 1.5px dashed #F4C0D1;
   }
 
+  /* 可点击的看板元素 */
+  .db-stat { cursor: pointer; }
+  .db-stat.clickable:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(212,83,126,0.18);
+    border-color: #D4537E;
+  }
+  .db-card-head { cursor: pointer; }
+  .db-card-head:hover .db-card-title { color: #D4537E; }
+  .db-todo { cursor: pointer; transition: background 0.15s; }
+  .db-todo:hover { background: #FBEAF0; border-radius: 8px; }
+  .db-cat-row { cursor: pointer; transition: background 0.15s; padding: 8px 6px; border-radius: 8px; }
+  .db-cat-row:hover { background: #FBEAF0; }
+  .db-cat-row:hover .db-cat-name { color: #D4537E; }
+  .db-week-cell { cursor: pointer; transition: transform 0.15s; }
+  .db-week-cell:hover { transform: scale(1.05); }
+  .db-mini-row { cursor: pointer; transition: background 0.15s; padding: 7px 6px; border-radius: 8px; margin: 0 -6px; }
+  .db-mini-row:hover { background: #FBEAF0; }
+  .db-jump-arrow { font-size: 11px; color: #D4537E; opacity: 0; transition: opacity 0.15s; margin-left: 4px; }
+  .db-cat-row:hover .db-jump-arrow,
+  .db-mini-row:hover .db-jump-arrow,
+  .db-todo:hover .db-jump-arrow { opacity: 0.8; }
+
   /* ═══ QUOTE CARD (今日金句) ═══ */
   .quote-card {
     margin: 0 24px 16px;
@@ -2473,7 +2496,7 @@
   <!-- Desktop header -->
   <div class="main-header">
     <div class="mh-left">
-      <span class="mh-title" id="mainTitle">全部板块</span>
+      <span class="mh-title" id="mainTitle">工作台</span>
     </div>
     <div class="mh-search">
       <span class="ms-icon">🔍</span>
@@ -2522,14 +2545,14 @@
     <!-- 今日待办 + 分类进度 双栏 -->
     <div class="db-col2">
       <div class="db-card">
-        <div class="db-card-head">
+        <div class="db-card-head" onclick="selectCategory('ops')" title="点击进入待办管理">
           <span class="db-card-title">🎯 今日待办</span>
           <span class="db-card-meta" id="dbTodayCount">--</span>
         </div>
         <div class="db-card-body" id="dbTodayList"></div>
       </div>
       <div class="db-card">
-        <div class="db-card-head">
+        <div class="db-card-head" style="cursor:default">
           <span class="db-card-title">📁 分类项目进度</span>
           <span class="db-card-meta">已完成 / 总计</span>
         </div>
@@ -2549,14 +2572,14 @@
     <!-- 项目进度 + 灵感 双栏 -->
     <div class="db-col2">
       <div class="db-card">
-        <div class="db-card-head">
+        <div class="db-card-head" onclick="selectCategory('finance')" title="点击进入财务管理">
           <span class="db-card-title">💰 合同 & 财务</span>
           <span class="db-card-meta" id="dbFinMeta">--</span>
         </div>
         <div class="db-card-body" id="dbFinanceProgress"></div>
       </div>
       <div class="db-card">
-        <div class="db-card-head">
+        <div class="db-card-head" onclick="selectCategory('ideas')" title="点击进入选题灵感">
           <span class="db-card-title">💡 灵感与选题</span>
           <span class="db-card-meta" id="dbIdeaMeta">--</span>
         </div>
@@ -3036,8 +3059,7 @@
 
   // ── Categories data ──
   const DEFAULT_CATEGORIES = [
-    { id: 'all',  icon: '🏠', img: 1, label: '全部板块', fixed: true },
-    { id: 'dashboard', icon: '📊', img: 8, label: '工作台', fixed: true },
+    { id: 'dashboard', icon: '📊', img: 1, label: '工作台', fixed: true },
     { id: 'ops',  icon: '📍', img: 2, label: '运营类',   fixed: false, count: 3 },
     { id: 'brand', icon: '🔧', img: 3, label: '品牌基建内容', fixed: false, count: 1 },
     { id: 'geo',  icon: '📊', img: 4, label: 'GEO内容',  fixed: false, count: 1 },
@@ -3051,11 +3073,26 @@
   // Backward compat: assign img to categories without one
   categories.forEach((c, idx) => {
     if (!c.img) {
-      // Map old ids to new images, or cycle through available images
-      const imgMap = { all: 1, ops: 2, brand: 3, geo: 4, home: 5, finance: 6, ideas: 7 };
+      const imgMap = { dashboard: 1, ops: 2, brand: 3, geo: 4, home: 5, finance: 6, ideas: 7 };
       c.img = imgMap[c.id] || ((idx % 12) + 1);
     }
   });
+
+  // Backward compat: remove old 'all' category, ensure 'dashboard' exists as first
+  categories = categories.filter(c => c.id !== 'all');
+  if (!categories.find(c => c.id === 'dashboard')) {
+    categories.unshift({ id: 'dashboard', icon: '📊', img: 1, label: '工作台', fixed: true });
+    localStorage.setItem('wb_categories', JSON.stringify(categories));
+  } else {
+    // Ensure dashboard is first
+    const dashIdx = categories.findIndex(c => c.id === 'dashboard');
+    if (dashIdx > 0) {
+      const [dash] = categories.splice(dashIdx, 1);
+      categories.unshift(dash);
+    }
+    // Re-save if we removed 'all'
+    localStorage.setItem('wb_categories', JSON.stringify(categories));
+  }
 
   // Backward compat: ensure 'finance' category exists
   if (!categories.find(c => c.id === 'finance')) {
@@ -3065,7 +3102,7 @@
     else categories.push(finCat);
     localStorage.setItem('wb_categories', JSON.stringify(categories));
   }
-  let currentCategory = 'all';
+  let currentCategory = 'dashboard';
   let ideas = JSON.parse(localStorage.getItem('wb_ideas')) || [
     { text: '小红书家居号转型：从纯装修内容转向「装修+生活方式」', tags: ['家居','小红书'], date: '07-26' },
     { text: '抖音探店短视频系列：厨房改造专题（3期）', tags: ['探店','抖音','厨房'], date: '07-24' },
@@ -3081,7 +3118,6 @@
   }
 
   function countCards(catId) {
-    if (catId === 'all') return document.querySelectorAll('.card').length;
     if (catId === 'dashboard') return '·';
     if (catId === 'ideas') return ideas.length;
     if (catId === 'finance') return contracts.length;
@@ -3115,7 +3151,7 @@
   function selectCategory(catId) {
     currentCategory = catId;
     const cat = categories.find(c => c.id === catId);
-    const titleText = cat ? cat.label : '全部板块';
+    const titleText = cat ? cat.label : '工作台';
     document.getElementById('mainTitle').textContent = titleText;
     document.getElementById('mobileTitle').textContent = cat ? cat.icon + ' ' + cat.label : '🛠 我的工位';
 
@@ -3130,12 +3166,18 @@
       ideaBoard.style.display = 'block';
       finBoard.style.display = 'none';
       todoBoard.style.display = 'none';
+      const db2 = document.getElementById('dashboardBoard'); if (db2) db2.style.display = 'none';
+      const hw2 = document.getElementById('homeWelcome'); if (hw2) hw2.style.display = 'none';
+      const qc2 = document.getElementById('quoteCard'); if (qc2) qc2.style.display = 'none';
       renderIdeas();
     } else if (catId === 'finance') {
       cardGrid.style.display = 'none';
       ideaBoard.style.display = 'none';
       finBoard.style.display = 'block';
       todoBoard.style.display = 'none';
+      const db3 = document.getElementById('dashboardBoard'); if (db3) db3.style.display = 'none';
+      const hw3 = document.getElementById('homeWelcome'); if (hw3) hw3.style.display = 'none';
+      const qc3 = document.getElementById('quoteCard'); if (qc3) qc3.style.display = 'none';
       renderFinance();
     } else if (catId === 'dashboard') {
       cardGrid.style.display = 'none';
@@ -3146,8 +3188,8 @@
       if (dashBoard) dashBoard.style.display = '';
       const homeEl = document.getElementById('homeWelcome');
       const quoteEl = document.getElementById('quoteCard');
-      if (homeEl) homeEl.style.display = 'none';
-      if (quoteEl) quoteEl.style.display = 'none';
+      if (homeEl) homeEl.style.display = '';
+      if (quoteEl) quoteEl.style.display = '';
       renderDashboard();
     } else {
       cardGrid.style.display = 'grid';
@@ -3155,17 +3197,18 @@
       finBoard.style.display = 'none';
       todoBoard.style.display = 'block';
 
-      // Home welcome & quote only on "all" category
-      const homeEl = document.getElementById('homeWelcome');
-      const quoteEl = document.getElementById('quoteCard');
-      const isAll = catId === 'all';
-      if (homeEl) homeEl.style.display = isAll ? '' : 'none';
-      if (quoteEl) quoteEl.style.display = isAll ? '' : 'none';
+      // Hide home welcome & quote on non-dashboard pages
+      const dashBoard = document.getElementById('dashboardBoard');
+      if (dashBoard) dashBoard.style.display = 'none';
+      const homeEl2 = document.getElementById('homeWelcome');
+      const quoteEl2 = document.getElementById('quoteCard');
+      if (homeEl2) homeEl2.style.display = 'none';
+      if (quoteEl2) quoteEl2.style.display = 'none';
 
       document.querySelectorAll('.card').forEach(card => {
         card.classList.remove('hidden');
         card.classList.remove('search-hidden');
-        if (catId !== 'all' && card.dataset.category !== catId) {
+        if (card.dataset.category !== catId) {
           card.classList.add('hidden');
         }
       });
@@ -3191,7 +3234,7 @@
     categories = categories.filter(c => c.id !== catId);
     saveCategories();
     if (currentCategory === catId) {
-      selectCategory('all');
+      selectCategory('dashboard');
     } else {
       renderSidebar();
     }
@@ -3901,7 +3944,11 @@
     const weekEndStr = `${weekEnd.getMonth()+1}/${weekEnd.getDate()}`;
     document.getElementById('dbWeekRange').textContent = `${weekStartStr} - ${weekEndStr}`;
 
-    // ── 今日待办：所有 endDate == today 的任务（含已完成） + 长期任务未完成 ──
+    // 第一个内容分类（用于待办跳转）
+    const firstContentCat = categories.find(c => c.id !== 'dashboard' && c.id !== 'finance' && c.id !== 'ideas');
+    const todoJumpTarget = firstContentCat ? firstContentCat.id : 'ops';
+
+    // ── 今日待办 ──
     const todaysTodos = todos.filter(t => {
       if (t.endDate === todayStr) return true;
       if (t.type === 'long' && t.status !== 'done') return true;
@@ -3912,21 +3959,22 @@
     document.getElementById('dbTodayCount').textContent = `进行中 ${todaysTodos.length - doneToday} · 已完成 ${doneToday}`;
 
     const todoListHtml = todaysTodos.length === 0
-      ? '<div class="db-empty">🎉 今天没有待办，享受轻松一天</div>'
+      ? `<div class="db-empty" onclick="selectCategory('${todoJumpTarget}')" style="cursor:pointer">🎉 今天没有待办，点击查看全部待办 →</div>`
       : todaysTodos.map(t => {
         const isDone = t.status === 'done';
         const isLong = t.type === 'long';
         const dotClass = isDone ? 'done' : (isLong ? 'long' : '');
         const timeText = t.endDate ? t.endDate.slice(5) : (isLong ? '长期任务' : '今日');
-        return `<div class="db-todo">
+        return `<div class="db-todo" onclick="selectCategory('${todoJumpTarget}')">
           <span class="db-todo-dot ${dotClass}"></span>
           <span class="db-todo-text ${isDone ? 'done' : ''}">${escapeHtml(t.text)}</span>
           <span class="db-todo-time">${timeText}${isLong ? ' · 📌' : ''}</span>
+          <span class="db-jump-arrow">→</span>
         </div>`;
       }).join('');
     document.getElementById('dbTodayList').innerHTML = todoListHtml;
 
-    // ── 顶部数据卡 ──
+    // ── 顶部数据卡（可点击跳转）──
     const activeTodos = todos.filter(t => t.status !== 'done').length;
     const totalContracts = contracts.length;
     let totalUnpaid = 0, overdueCount = 0, dueSoonCount = 0;
@@ -3941,38 +3989,36 @@
       });
     });
     const ideaCount = ideas.length;
-    // 本周完成 = weekStart 之后 doneDate 的 todo 数量
     const weekDoneCount = todos.filter(t => t.status === 'done' && t.doneDate && new Date(t.doneDate) >= weekStart).length;
-    // 本周目标 = 当周全部长期任务（粗略估算）
     const weekGoal = Math.max(todos.filter(t => t.type === 'long' && t.status !== 'done').length + 5, 8);
     const weekPct = Math.min(100, Math.round(weekDoneCount / weekGoal * 100));
 
     document.getElementById('dbStats').innerHTML = `
-      <div class="db-stat accent">
+      <div class="db-stat accent clickable" onclick="selectCategory('${todoJumpTarget}')">
         <div class="db-stat-value">${activeTodos}</div>
         <div class="db-stat-label">进行中待办</div>
-        <div class="db-stat-sub">${doneToday} 项今日已完成</div>
+        <div class="db-stat-sub">${doneToday} 项今日已完成 · 点击查看 →</div>
       </div>
       <div class="db-stat success">
         <div class="db-stat-value">${weekDoneCount}/${weekGoal}</div>
         <div class="db-stat-label">本周完成</div>
         <div class="db-stat-sub">完成度 ${weekPct}%</div>
       </div>
-      <div class="db-stat warn">
+      <div class="db-stat warn clickable" onclick="selectCategory('finance')">
         <div class="db-stat-value">¥${(totalUnpaid/1000).toFixed(1)}k</div>
         <div class="db-stat-label">待付金额</div>
-        <div class="db-stat-sub">${overdueCount} 笔逾期 · ${dueSoonCount} 笔7天内</div>
+        <div class="db-stat-sub">${overdueCount} 笔逾期 · 点击查看 →</div>
       </div>
-      <div class="db-stat">
+      <div class="db-stat clickable" onclick="selectCategory('ideas')">
         <div class="db-stat-value">${ideaCount}</div>
         <div class="db-stat-label">选题灵感</div>
-        <div class="db-stat-sub">已积累 ${ideaCount} 条</div>
+        <div class="db-stat-sub">已积累 ${ideaCount} 条 · 点击查看 →</div>
       </div>
     `;
 
-    // ── 分类项目进度（基于卡片）──
+    // ── 分类项目进度（每行可点击跳转）──
     const catProgressHtml = categories
-      .filter(c => c.id !== 'all' && c.id !== 'dashboard' && c.id !== 'ideas' && c.id !== 'finance' && c.id !== 'todos')
+      .filter(c => c.id !== 'dashboard' && c.id !== 'ideas' && c.id !== 'finance' && c.id !== 'todos')
       .map(c => {
         const cards = document.querySelectorAll(`.card[data-category="${c.id}"]`);
         let totalTasks = 0, doneTasks = 0;
@@ -3982,7 +4028,6 @@
             totalTasks++;
             if (item.classList.contains('done')) doneTasks++;
           });
-          // 也把 metric 进度作为权重
           const fills = card.querySelectorAll('.progress-fill');
           fills.forEach(fill => {
             const w = parseInt(fill.dataset.width || '0');
@@ -3993,15 +4038,16 @@
         if (totalTasks === 0) return '';
         const pct = Math.round(doneTasks / totalTasks * 100);
         const fillCls = pct >= 80 ? 'high' : '';
-        return `<div class="db-cat-row">
+        return `<div class="db-cat-row" onclick="selectCategory('${c.id}')">
           <span class="db-cat-name">${c.icon} ${escapeHtml(c.label)}</span>
           <div class="db-cat-bar"><div class="db-cat-fill ${fillCls}" style="width:${pct}%"></div></div>
           <span class="db-cat-pct">${doneTasks}/${totalTasks} (${pct}%)</span>
+          <span class="db-jump-arrow">→</span>
         </div>`;
       }).filter(Boolean).join('');
     document.getElementById('dbCategoryProgress').innerHTML = catProgressHtml || '<div class="db-empty">暂无分类进度数据</div>';
 
-    // ── 本周概览 4 格统计 ──
+    // ── 本周概览 ──
     const activeCounts = {
       newTodos: todos.filter(t => t.date >= weekStartStr && t.date <= todayStr).length,
       weekDone: weekDoneCount,
@@ -4012,26 +4058,26 @@
     };
     document.getElementById('dbWeekOverview').innerHTML = `
       <div class="db-week-grid">
-        <div class="db-week-cell">
+        <div class="db-week-cell" onclick="selectCategory('${todoJumpTarget}')">
           <div class="db-week-cell-val">${activeCounts.newTodos}</div>
           <div class="db-week-cell-label">本周新增待办</div>
         </div>
-        <div class="db-week-cell">
+        <div class="db-week-cell" onclick="selectCategory('${todoJumpTarget}')">
           <div class="db-week-cell-val ok">${activeCounts.weekDone}</div>
           <div class="db-week-cell-label">本周完成</div>
         </div>
-        <div class="db-week-cell">
+        <div class="db-week-cell" onclick="selectCategory('${todoJumpTarget}')">
           <div class="db-week-cell-val">${activeCounts.longActive}</div>
           <div class="db-week-cell-label">长期任务进行中</div>
         </div>
-        <div class="db-week-cell">
+        <div class="db-week-cell" onclick="selectCategory('finance')">
           <div class="db-week-cell-val ${overdueCount > 0 ? 'danger' : 'ok'}">${overdueCount + dueSoonCount}</div>
           <div class="db-week-cell-label">紧急财务事项</div>
         </div>
       </div>
     `;
 
-    // ── 合同 & 财务 ──
+    // ── 合同 & 财务（每行可点击跳转）──
     let totalContractAmount = 0, totalPaid = 0, activeContracts = 0, completedContracts = 0;
     contracts.forEach(c => {
       totalContractAmount += c.totalAmount || 0;
@@ -4045,30 +4091,30 @@
     const invoiceUploaded = contracts.reduce((s,c) => s + c.payments.filter(p => p.invoice === 'uploaded').length, 0);
     const invoiceNeeded = contracts.reduce((s,c) => s + c.payments.filter(p => p.status === 'submitted' || p.status === 'paid').length, 0);
 
-    document.getElementById('dbFinMeta').textContent = `共 ${totalContracts} 个合同`;
+    document.getElementById('dbFinMeta').textContent = `共 ${totalContracts} 个合同 · 点击查看全部`;
     document.getElementById('dbFinanceProgress').innerHTML = `
-      <div class="db-mini-row"><span class="db-mini-label">📑 合同总数</span><span class="db-mini-val">${totalContracts}</span></div>
-      <div class="db-mini-row"><span class="db-mini-label">🟢 进行中</span><span class="db-mini-val">${activeContracts}</span></div>
-      <div class="db-mini-row"><span class="db-mini-label">✅ 已完结</span><span class="db-mini-val ok">${completedContracts}</span></div>
-      <div class="db-mini-row"><span class="db-mini-label">💵 总金额</span><span class="db-mini-val">¥${totalContractAmount.toLocaleString()}</span></div>
-      <div class="db-mini-row"><span class="db-mini-label">💰 已付款</span><span class="db-mini-val ok">¥${totalPaid.toLocaleString()}</span></div>
-      <div class="db-mini-row"><span class="db-mini-label">⏰ 待付总额</span><span class="db-mini-val ${totalUnpaid>0?'danger':''}">¥${totalUnpaid.toLocaleString()}</span></div>
-      <div class="db-mini-row"><span class="db-mini-label">⚠️ 逾期 / 7天内</span><span class="db-mini-val ${overdueCount>0?'danger':''}">${overdueCount} / ${dueSoonCount}</span></div>
-      <div class="db-mini-row"><span class="db-mini-label">🧾 发票上传</span><span class="db-mini-val">${invoiceUploaded}/${invoiceNeeded}</span></div>
+      <div class="db-mini-row" onclick="selectCategory('finance')"><span class="db-mini-label">📑 合同总数</span><span class="db-mini-val">${totalContracts}</span><span class="db-jump-arrow">→</span></div>
+      <div class="db-mini-row" onclick="selectCategory('finance')"><span class="db-mini-label">🟢 进行中</span><span class="db-mini-val">${activeContracts}</span><span class="db-jump-arrow">→</span></div>
+      <div class="db-mini-row" onclick="selectCategory('finance')"><span class="db-mini-label">✅ 已完结</span><span class="db-mini-val ok">${completedContracts}</span><span class="db-jump-arrow">→</span></div>
+      <div class="db-mini-row" onclick="selectCategory('finance')"><span class="db-mini-label">💵 总金额</span><span class="db-mini-val">¥${totalContractAmount.toLocaleString()}</span><span class="db-jump-arrow">→</span></div>
+      <div class="db-mini-row" onclick="selectCategory('finance')"><span class="db-mini-label">💰 已付款</span><span class="db-mini-val ok">¥${totalPaid.toLocaleString()}</span><span class="db-jump-arrow">→</span></div>
+      <div class="db-mini-row" onclick="selectCategory('finance')"><span class="db-mini-label">⏰ 待付总额</span><span class="db-mini-val ${totalUnpaid>0?'danger':''}">¥${totalUnpaid.toLocaleString()}</span><span class="db-jump-arrow">→</span></div>
+      <div class="db-mini-row" onclick="selectCategory('finance')"><span class="db-mini-label">⚠️ 逾期 / 7天内</span><span class="db-mini-val ${overdueCount>0?'danger':''}">${overdueCount} / ${dueSoonCount}</span><span class="db-jump-arrow">→</span></div>
+      <div class="db-mini-row" onclick="selectCategory('finance')"><span class="db-mini-label">🧾 发票上传</span><span class="db-mini-val">${invoiceUploaded}/${invoiceNeeded}</span><span class="db-jump-arrow">→</span></div>
     `;
 
-    // ── 灵感统计 ──
+    // ── 灵感统计（每行可点击跳转）──
     const thisMonth = todayStr.slice(0, 7);
     const monthIdeas = ideas.filter(i => i.date && i.date.startsWith(thisMonth) || (i.date && i.date.includes('-' + today.getMonth()+1 + '-'))).length;
     const recentIdeas = ideas.slice(0, 3);
-    document.getElementById('dbIdeaMeta').textContent = `共 ${ideaCount} 条`;
+    document.getElementById('dbIdeaMeta').textContent = `共 ${ideaCount} 条 · 点击查看全部`;
     const recentHtml = recentIdeas.length === 0
       ? '<div class="db-empty">还没有灵感，去选题灵感区记录一个</div>'
-      : recentIdeas.map(i => `<div class="db-mini-row"><span class="db-mini-label">💡 ${escapeHtml(i.text.length > 18 ? i.text.slice(0, 18) + '…' : i.text)}</span><span class="db-mini-val">${i.date || '近期'}</span></div>`).join('');
+      : recentIdeas.map(i => `<div class="db-mini-row" onclick="selectCategory('ideas')"><span class="db-mini-label">💡 ${escapeHtml(i.text.length > 18 ? i.text.slice(0, 18) + '…' : i.text)}</span><span class="db-mini-val">${i.date || '近期'}</span><span class="db-jump-arrow">→</span></div>`).join('');
     document.getElementById('dbIdeaStats').innerHTML = `
-      <div class="db-mini-row"><span class="db-mini-label">📚 灵感总数</span><span class="db-mini-val">${ideaCount}</span></div>
-      <div class="db-mini-row"><span class="db-mini-label">📅 本月新增</span><span class="db-mini-val">${monthIdeas}</span></div>
-      <div class="db-mini-row" style="font-size:11px;opacity:0.6;"><span class="db-mini-label">最近灵感</span></div>
+      <div class="db-mini-row" onclick="selectCategory('ideas')"><span class="db-mini-label">📚 灵感总数</span><span class="db-mini-val">${ideaCount}</span><span class="db-jump-arrow">→</span></div>
+      <div class="db-mini-row" onclick="selectCategory('ideas')"><span class="db-mini-label">📅 本月新增</span><span class="db-mini-val">${monthIdeas}</span><span class="db-jump-arrow">→</span></div>
+      <div class="db-mini-row" style="font-size:11px;opacity:0.6;cursor:default;"><span class="db-mini-label">最近灵感</span></div>
       ${recentHtml}
     `;
   }
@@ -4599,6 +4645,7 @@
 
   // ── Init ──
   renderSidebar();
+  selectCategory('dashboard');
   renderIdeas();
   renderTodos();
   animateProgressBars();
