@@ -2413,6 +2413,166 @@
       grid-template-columns: repeat(3, 1fr);
     }
   }
+
+  /* ═══════════════════════════════════════════════════════
+     NEW MODULES: 门店数据看板 + 知识产权台账
+     ═══════════════════════════════════════════════════════ */
+
+  /* ---- 通用工具 ---- */
+  .nm-toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px; }
+  .nm-seg { display:inline-flex; background:#F1F5F9; border-radius:10px; padding:3px; gap:2px; }
+  .nm-seg button { border:none; background:transparent; padding:8px 15px; border-radius:8px; font-size:13px; font-weight:600; color:var(--text-secondary); cursor:pointer; min-height:38px; transition:.15s; }
+  .nm-seg button.active { background:#fff; color:#BE185D; box-shadow:var(--shadow-sm); }
+  .nm-select { padding:9px 12px; border:1px solid var(--border); border-radius:10px; font-size:14px; background:#fff; color:var(--text-primary); min-height:40px; max-width:100%; }
+  .nm-btn { border:none; border-radius:10px; padding:9px 15px; font-size:13px; font-weight:600; cursor:pointer; min-height:40px; display:inline-flex; align-items:center; gap:6px; transition:.15s; }
+  .nm-btn-primary { background:#BE185D; color:#fff; }
+  .nm-btn-primary:hover { background:#9D174D; }
+  .nm-btn-ghost { background:#fff; color:var(--text-secondary); border:1px solid var(--border); }
+  .nm-btn-ghost:hover { border-color:#BE185D; color:#BE185D; }
+  .nm-hint { font-size:12px; color:var(--text-muted); line-height:1.7; }
+  .nm-empty { text-align:center; padding:36px 16px; color:var(--text-muted); font-size:14px; }
+
+  /* ---- 门店看板 ---- */
+  .sd-wrap, .ip-wrap { max-width:1400px; }
+  .sd-hero { background:linear-gradient(135deg,#FFF0F5 0%,#FDF2F8 60%,#EFF6FF 100%); border:1px solid #FCE7F3; border-radius:16px; padding:20px 22px; margin-bottom:18px; }
+  .sd-hero-top { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; align-items:flex-start; }
+  .sd-hero h2 { font-size:20px; font-weight:800; color:#9D174D; display:flex; align-items:center; gap:8px; }
+  .sd-hero p { font-size:12px; color:#9D174D; opacity:.75; margin-top:4px; }
+  .sd-period-note { background:rgba(255,255,255,.7); border:1px solid #FCE7F3; border-radius:8px; padding:6px 11px; font-size:12px; color:#9D174D; font-weight:600; }
+
+  .sd-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px; }
+  .sd-kpi { background:#fff; border:1px solid var(--border-light); border-radius:13px; padding:14px 15px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden; }
+  .sd-kpi::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--kpi-c,#BE185D); }
+  .sd-kpi-label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; }
+  .sd-kpi-val { font-size:22px; font-weight:800; color:var(--text-primary); line-height:1.2; letter-spacing:-.5px; }
+  .sd-kpi-unit { font-size:12px; font-weight:600; color:var(--text-muted); margin-left:2px; }
+
+  .sd-caliber { margin-top:14px; font-size:11px; color:#9D174D; opacity:.8; background:rgba(255,255,255,.55); border-radius:8px; padding:8px 12px; line-height:1.7; }
+
+  .sd-filter-bar { background:#fff; border:1px solid var(--border); border-radius:13px; padding:14px 16px; margin-bottom:16px; }
+  .sd-filter-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+  .sd-filter-label { font-size:12px; font-weight:700; color:var(--text-secondary); white-space:nowrap; }
+  .sd-shop-chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .sd-chip { font-size:12px; padding:6px 11px; border-radius:20px; border:1px solid var(--border); background:#fff; color:var(--text-secondary); cursor:pointer; min-height:32px; transition:.15s; user-select:none; }
+  .sd-chip.on { background:#FCE7F3; border-color:#F9A8D4; color:#9D174D; font-weight:700; }
+  .sd-chip-all { background:#F1F5F9; font-weight:700; }
+
+  .sd-section-title { font-size:15px; font-weight:800; color:var(--text-primary); margin:22px 0 12px; display:flex; align-items:center; gap:8px; }
+  .sd-section-title .badge { font-size:11px; font-weight:600; background:#F1F5F9; color:var(--text-secondary); padding:3px 9px; border-radius:12px; }
+
+  .sd-table-wrap { background:#fff; border:1px solid var(--border); border-radius:13px; overflow-x:auto; box-shadow:var(--shadow-sm); }
+  .nm-table { width:100%; border-collapse:collapse; font-size:13px; min-width:960px; }
+  .nm-table th { background:#F8FAFC; color:var(--text-secondary); font-size:12px; font-weight:700; text-align:right; padding:12px 12px; white-space:nowrap; border-bottom:1px solid var(--border); position:sticky; top:0; }
+  .nm-table th:first-child, .nm-table td:first-child { text-align:left; position:sticky; left:0; background:#F8FAFC; z-index:1; }
+  .nm-table td { padding:11px 12px; text-align:right; white-space:nowrap; border-bottom:1px solid var(--border-light); color:var(--text-primary); }
+  .nm-table td:first-child { background:#fff; font-weight:600; }
+  .nm-table tbody tr:hover td { background:#FFF7FB; }
+  .nm-table tbody tr:hover td:first-child { background:#FFF7FB; }
+  .nm-table tbody tr:last-child td { border-bottom:none; }
+  .nm-table tr.nm-total td { background:#FFF0F5 !important; font-weight:800; color:#9D174D; border-top:2px solid #F9A8D4; }
+  .nm-cell-warn { color:#DC2626 !important; font-weight:800; background:#FEF2F2 !important; }
+  .nm-cell-good { color:#059669 !important; font-weight:700; }
+  .nm-cell-dim { color:var(--text-muted); }
+  .nm-shop-dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+  .nm-target-input { width:88px; padding:5px 7px; border:1px solid var(--border); border-radius:6px; font-size:12px; text-align:right; }
+  .nm-rate-bar { display:inline-flex; align-items:center; gap:6px; justify-content:flex-end; }
+  .nm-rate-bar .bar { width:44px; height:6px; background:#F1F5F9; border-radius:4px; overflow:hidden; }
+  .nm-rate-bar .bar i { display:block; height:100%; border-radius:4px; background:#10B981; }
+  .nm-rate-bar .bar i.low { background:#F59E0B; }
+  .nm-rate-bar .bar i.bad { background:#EF4444; }
+
+  .sd-charts { display:grid; grid-template-columns:1.5fr 1fr; gap:14px; }
+  .sd-chart-card { background:#fff; border:1px solid var(--border); border-radius:13px; padding:16px; box-shadow:var(--shadow-sm); min-width:0; }
+  .sd-chart-title { font-size:14px; font-weight:800; color:var(--text-primary); margin-bottom:4px; }
+  .sd-chart-sub { font-size:11px; color:var(--text-muted); margin-bottom:12px; }
+  .sd-chart-card svg { width:100%; height:auto; display:block; }
+  .sd-legend { display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--text-secondary); margin-top:10px; }
+  .sd-legend span { display:inline-flex; align-items:center; gap:5px; }
+  .sd-legend i { width:12px; height:3px; border-radius:2px; display:inline-block; }
+
+  .sd-style-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:7px 0; border-bottom:1px dashed var(--border-light); font-size:12px; }
+  .sd-style-row:last-child { border-bottom:none; }
+  .sd-style-name { color:var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sd-style-count { color:var(--text-secondary); font-weight:700; flex-shrink:0; }
+  .sd-style-tag { font-size:10px; padding:2px 7px; border-radius:10px; font-weight:700; flex-shrink:0; }
+  .sd-style-tag.hot { background:#FEF2F2; color:#DC2626; }
+  .sd-style-tag.cold { background:#EFF6FF; color:#2563EB; }
+
+  /* ---- 知识产权台账 ---- */
+  .ip-alert-banner { border-radius:15px; padding:18px 20px; margin-bottom:16px; border:1px solid; }
+  .ip-alert-danger { background:linear-gradient(135deg,#FEF2F2,#FFF1F2); border-color:#FECDD3; }
+  .ip-alert-warn { background:linear-gradient(135deg,#FFFBEB,#FFF7ED); border-color:#FDE68A; }
+  .ip-alert-ok { background:linear-gradient(135deg,#F0FDF4,#ECFDF5); border-color:#A7F3D0; }
+  .ip-alert-head { font-size:15px; font-weight:800; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .ip-alert-danger .ip-alert-head { color:#B91C1C; }
+  .ip-alert-warn .ip-alert-head { color:#B45309; }
+  .ip-alert-ok .ip-alert-head { color:#047857; }
+  .ip-alert-items { display:flex; flex-direction:column; gap:8px; }
+  .ip-alert-item { display:flex; flex-wrap:wrap; align-items:center; gap:9px; background:rgba(255,255,255,.75); border-radius:9px; padding:9px 12px; font-size:12px; }
+  .ip-alert-item .ip-name { font-weight:700; color:var(--text-primary); }
+  .ip-alert-item .ip-reason { color:var(--text-secondary); }
+  .ip-badge { font-size:11px; font-weight:800; padding:3px 9px; border-radius:12px; white-space:nowrap; }
+  .ip-badge.red { background:#FEE2E2; color:#B91C1C; }
+  .ip-badge.yellow { background:#FEF3C7; color:#B45309; }
+  .ip-badge.green { background:#D1FAE5; color:#047857; }
+  .ip-badge.gray { background:#F1F5F9; color:#64748B; }
+  .ip-badge.blue { background:#DBEAFE; color:#1D4ED8; }
+
+  .ip-summary { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:18px; }
+  .ip-sum-card { background:#fff; border:1px solid var(--border); border-radius:13px; padding:15px 17px; box-shadow:var(--shadow-sm); }
+  .ip-sum-title { font-size:13px; font-weight:800; color:var(--text-primary); margin-bottom:11px; display:flex; justify-content:space-between; align-items:center; }
+  .ip-sum-total { font-size:12px; color:var(--text-muted); font-weight:600; }
+  .ip-sum-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .ip-sum-cell { background:#F8FAFC; border-radius:9px; padding:10px 8px; text-align:center; }
+  .ip-sum-num { font-size:19px; font-weight:800; color:var(--text-primary); line-height:1.2; }
+  .ip-sum-lbl { font-size:11px; color:var(--text-secondary); margin-top:3px; }
+
+  .ip-tabs { display:flex; gap:8px; margin-bottom:14px; border-bottom:2px solid var(--border); }
+  .ip-tab { border:none; background:transparent; padding:10px 18px; font-size:14px; font-weight:700; color:var(--text-secondary); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; min-height:42px; }
+  .ip-tab.active { color:#BE185D; border-bottom-color:#BE185D; }
+
+  .ip-status-sel { padding:5px 8px; border:1px solid var(--border); border-radius:7px; font-size:12px; background:#fff; max-width:110px; cursor:pointer; }
+  .ip-row-actions { display:flex; gap:5px; justify-content:flex-end; }
+  .ip-icon-btn { border:1px solid var(--border); background:#fff; border-radius:6px; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; font-size:12px; color:var(--text-secondary); }
+  .ip-icon-btn:hover { border-color:#BE185D; color:#BE185D; }
+  .ip-note-risk { color:#B91C1C; }
+  .ip-cert-link { color:#2563EB; text-decoration:underline; cursor:pointer; }
+
+  .ip-timeline { background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin:6px 0 14px; }
+  .ip-tl-title { font-size:13px; font-weight:800; margin-bottom:12px; color:var(--text-primary); }
+  .ip-tl-track { display:flex; position:relative; padding-left:8px; }
+  .ip-tl-track::before { content:''; position:absolute; left:14px; top:8px; bottom:8px; width:2px; background:#FCE7F3; }
+  .ip-tl-node { flex:1; position:relative; text-align:center; padding-top:24px; font-size:11px; color:var(--text-secondary); min-width:0; }
+  .ip-tl-node i { position:absolute; top:4px; left:50%; transform:translateX(-50%); width:11px; height:11px; border-radius:50%; background:#fff; border:2px solid #F9A8D4; z-index:1; }
+  .ip-tl-node.done i { background:#BE185D; border-color:#BE185D; }
+  .ip-tl-node.now i { background:#F59E0B; border-color:#F59E0B; box-shadow:0 0 0 4px #FEF3C7; }
+  .ip-tl-node b { display:block; color:var(--text-primary); font-size:11px; margin-bottom:2px; }
+  .ip-tl-node small { color:var(--text-muted); font-size:10px; }
+
+  /* ---- 新增/编辑弹窗 ---- */
+  .nm-form-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  .nm-form-field { display:flex; flex-direction:column; gap:5px; min-width:0; }
+  .nm-form-field.full { grid-column:1/-1; }
+  .nm-form-field label { font-size:12px; font-weight:700; color:var(--text-secondary); }
+  .nm-form-field input, .nm-form-field select, .nm-form-field textarea { width:100%; padding:9px 11px; border:1px solid var(--border); border-radius:8px; font-size:16px; color:var(--text-primary); background:#fff; }
+  .nm-form-field textarea { resize:vertical; min-height:64px; }
+  .nm-modal-scroll { max-height:70vh; overflow-y:auto; padding-right:4px; }
+
+  @media (max-width:1100px) {
+    .sd-kpis { grid-template-columns:repeat(2,1fr); }
+    .sd-charts { grid-template-columns:1fr; }
+    .ip-summary { grid-template-columns:1fr; }
+  }
+  @media (max-width:768px) {
+    .sd-kpis { grid-template-columns:repeat(2,1fr); gap:9px; }
+    .sd-kpi { padding:11px 12px; }
+    .sd-kpi-val { font-size:18px; }
+    .nm-form-grid { grid-template-columns:1fr; }
+    .sd-hero { padding:16px; }
+    .nm-table th, .nm-table td { padding:10px 9px; }
+    .ip-sum-grid { grid-template-columns:repeat(2,1fr); }
+  }
+
 </style>
 </head>
 <body>
@@ -3091,6 +3251,156 @@
     <div class="fin-contract-list" id="finContractList"></div>
   </div>
 
+
+  <!-- ═══════════ NEW: 线下门店经营数据看板 ═══════════ -->
+  <div class="sd-wrap" id="storeBoard" style="display:none;">
+    <div class="sd-hero">
+      <div class="sd-hero-top">
+        <div>
+          <h2>📈 线下门店经营数据看板</h2>
+          <p>全 9 店统一口径 · 汇总 → 横向对比 → 单店明细三层视图</p>
+        </div>
+        <div class="sd-period-note" id="sbPeriodNote">当日</div>
+      </div>
+      <div class="sd-kpis" id="sbKpis"></div>
+      <div class="sd-caliber">
+        📐 <b>口径统一说明</b>：客流 = 到店登记 / 导购接待客流（每店统计方式见对比表门店前色点：🔵计数器 🟠导购登记）；
+        转化率 = 成交笔数 ÷ 客流；连带率 = 销售件数 ÷ 成交笔数；客单价 = 销售额 ÷ 成交笔数。
+      </div>
+    </div>
+
+    <div class="sd-filter-bar">
+      <div class="sd-filter-row" style="margin-bottom:11px;">
+        <span class="sd-filter-label">统计周期</span>
+        <div class="nm-seg" id="sbPeriodSeg">
+          <button class="active" data-p="day" onclick="sbSetPeriod('day')">当日</button>
+          <button data-p="week" onclick="sbSetPeriod('week')">本周</button>
+          <button data-p="month" onclick="sbSetPeriod('month')">本月</button>
+        </div>
+        <span class="sd-filter-label" style="margin-left:auto;">预警阈值</span>
+        <span class="nm-hint">转化率&lt;</span><input class="nm-target-input" type="number" step="0.01" value="0.18" onchange="sbSetThresh('conv',this.value)" title="转化率低于此值标红">
+        <span class="nm-hint">连带率&lt;</span><input class="nm-target-input" type="number" step="0.1" value="1.5" onchange="sbSetThresh('attach',this.value)" title="连带率低于此值标红">
+        <button class="nm-btn nm-btn-ghost" onclick="sbOpenFlowModal()">⚙️ 客流口径</button>
+        <button class="nm-btn nm-btn-primary" onclick="sbOpenModal()">＋ 录入数据</button>
+      </div>
+      <div class="sd-filter-row">
+        <span class="sd-filter-label">门店筛选</span>
+        <div class="sd-shop-chips" id="sbShopChips"></div>
+      </div>
+    </div>
+
+    <div class="sd-section-title">📊 9 门店横向对比 <span class="badge" id="sbCompareCount">9 家</span> <span class="nm-hint" style="font-weight:400;">红=低于阈值预警 · 绿=达标 · 达成率按月度目标折算</span></div>
+    <div class="sd-table-wrap">
+      <table class="nm-table" style="min-width:1250px;">
+        <thead><tr>
+          <th>门店名称</th><th>周期销售额</th><th>成交笔数</th><th>销售件数</th><th>连带率</th><th>客流</th><th>转化率</th><th>客单价</th><th>出款款式数</th><th>目标达成率</th><th>月度目标(¥)</th>
+        </tr></thead>
+        <tbody id="sbCompareBody"></tbody>
+      </table>
+    </div>
+    <div class="nm-hint" style="margin-top:8px;">💡 每店客流统计口径可单独标注：点击门店名可设置（当前通过数据初始化，详见备注）。修改月度目标直接在表格末列输入。</div>
+
+    <div class="sd-section-title">📋 单店每日明细 <span class="badge" id="sbDetailCount">0 条</span></div>
+    <div class="nm-toolbar">
+      <span class="sd-filter-label">查看门店</span>
+      <select class="nm-select" id="sbDetailShopSel" onchange="sbSetDetailShop(this.value)"></select>
+    </div>
+    <div class="sd-table-wrap">
+      <table class="nm-table" style="min-width:1100px;">
+        <thead><tr>
+          <th>日期</th><th>门店</th><th>销售金额</th><th>笔数</th><th>件数</th><th>连带率</th><th>客流</th><th>转化率</th><th>客单价</th><th>成交款式清单（款数）</th><th>操作</th>
+        </tr></thead>
+        <tbody id="sbDetailBody"></tbody>
+      </table>
+    </div>
+    <div class="nm-hint" style="margin-top:8px;">💡 点「＋ 录入数据」时可填写当日成交款式清单（逗号分隔），热销/滞销 TOP 榜据此自动统计。</div>
+
+    <div class="sd-charts" style="margin-top:16px;">
+      <div class="sd-chart-card">
+        <div class="sd-chart-title">近 30 天经营趋势</div>
+        <div class="sd-chart-sub" id="sbTrendSub">销售额与连带率走势（按选中门店聚合）</div>
+        <div id="sbTrend"></div>
+        <div class="sd-legend" id="sbTrendLegend"></div>
+      </div>
+      <div class="sd-chart-card">
+        <div class="sd-chart-title">款式分布 · 热销 / 滞销</div>
+        <div class="sd-chart-sub">按周期出款款式数排序 · 兼顾简洁与信息量</div>
+        <div id="sbStyleDist"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ NEW: 知识产权进度台账 ═══════════ -->
+  <div class="ip-wrap" id="ipBoard" style="display:none;">
+    <div class="nm-toolbar" style="justify-content:space-between;">
+      <h2 style="font-size:20px;font-weight:800;color:#9D174D;display:flex;align-items:center;gap:8px;">📜 知识产权进度台账 <span class="ip-badge gray" id="ipAlertCount">0 项临期</span></h2>
+      <span class="nm-hint">商标续展 · 外观专利年费 · 进度节点 · 风险预警</span>
+    </div>
+    <div id="ipAlerts"></div>
+    <div class="ip-summary" id="ipSummary"></div>
+
+    <div class="nm-toolbar">
+      <div class="nm-seg" id="ipTabs" style="margin-right:auto;">
+        <button class="ip-tab active" data-tab="tm" onclick="ipSetTab('tm')">™️ 商标台账</button>
+        <button class="ip-tab" data-tab="pt" onclick="ipSetTab('pt')">💡 外观专利台账</button>
+      </div>
+      <select class="nm-select" id="ipFilterSel" onchange="ipSetFilter(this.value)"></select>
+      <button class="nm-btn nm-btn-primary" onclick="ipAdd()">＋ 新增记录</button>
+    </div>
+
+    <div class="nm-hint" style="margin-bottom:10px;">
+      ⚙️ 预警规则：7 天内到期 / 已逾期标红，30 天内标黄；商标看「续展到期日」，专利看「年费截止日」，两者规则独立不混用。点 ▼ 展开时间线视图。证书扫描件可填链接，点「查看证书」直接打开。
+    </div>
+    <div class="sd-table-wrap" id="ipTableWrap"></div>
+    <div class="nm-hint" style="margin-top:8px;" id="ipTableCount"></div>
+  </div>
+
+  <!-- NEW: 门店数据录入弹窗 -->
+  <div class="modal-overlay" id="sbModal">
+    <div class="modal" style="max-width:520px;">
+      <h3>📈 录入门店每日数据</h3>
+      <div class="nm-form-grid">
+        <div class="nm-form-field"><label>日期</label><input type="date" id="sbFormDate"></div>
+        <div class="nm-form-field"><label>门店</label><select id="sbFormShop"></select></div>
+        <div class="nm-form-field"><label>销售金额（¥）</label><input type="number" id="sbFormSales" min="0" placeholder="0"></div>
+        <div class="nm-form-field"><label>成交笔数</label><input type="number" id="sbFormTxns" min="0" placeholder="0"></div>
+        <div class="nm-form-field"><label>销售件数</label><input type="number" id="sbFormItems" min="0" placeholder="0"></div>
+        <div class="nm-form-field"><label>客流</label><input type="number" id="sbFormTraffic" min="0" placeholder="0"></div>
+        <div class="nm-form-field"><label>成交款式数量（款，可留空自动统计）</label><input type="number" id="sbFormStyles" min="0" placeholder="例如：18"></div>
+        <div class="nm-form-field"><label>成交款式清单（逗号分隔）</label><input type="text" id="sbFormStylesInput" placeholder="例如：珍珠项链,珐琅手镯,发夹"></div>
+      </div>
+      <div class="modal-btns">
+        <button class="modal-btn secondary" onclick="sbCloseModal()">取消</button>
+        <button class="modal-btn primary" style="background:#BE185D;" onclick="sbSaveRow()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: 客流口径设置弹窗 -->
+  <div class="modal-overlay" id="sbFlowModal">
+    <div class="modal" style="max-width:500px;">
+      <h3>⚙️ 各门店客流统计口径</h3>
+      <div class="nm-hint" style="margin-bottom:14px;">门店口径不一致时单独标注，避免数据争议。设置后对比表门店名前会显示色点：🔵计数器 🟠导购登记。</div>
+      <div class="nm-form-grid" id="sbFlowList" style="grid-template-columns:1fr;"></div>
+      <div class="modal-btns">
+        <button class="modal-btn primary" style="background:#BE185D;" onclick="sbCloseFlowModal()">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: 知识产权编辑弹窗 -->
+  <div class="modal-overlay" id="ipModal">
+    <div class="modal" style="max-width:680px;">
+      <h3 id="ipModalTitle">编辑</h3>
+      <div id="ipModalBody"></div>
+      <div class="modal-btns">
+        <button class="modal-btn secondary" onclick="ipCloseModal()">取消</button>
+        <button class="modal-btn primary" style="background:#BE185D;" onclick="ipSave()">保存</button>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 <script>
@@ -3213,8 +3523,33 @@
     const ideaBoard = document.getElementById('ideaBoard');
     const finBoard = document.getElementById('financeBoard');
     const todoBoard = document.getElementById('todoBoard');
+    const storeBoard = document.getElementById('storeBoard');
+    const ipBoard = document.getElementById('ipBoard');
+    // 默认隐藏两个新板块，下面各自分支再打开
+    if (storeBoard) storeBoard.style.display = 'none';
+    if (ipBoard) ipBoard.style.display = 'none';
 
-    if (catId === 'ideas') {
+    if (catId === 'storeboard') {
+      cardGrid.style.display = 'none';
+      ideaBoard.style.display = 'none';
+      finBoard.style.display = 'none';
+      todoBoard.style.display = 'none';
+      const dbA = document.getElementById('dashboardBoard'); if (dbA) dbA.style.display = 'none';
+      const hwA = document.getElementById('homeWelcome'); if (hwA) hwA.style.display = 'none';
+      const qcA = document.getElementById('quoteCard'); if (qcA) qcA.style.display = 'none';
+      if (storeBoard) storeBoard.style.display = '';
+      sbRefresh();
+    } else if (catId === 'ipboard') {
+      cardGrid.style.display = 'none';
+      ideaBoard.style.display = 'none';
+      finBoard.style.display = 'none';
+      todoBoard.style.display = 'none';
+      const dbB = document.getElementById('dashboardBoard'); if (dbB) dbB.style.display = 'none';
+      const hwB = document.getElementById('homeWelcome'); if (hwB) hwB.style.display = 'none';
+      const qcB = document.getElementById('quoteCard'); if (qcB) qcB.style.display = 'none';
+      if (ipBoard) ipBoard.style.display = '';
+      ipRefresh();
+    } else if (catId === 'ideas') {
       cardGrid.style.display = 'none';
       ideaBoard.style.display = 'block';
       finBoard.style.display = 'none';
@@ -4779,6 +5114,631 @@
       });
     }
   }
+
+
+  /* ═══════════════════════════════════════════════════════
+     NEW MODULE 1: 线下门店经营数据看板 (storeboard)
+     ═══════════════════════════════════════════════════════ */
+  const SB = {
+    KEY: 'wb_storeboard_rows',
+    TARGET_KEY: 'wb_storeboard_targets',
+    FLOW_KEY: 'wb_storeboard_flowmode',
+    THRESH_KEY: 'wb_storeboard_thresholds',
+    PERIOD: 'day',        // day | week | month
+    shops: [],            // 选中的门店，空=全部
+    detailShop: '',       // 明细表选中的单店，空=全部
+  };
+  const SB_DEFAULT_SHOPS = ['杭州湖滨店','杭州万象城店','杭州嘉里中心店','杭州武林店','武汉SKP店','北京SKP店','深圳万象城店','上海静安店','成都太古里店'];
+  const SB_DEFAULT_TARGETS = { '杭州湖滨店':380000,'杭州万象城店':420000,'杭州嘉里中心店':300000,'杭州武林店':280000,'武汉SKP店':350000,'北京SKP店':400000,'深圳万象城店':330000,'上海静安店':310000,'成都太古里店':260000 };
+
+  function sbNow(){ return new Date(); }
+  function sbDateStr(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  function sbDaysAgo(n){ const d = sbNow(); d.setDate(d.getDate()-n); return sbDateStr(d); }
+  function sbGenSeed(){
+    // 生成近30天 × 9店示例数据（确定性伪随机，刷新不跳变）
+    const rows = [];
+    let seed = 20261127;
+    const rnd = () => { seed = (seed*9301+49297)%233280; return seed/233280; };
+    for(let d=29; d>=0; d--){
+      const date = sbDaysAgo(d);
+      SB_DEFAULT_SHOPS.forEach((shop,si)=>{
+        const traffic = Math.round(90 + rnd()*70 + si*2);
+        const txns = Math.round(traffic*(0.16+rnd()*0.10));
+        const items = Math.round(txns*(1.3+rnd()*0.55));
+        const aov = Math.round(320 + rnd()*220 + si*8);
+        const sales = txns*aov;
+        const styleCount = 12 + Math.floor(rnd()*18);
+        rows.push({ id:`seed_${date}_${si}`, date, shop, sales, txns, items, traffic, styleCount,
+          styles: [], note:'' });
+      });
+    }
+    return rows;
+  }
+  function sbLoad(){
+    let rows = JSON.parse(localStorage.getItem(SB.KEY) || 'null');
+    if(!rows || !rows.length){ rows = sbGenSeed(); localStorage.setItem(SB.KEY, JSON.stringify(rows)); }
+    return rows;
+  }
+  let sbTargets = JSON.parse(localStorage.getItem(SB.TARGET_KEY) || 'null') || Object.assign({}, SB_DEFAULT_TARGETS);
+  let sbFlowMode = JSON.parse(localStorage.getItem(SB.FLOW_KEY) || 'null') || {};
+  let sbThresh = JSON.parse(localStorage.getItem(SB.THRESH_KEY) || 'null') || { conv:0.18, attach:1.5 };
+  let sbRows = [];
+
+  function sbSaveRows(){ localStorage.setItem(SB.KEY, JSON.stringify(sbRows)); }
+  function sbSaveTargets(){ localStorage.setItem(SB.TARGET_KEY, JSON.stringify(sbTargets)); }
+  function sbSaveFlow(){ localStorage.setItem(SB.FLOW_KEY, JSON.stringify(sbFlowMode)); }
+  function sbSaveThresh(){ localStorage.setItem(SB.THRESH_KEY, JSON.stringify(sbThresh)); }
+
+  function sbPeriodRange(){
+    const now = sbNow();
+    let start, end = sbDateStr(now);
+    if(SB.PERIOD === 'day'){ start = end; }
+    else if(SB.PERIOD === 'week'){
+      const d = new Date(now); d.setDate(d.getDate()-6); start = sbDateStr(d);
+    } else {
+      const d = new Date(now.getFullYear(), now.getMonth(), 1); start = sbDateStr(d);
+    }
+    return {start, end};
+  }
+  function sbInPeriod(row){
+    const {start,end} = sbPeriodRange();
+    return row.date >= start && row.date <= end;
+  }
+  function sbShopList(){
+    // 从数据里提取所有门店
+    const set = new Set(sbRows.map(r=>r.shop));
+    SB_DEFAULT_SHOPS.forEach(s=>set.add(s));
+    return Array.from(set);
+  }
+  function sbSelectedShops(){
+    const all = sbShopList();
+    return SB.shops.length ? SB.shops : all;
+  }
+  function sbAggregate(rows){
+    const a = { sales:0, txns:0, items:0, traffic:0, styleTotal:0, n:0 };
+    rows.forEach(r=>{
+      a.sales += +r.sales||0; a.txns += +r.txns||0; a.items += +r.items||0;
+      a.traffic += +r.traffic||0; a.styleTotal += +r.styleCount||(+r.styles||[]).length||0; a.n++;
+    });
+    a.conv = a.traffic ? a.txns/a.traffic : 0;
+    a.attach = a.txns ? a.items/a.txns : 0;
+    a.aov = a.txns ? a.sales/a.txns : 0;
+    return a;
+  }
+  function sbFmtMoney(n){ return '¥' + Math.round(n||0).toLocaleString('zh-CN'); }
+  function sbPct(x){ return (x*100).toFixed(1)+'%'; }
+
+  // 统一刷新入口（铁律9：渲染函数互不调用，全部由这里调度）
+  function sbRefresh(){
+    sbRenderHero();
+    sbRenderCompare();
+    sbRenderDetail();
+    sbRenderCharts();
+  }
+  function sbRenderHero(){
+    const el = document.getElementById('sbKpis'); if(!el) return;
+    const rows = sbRows.filter(r=>sbInPeriod(r) && sbSelectedShops().includes(r.shop));
+    const a = sbAggregate(rows);
+    const {start,end} = sbPeriodRange();
+    const pname = {day:'当日',week:'本周',month:'本月'}[SB.PERIOD];
+    const pn = document.getElementById('sbPeriodNote'); if(pn) pn.textContent = `${pname} · ${start===end?end:start+' ~ '+end} · ${sbSelectedShops().length} 家门店`;
+    const kpis = [
+      ['总销售金额', sbFmtMoney(a.sales), '#BE185D'],
+      ['总交易笔数', a.txns.toLocaleString('zh-CN')+' 笔', '#3B82F6'],
+      ['总销售件数', a.items.toLocaleString('zh-CN')+' 件', '#10B981'],
+      ['整体连带率', a.attach.toFixed(2), '#8B5CF6'],
+      ['总客流', a.traffic.toLocaleString('zh-CN')+' 人', '#F59E0B'],
+      ['整体转化率', sbPct(a.conv), '#06B6D4'],
+      ['平均客单价', sbFmtMoney(a.aov), '#EC4899'],
+      ['在售 SKU 款式数', a.styleTotal.toLocaleString('zh-CN')+' 款', '#F97316'],
+    ];
+    el.innerHTML = kpis.map(k=>`<div class="sd-kpi" style="--kpi-c:${k[2]}"><div class="sd-kpi-label">${k[0]}</div><div class="sd-kpi-val">${k[1]}</div></div>`).join('');
+  }
+  function sbCellClass(val, type){
+    if(type==='conv') return val < sbThresh.conv ? 'nm-cell-warn' : 'nm-cell-good';
+    if(type==='attach') return val < sbThresh.attach ? 'nm-cell-warn' : 'nm-cell-good';
+    return '';
+  }
+  function sbRenderCompare(){
+    const el = document.getElementById('sbCompareBody'); if(!el) return;
+    const shops = sbSelectedShops();
+    let html = '';
+    let total = {sales:0,txns:0,items:0,traffic:0,styleTotal:0};
+    shops.forEach(shop=>{
+      const rows = sbRows.filter(r=>r.shop===shop && sbInPeriod(r));
+      const a = sbAggregate(rows);
+      total.sales+=a.sales; total.txns+=a.txns; total.items+=a.items; total.traffic+=a.traffic; total.styleTotal+=a.styleTotal;
+      const target = +sbTargets[shop]||0;
+      // 月目标按周期折算：day=月目标/30, week=月目标/30*7, month=月目标
+      const factor = SB.PERIOD==='day'?1/30:(SB.PERIOD==='week'?7/30:1);
+      const periodTarget = target*factor;
+      const rate = periodTarget ? a.sales/periodTarget : 0;
+      const rateCls = rate>=1?'good':(rate>=0.8?'':'bad');
+      const barW = Math.min(100, Math.round(rate*100));
+      const flow = sbFlowMode[shop] || '计数器';
+      const flowColor = flow==='导购登记'?'#F59E0B':(flow==='混合'?'#8B5CF6':'#3B82F6');
+      html += `<tr>
+        <td title="客流口径：${flow}（点击顶部「客流口径」按钮修改）"><span class="nm-shop-dot" style="background:${flowColor}"></span>${shop}</td>
+        <td>${sbFmtMoney(a.sales)}</td>
+        <td>${a.txns}</td>
+        <td>${a.items}</td>
+        <td class="${sbCellClass(a.attach,'attach')}">${a.attach.toFixed(2)}</td>
+        <td>${a.traffic}</td>
+        <td class="${sbCellClass(a.conv,'conv')}">${sbPct(a.conv)}</td>
+        <td>${sbFmtMoney(a.aov)}</td>
+        <td class="nm-cell-dim">${a.styleTotal}</td>
+        <td><span class="nm-rate-bar"><span class="bar"><i class="${rateCls}" style="width:${barW}%"></i></span><b style="color:${rate>=1?'#059669':(rate>=0.8?'#D97706':'#DC2626')}">${target?sbPct(rate):'—'}</b></span></td>
+        <td><input class="nm-target-input" type="number" min="0" step="10000" value="${target}" title="月度销售目标" onchange="sbSetTarget('${shop}',this.value)"></td>
+      </tr>`;
+    });
+    const ta = sbAggregate(sbRows.filter(r=>sbInPeriod(r)&&sbSelectedShops().includes(r.shop)));
+    html += `<tr class="nm-total"><td>合计 / 整体</td><td>${sbFmtMoney(ta.sales)}</td><td>${ta.txns}</td><td>${ta.items}</td><td>${ta.attach.toFixed(2)}</td><td>${ta.traffic}</td><td>${sbPct(ta.conv)}</td><td>${sbFmtMoney(ta.aov)}</td><td>${ta.styleTotal}</td><td colspan="2"></td></tr>`;
+    el.innerHTML = html;
+    const cnt = document.getElementById('sbCompareCount'); if(cnt) cnt.textContent = shops.length+' 家';
+  }
+  function sbRenderDetail(){
+    const el = document.getElementById('sbDetailBody'); if(!el) return;
+    const shop = SB.detailShop;
+    let rows = sbRows.filter(r=>sbInPeriod(r) && (!shop || r.shop===shop));
+    rows.sort((a,b)=> b.date.localeCompare(a.date));
+    if(!rows.length){ el.innerHTML = '<tr><td colspan="10" class="nm-empty">该周期暂无数据，点「＋ 录入数据」添加</td></tr>'; return; }
+    el.innerHTML = rows.map(r=>{
+      const conv = r.traffic? r.txns/r.traffic:0;
+      const attach = r.txns? r.items/r.txns:0;
+      const aov = r.txns? r.sales/r.txns:0;
+      const st = (r.styles||[]);
+      const styleTxt = st.length ? st.slice(0,4).join('、')+(st.length>4?` 等${st.length}款`:'') : (r.styleCount||0)+' 款';
+      return `<tr>
+        <td>${r.date}</td><td>${r.shop}</td>
+        <td>${sbFmtMoney(r.sales)}</td><td>${r.txns}</td><td>${r.items}</td>
+        <td class="${sbCellClass(attach,'attach')}">${attach.toFixed(2)}</td>
+        <td>${r.traffic}</td>
+        <td class="${sbCellClass(conv,'conv')}">${sbPct(conv)}</td>
+        <td>${sbFmtMoney(aov)}</td>
+        <td class="nm-cell-dim" title="${styleTxt}">${styleTxt}</td>
+        <td><button class="ip-icon-btn" onclick="sbDeleteRow('${r.id}')" title="删除">✕</button></td>
+      </tr>`;
+    }).join('');
+    const cnt = document.getElementById('sbDetailCount'); if(cnt) cnt.textContent = rows.length+' 条';
+  }
+  function sbLinePath(vals, w, h, pad, max){
+    if(!vals.length) return '';
+    const n = vals.length;
+    const step = n>1 ? (w-pad*2)/(n-1) : 0;
+    return vals.map((v,i)=>{
+      const x = pad + i*step;
+      const y = h-pad - (max?(v/max)*(h-pad*2):0);
+      return (i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);
+    }).join(' ');
+  }
+  function sbRenderCharts(){
+    const trend = document.getElementById('sbTrend'); if(trend){
+      const shop = SB.detailShop;
+      let rows = sbRows.filter(r=>(!shop||r.shop===shop));
+      // 近30天按日期聚合
+      const byDate = {};
+      rows.forEach(r=>{ if(!byDate[r.date]) byDate[r.date]={sales:0,txns:0,items:0,traffic:0}; byDate[r.date].sales+=+r.sales||0; byDate[r.date].txns+=+r.txns||0; byDate[r.date].items+=+r.items||0; byDate[r.date].traffic+=+r.traffic||0; });
+      const dates = Object.keys(byDate).sort().slice(-30);
+      const sales = dates.map(d=>byDate[d].sales);
+      const attach = dates.map(d=> byDate[d].txns? byDate[d].items/byDate[d].txns:0);
+      const w=620,h=230,pad=32;
+      const maxSales = Math.max(1,...sales);
+      const maxAttach = Math.max(1,...attach);
+      const salesPath = sbLinePath(sales,w,h,pad,maxSales);
+      const attachPath = sbLinePath(attach,w,h,pad,maxAttach);
+      const step = dates.length>1?(w-pad*2)/(dates.length-1):0;
+      let grid='';
+      for(let i=0;i<=3;i++){ const y=pad+i*(h-pad*2)/3; grid+=`<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#F1F5F9" stroke-width="1"/>`; }
+      const labelIdx = [0, Math.floor(dates.length/2), dates.length-1].filter((v,i,a)=>a.indexOf(v)===i && dates.length);
+      let xlabels = labelIdx.map(i=>`<text x="${pad+i*step}" y="${h-8}" font-size="10" fill="#94A3B8" text-anchor="middle">${dates[i]?dates[i].slice(5):''}</text>`).join('');
+      trend.innerHTML = dates.length ? `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+        ${grid}
+        <path d="${salesPath}" fill="none" stroke="#BE185D" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="${attachPath}" fill="none" stroke="#3B82F6" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round"/>
+        ${xlabels}
+        <text x="${pad}" y="${pad-10}" font-size="10" fill="#BE185D">销售 ¥${Math.round(maxSales).toLocaleString()}</text>
+        <text x="${w-pad}" y="${pad-10}" font-size="10" fill="#3B82F6" text-anchor="end">连带 ${maxAttach.toFixed(2)}</text>
+      </svg>` : '<div class="nm-empty">暂无趋势数据</div>';
+      const lg = document.getElementById('sbTrendLegend');
+      if(lg) lg.innerHTML = `<span><i style="background:#BE185D"></i>销售额</span><span><i style="background:#3B82F6"></i>连带率</span>`;
+    }
+    const dist = document.getElementById('sbStyleDist'); if(dist){
+      // 热销/滞销：用所有款式汇总（示例数据将 styleCount 作为款式数，真实录入可用 styles 数组）
+      const shops = sbSelectedShops();
+      const rows = sbRows.filter(r=>sbInPeriod(r)&&shops.includes(r.shop));
+      const freq = {};
+      // 款式出现次数按"天"计（同一天同款只算1次）
+      rows.forEach(r=>{ const uniq = new Set((r.styles||[]).map(s=>String(s).trim()).filter(Boolean)); uniq.forEach(s=>{ freq[s]=(freq[s]||0)+1; }); });
+      let items = Object.entries(freq).map(([name,c])=>({name,c}));
+      if(!items.length){
+        // 示例数据未填款式名时：按门店出款数兜底展示，并明确标注
+        items = shops.map(s=>{
+          const a = sbAggregate(sbRows.filter(r=>r.shop===s&&sbInPeriod(r)));
+          return {name:'[示例] '+s+' 出款数', c:a.styleTotal};
+        }).sort((a,b)=>b.c-a.c);
+      } else { items.sort((a,b)=>b.c-a.c); }
+      const hot = items.slice(0,5);
+      const cold = items.slice(-3).reverse();
+      dist.innerHTML = `
+        <div style="font-size:12px;font-weight:800;color:#DC2626;margin-bottom:6px;">🔥 热销 TOP5</div>
+        ${hot.map(x=>`<div class="sd-style-row"><span class="sd-style-name">${x.name}</span><span class="sd-style-count">${x.c}</span><span class="sd-style-tag hot">热销</span></div>`).join('') || '<div class="nm-hint">暂无款式数据</div>'}
+        <div style="font-size:12px;font-weight:800;color:#2563EB;margin:14px 0 6px;">❄️ 滞销 / 低动销</div>
+        ${cold.map(x=>`<div class="sd-style-row"><span class="sd-style-name">${x.name}</span><span class="sd-style-count">${x.c}</span><span class="sd-style-tag cold">待关注</span></div>`).join('') || '<div class="nm-hint">暂无款式数据</div>'}
+      `;
+    }
+  }
+
+  // ---- 门店看板 事件 ----
+  function sbSetPeriod(p){ SB.PERIOD=p; document.querySelectorAll('#sbPeriodSeg button').forEach(b=>b.classList.toggle('active', b.dataset.p===p)); sbRefresh(); }
+  function sbToggleShop(shop){
+    if(shop==='__all__'){ SB.shops=[]; }
+    else {
+      const i = SB.shops.indexOf(shop);
+      if(i>=0) SB.shops.splice(i,1); else SB.shops.push(shop);
+    }
+    sbRenderShopChips(); sbRefresh();
+  }
+  function sbRenderShopChips(){
+    const el = document.getElementById('sbShopChips'); if(!el) return;
+    const all = sbShopList();
+    let h = `<span class="sd-chip sd-chip-all ${SB.shops.length?'':'on'}" onclick="sbToggleShop('__all__')">全部门店</span>`;
+    h += all.map(s=>`<span class="sd-chip ${SB.shops.includes(s)?'on':''}" onclick="sbToggleShop('${s}')">${s}</span>`).join('');
+    el.innerHTML = h;
+    const sel = document.getElementById('sbDetailShopSel');
+    if(sel){
+      const cur = SB.detailShop;
+      sel.innerHTML = '<option value="">全部门店（逐日流水）</option>' + all.map(s=>`<option value="${s}" ${s===cur?'selected':''}>${s}</option>`).join('');
+    }
+  }
+  function sbSetDetailShop(v){ SB.detailShop=v; sbRefresh(); }
+  function sbSetTarget(shop, v){ sbTargets[shop]=Math.max(0,+v||0); sbSaveTargets(); sbRefresh(); }
+  function sbSetFlow(shop, v){ sbFlowMode[shop]=v; sbSaveFlow(); sbRefresh(); }
+  function sbSetThresh(key, v){ sbThresh[key]=+v||0; sbSaveThresh(); sbRefresh(); }
+  function sbDeleteRow(id){
+    if(!confirm('确定删除这条流水记录？')) return;
+    sbRows = sbRows.filter(r=>r.id!==id); sbSaveRows(); sbRefresh();
+  }
+  function sbOpenModal(){
+    document.getElementById('sbModal').classList.add('open');
+    const sel = document.getElementById('sbFormShop');
+    const all = sbShopList();
+    sel.innerHTML = all.map(s=>`<option value="${s}">${s}</option>`).join('');
+    document.getElementById('sbFormDate').value = sbDateStr(sbNow());
+  }
+  function sbCloseModal(){ document.getElementById('sbModal').classList.remove('open'); }
+  function sbSaveRow(){
+    const date = document.getElementById('sbFormDate').value;
+    const shop = document.getElementById('sbFormShop').value;
+    const sales = +document.getElementById('sbFormSales').value||0;
+    const txns = +document.getElementById('sbFormTxns').value||0;
+    const items = +document.getElementById('sbFormItems').value||0;
+    const traffic = +document.getElementById('sbFormTraffic').value||0;
+    const styleStr = document.getElementById('sbFormStylesInput').value.trim();
+    const styles = styleStr ? styleStr.split(/[,，、\s]+/).map(s=>s.trim()).filter(Boolean) : [];
+    const styleCount = +document.getElementById('sbFormStyles').value || styles.length;
+    if(!date || !shop){ alert('请填写日期和门店'); return; }
+    sbRows.push({ id:'u_'+Date.now()+'_'+Math.floor(Math.random()*1000), date, shop, sales, txns, items, traffic, styleCount, styles, note:'' });
+    sbSaveRows(); sbCloseModal();
+    ['sbFormSales','sbFormTxns','sbFormItems','sbFormTraffic','sbFormStyles','sbFormStylesInput'].forEach(id=>{const e=document.getElementById(id); if(e) e.value='';});
+    sbRefresh();
+  }
+  // 客流口径设置
+  function sbOpenFlowModal(){
+    const box = document.getElementById('sbFlowList');
+    if(!box) return;
+    const all = sbShopList();
+    box.innerHTML = all.map(s=>{
+      const mode = sbFlowMode[s] || '计数器';
+      return `<div class="nm-form-field" style="flex-direction:row;align-items:center;justify-content:space-between;gap:10px;">
+        <label style="flex:1;">${s}</label>
+        <select class="nm-select" onchange="sbSetFlow('${s}',this.value)">
+          <option value="计数器" ${mode==='计数器'?'selected':''}>门口计数器</option>
+          <option value="导购登记" ${mode==='导购登记'?'selected':''}>导购登记</option>
+          <option value="混合" ${mode==='混合'?'selected':''}>混合口径</option>
+        </select>
+      </div>`;
+    }).join('');
+    document.getElementById('sbFlowModal').classList.add('open');
+  }
+  function sbCloseFlowModal(){ document.getElementById('sbFlowModal').classList.remove('open'); }
+
+  /* ═══════════════════════════════════════════════════════
+     NEW MODULE 2: 知识产权进度台账 (ipboard)
+     ═══════════════════════════════════════════════════════ */
+  const IP = {
+    TM_KEY: 'wb_ip_tm', PT_KEY: 'wb_ip_pt',
+    TAB: 'tm',        // tm | pt
+    tmFilter: 'all',  // all / 状态 / warn
+    ptFilter: 'all',
+    timeline: '',     // 展开时间线的记录 id
+  };
+  const TM_STATUS = ['待受理','审查中','驳回','复审中','已注册','无效中'];
+  const PT_STATUS = ['受理','实审','授权','驳回','失效'];
+  const IP_FLOW_FIELDS = [
+    {key:'tmFlow1',label:'① 申请提交'},
+    {key:'tmFlow2',label:'② 受理通知'},
+    {key:'tmFlow3',label:'③ 初审公告'},
+    {key:'tmFlow4',label:'④ 注册下证'},
+    {key:'tmFlow5',label:'⑤ 续展/维护'}
+  ];
+  function ipSeedTM(){
+    const today = sbNow();
+    const d = n => { const x=new Date(today); x.setDate(x.getDate()+n); return sbDateStr(x); };
+    return [
+      {id:'tm1', name:'可可家居 COCO LIFE', cls:'20 家具', appNo:'CN20261123001', appDate:d(-420), status:'已注册', nodeDate:d(-60), certNo:'第66882341号', validFrom:d(-400), validTo:d(690), plan:'2030年续展', agent:'王代理', attachment:'', note:'核心类别，需重点维护', flow1:d(-420),flow2:d(-410),flow3:d(-120),flow4:d(-60),flow5:''},
+      {id:'tm2', name:'播途', cls:'35 广告销售', appNo:'CN20260712008', appDate:d(-160), status:'驳回', nodeDate:d(-5), certNo:'', validFrom:'', validTo:'', plan:'15日内提交复审', agent:'李代理', attachment:'', note:'⚠ 复审答复临近，对方小公司可考虑撤三反制', flow1:d(-160),flow2:d(-150),flow3:'',flow4:'',flow5:''},
+      {id:'tm3', name:'COCO 家居', cls:'14 首饰', appNo:'CN20260903015', appDate:d(-90), status:'审查中', nodeDate:d(-20), certNo:'', validFrom:'', validTo:'', plan:'跟进审查意见', agent:'王代理', attachment:'', note:'与现有14类近似，注意冲突', flow1:d(-90),flow2:d(-80),flow3:'',flow4:'',flow5:''},
+      {id:'tm4', name:'可可生活', cls:'24 布料', appNo:'CN20250818022', appDate:d(-460), status:'已注册', nodeDate:d(-300), certNo:'第55120987号', validFrom:d(-300), validTo:d(25), plan:'准备续展材料', agent:'李代理', attachment:'', note:'⚠ 30天内到期续展', flow1:d(-460),flow2:d(-450),flow3:d(-320),flow4:d(-300),flow5:''},
+    ];
+  }
+  function ipSeedPT(){
+    const today = sbNow();
+    const d = n => { const x=new Date(today); x.setDate(x.getDate()+n); return sbDateStr(x); };
+    return [
+      {id:'pt1', name:'折叠收纳盒（A款）', appNo:'CN202630012345.6', appDate:d(-300), status:'授权', grantDate:d(-120), certNo:'ZL202630012345.6', feeNode:'每年 3 月缴年费', nextFee:d(5), feeAmount:600, protectTo:d(1240), agent:'赵代理', attachment:'', note:'⚠ 年费7天内到期，产品已上市'},
+      {id:'pt2', name:'香薰灯外观（B款）', appNo:'CN202630067890.1', appDate:d(-200), status:'授权', grantDate:d(-60), certNo:'ZL202630067890.1', feeNode:'每年 5 月缴年费', nextFee:d(45), feeAmount:600, protectTo:d(1280), agent:'赵代理', attachment:'', note:'未上市，pending 侵权比对'},
+      {id:'pt3', name:'壁挂置物架（C款）', appNo:'CN202630099111.2', appDate:d(-70), status:'实审', grantDate:'', certNo:'', feeNode:'', nextFee:'', feeAmount:0, protectTo:'', agent:'赵代理', attachment:'', note:'审查中，暂无年费'},
+      {id:'pt4', name:'布艺收纳袋（D款）', appNo:'CN202530044455.7', appDate:d(-500), status:'失效', grantDate:d(-330), certNo:'ZL202530044455.7', feeNode:'已失效', nextFee:'', feeAmount:0, protectTo:d(-35), agent:'王代理', attachment:'', note:'忘缴年费失效，已无法恢复'},
+    ];
+  }
+  let ipTM = JSON.parse(localStorage.getItem(IP.TM_KEY) || 'null') || ipSeedTM();
+  let ipPT = JSON.parse(localStorage.getItem(IP.PT_KEY) || 'null') || ipSeedPT();
+  function ipSaveTM(){ localStorage.setItem(IP.TM_KEY, JSON.stringify(ipTM)); }
+  function ipSavePT(){ localStorage.setItem(IP.PT_KEY, JSON.stringify(ipPT)); }
+  function ipDays(dateStr){
+    if(!dateStr) return null;
+    const t = new Date(); t.setHours(0,0,0,0);
+    const d = new Date(dateStr+'T00:00:00');
+    return Math.round((d-t)/86400000);
+  }
+  function ipAlertLevel(dateStr){
+    const diff = ipDays(dateStr);
+    if(diff===null) return {lv:'none', txt:''};
+    if(diff<0) return {lv:'red', txt:`已逾期 ${-diff} 天`};
+    if(diff<=7) return {lv:'red', txt:`${diff} 天内到期`};
+    if(diff<=30) return {lv:'yellow', txt:`${diff} 天后到期`};
+    return {lv:'none', txt:''};
+  }
+  function ipCollectAlerts(){
+    const out = [];
+    ipTM.forEach(t=>{
+      if(t.validTo){ const a=ipAlertLevel(t.validTo); if(a.lv!=='none') out.push({id:t.id, type:'tm', name:t.name, reason:'商标续展到期', date:t.validTo, lv:a.lv, txt:a.txt}); }
+      if(t.nodeDate && (t.status==='驳回'||t.status==='复审中')){ const a=ipAlertLevel(t.nodeDate); if(a.lv!=='none') out.push({id:t.id, type:'tm', name:t.name, reason:'答复/复审期限', date:t.nodeDate, lv:a.lv, txt:a.txt}); }
+    });
+    ipPT.forEach(p=>{
+      if(p.nextFee){ const a=ipAlertLevel(p.nextFee); if(a.lv!=='none') out.push({id:p.id, type:'pt', name:p.name, reason:'年费缴费截止', date:p.nextFee, lv:a.lv, txt:a.txt}); }
+    });
+    out.sort((a,b)=> a.date.localeCompare(b.date));
+    return out;
+  }
+  function ipRefresh(){ ipRenderAlerts(); ipRenderSummary(); ipRenderTable(); }
+  function ipRenderAlerts(){
+    const el = document.getElementById('ipAlerts'); if(!el) return;
+    const alerts = ipCollectAlerts();
+    const red = alerts.filter(a=>a.lv==='red'), yellow = alerts.filter(a=>a.lv==='yellow');
+    const boxCls = red.length?'ip-alert-danger':(yellow.length?'ip-alert-warn':'ip-alert-ok');
+    const head = red.length?`🚨 ${red.length} 项紧急待办（7天内 / 已逾期）`:(yellow.length?`⚠️ ${yellow.length} 项临期提醒（30天内）`:'✅ 近期无临期待办');
+    el.className = 'ip-alert-banner '+boxCls;
+    el.innerHTML = `<div class="ip-alert-head">${head}</div><div class="ip-alert-items">${
+      alerts.length ? alerts.map(a=>`<div class="ip-alert-item">
+        <span class="ip-badge ${a.lv}">${a.txt}</span>
+        <span class="ip-name">${a.type==='tm'?'商标':'专利'} · ${a.name}</span>
+        <span class="ip-reason">${a.reason} · ${a.date}</span>
+      </div>`).join('') : '<div class="nm-hint">所有证书与缴费节点均在安全期内。</div>'
+    }</div>`;
+    const cnt = document.getElementById('ipAlertCount');
+    if(cnt){ cnt.textContent = alerts.length+' 项临期'; cnt.className = 'ip-badge '+(red.length?'red':(yellow.length?'yellow':'green')); }
+  }
+  function ipRenderSummary(){
+    const el = document.getElementById('ipSummary'); if(!el) return;
+    const tmStat = { '申请中':0,'已下证':0,'驳回/无效':0 };
+    ipTM.forEach(t=>{
+      if(t.status==='已注册') tmStat['已下证']++;
+      else if(t.status==='驳回'||t.status==='无效中') tmStat['驳回/无效']++;
+      else tmStat['申请中']++;
+    });
+    const ptStat = { '申请中':0,'已授权':0,'失效':0 };
+    ipPT.forEach(p=>{
+      if(p.status==='授权') ptStat['已授权']++;
+      else if(p.status==='失效') ptStat['失效']++;
+      else ptStat['申请中']++;
+    });
+    el.innerHTML = `
+      <div class="ip-sum-card"><div class="ip-sum-title"><span>™️ 商标资产</span><span class="ip-sum-total">共 ${ipTM.length} 件</span></div>
+        <div class="ip-sum-grid">
+          <div class="ip-sum-cell"><div class="ip-sum-num" style="color:#3B82F6">${tmStat['申请中']}</div><div class="ip-sum-lbl">申请中</div></div>
+          <div class="ip-sum-cell"><div class="ip-sum-num" style="color:#059669">${tmStat['已下证']}</div><div class="ip-sum-lbl">已下证</div></div>
+          <div class="ip-sum-cell"><div class="ip-sum-num" style="color:#DC2626">${tmStat['驳回/无效']}</div><div class="ip-sum-lbl">驳回/无效</div></div>
+          <div class="ip-sum-cell"><div class="ip-sum-num">${ipTM.length}</div><div class="ip-sum-lbl">总计</div></div>
+        </div></div>
+      <div class="ip-sum-card"><div class="ip-sum-title"><span>💡 外观专利</span><span class="ip-sum-total">共 ${ipPT.length} 件</span></div>
+        <div class="ip-sum-grid">
+          <div class="ip-sum-cell"><div class="ip-sum-num" style="color:#3B82F6">${ptStat['申请中']}</div><div class="ip-sum-lbl">申请中</div></div>
+          <div class="ip-sum-cell"><div class="ip-sum-num" style="color:#059669">${ptStat['已授权']}</div><div class="ip-sum-lbl">已授权</div></div>
+          <div class="ip-sum-cell"><div class="ip-sum-num" style="color:#DC2626">${ptStat['失效']}</div><div class="ip-sum-lbl">失效</div></div>
+          <div class="ip-sum-cell"><div class="ip-sum-num">${ipPT.length}</div><div class="ip-sum-lbl">总计</div></div>
+        </div></div>`;
+  }
+  function ipStatusBadge(s){
+    const map = {'已注册':'green','授权':'green','驳回':'red','失效':'red','无效中':'red','复审中':'yellow','审查中':'blue','实审':'blue','受理':'blue','待受理':'gray'};
+    return `<span class="ip-badge ${map[s]||'gray'}">${s}</span>`;
+  }
+  function ipTimelineHtml(item, type){
+    const nodes = type==='tm'
+      ? [['申请提交',item.flow1||item.appDate],['受理通知',item.flow2],['初审公告',item.flow3],['注册下证',item.flow4||item.certNo&&item.validFrom],['续展/维护',item.flow5||item.validTo]]
+      : [['申请提交',item.appDate],['实审',item.status==='实审'||item.status==='授权'?item.appDate:''],['授权下证',item.grantDate],['年费缴纳',item.nextFee],['保护到期',item.protectTo]];
+    let lastDone = -1;
+    nodes.forEach((n,i)=>{ if(n[1]) lastDone=i; });
+    return `<div class="ip-timeline"><div class="ip-tl-title">时间线 · ${item.name}</div><div class="ip-tl-track">${
+      nodes.map((n,i)=>{
+        const cls = n[1] ? (i===lastDone?'now':'done') : '';
+        return `<div class="ip-tl-node ${cls}"><i></i><b>${n[0]}</b><small>${n[1]||'—'}</small></div>`;
+      }).join('')
+    }</div></div>`;
+  }
+  function ipRenderTable(){
+    const wrap = document.getElementById('ipTableWrap'); if(!wrap) return;
+    document.querySelectorAll('#ipTabs .ip-tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===IP.TAB));
+    const isTM = IP.TAB==='tm';
+    const filter = isTM? IP.tmFilter : IP.ptFilter;
+    let list = isTM? ipTM.slice() : ipPT.slice();
+    if(filter==='warn'){ list = list.filter(x=>{ const key=isTM?x.validTo:x.nextFee; return ipAlertLevel(key).lv!=='none'; }); }
+    else if(filter!=='all'){ list = list.filter(x=>x.status===filter); }
+    let h = '';
+    if(isTM){
+      h = `<table class="nm-table" style="min-width:1500px"><thead><tr>
+        <th>商标名称 / 品牌</th><th>类别</th><th>申请号</th><th>申请日</th><th>当前状态</th><th>状态节点时间</th>
+        <th>证书编号</th><th>有效期起</th><th>有效期至</th><th>续展 / 后续计划</th><th>代理</th><th>证书附件</th><th>备注（风险）</th><th>预警</th><th>时间线</th><th>操作</th>
+      </tr></thead><tbody>`;
+      h += list.map(t=>{
+        const al = ipAlertLevel(t.validTo);
+        const tl = IP.timeline===t.id ? ipTimelineHtml(t,'tm') : '';
+        return `<tr>
+          <td>${t.name}</td><td>${t.cls||'—'}</td><td class="nm-cell-dim">${t.appNo||'—'}</td><td>${t.appDate||'—'}</td>
+          <td><select class="ip-status-sel" onchange="ipSetStatus('tm','${t.id}',this.value)">${TM_STATUS.map(s=>`<option ${s===t.status?'selected':''}>${s}</option>`).join('')}</select></td>
+          <td>${t.nodeDate||'—'}</td><td class="nm-cell-dim">${t.certNo||'—'}</td><td>${t.validFrom||'—'}</td>
+          <td class="${al.lv==='red'?'nm-cell-warn':(al.lv==='yellow'?'':'')}">${t.validTo||'—'}</td>
+          <td>${t.plan||'—'}</td><td>${t.agent||'—'}</td>
+          <td>${t.attachment?`<span class="ip-cert-link" onclick="window.open('${t.attachment}','_blank')">查看证书</span>`:'<span class="nm-cell-dim">未上传</span>'}</td>
+          <td class="${t.note&&t.note.includes('⚠')?'ip-note-risk':''}">${t.note||'—'}</td>
+          <td><span class="ip-badge ${al.lv==='none'?'green':al.lv}">${al.txt||'正常'}</span></td>
+          <td><button class="ip-icon-btn" onclick="ipToggleTimeline('${t.id}')" title="时间线">${IP.timeline===t.id?'▲':'▼'}</button></td>
+          <td><div class="ip-row-actions"><button class="ip-icon-btn" onclick="ipEdit('tm','${t.id}')" title="编辑">✎</button><button class="ip-icon-btn" onclick="ipDelete('tm','${t.id}')" title="删除">✕</button></div></td>
+        </tr>${tl?`<tr><td colspan="16" style="padding:0 12px 10px;">${tl}</td></tr>`:''}`;
+      }).join('');
+    } else {
+      h = `<table class="nm-table" style="min-width:1400px"><thead><tr>
+        <th>专利名称（款式）</th><th>申请号</th><th>申请日</th><th>当前状态</th><th>授权下证日</th><th>证书编号</th>
+        <th>年费缴费节点</th><th>下期年费截止</th><th>年费金额</th><th>保护到期日</th><th>代理</th><th>证书附件</th><th>备注（风险）</th><th>预警</th><th>时间线</th><th>操作</th>
+      </tr></thead><tbody>`;
+      h += list.map(p=>{
+        const al = ipAlertLevel(p.nextFee);
+        const tl = IP.timeline===p.id ? ipTimelineHtml(p,'pt') : '';
+        return `<tr>
+          <td>${p.name}</td><td class="nm-cell-dim">${p.appNo||'—'}</td><td>${p.appDate||'—'}</td>
+          <td><select class="ip-status-sel" onchange="ipSetStatus('pt','${p.id}',this.value)">${PT_STATUS.map(s=>`<option ${s===p.status?'selected':''}>${s}</option>`).join('')}</select></td>
+          <td>${p.grantDate||'—'}</td><td class="nm-cell-dim">${p.certNo||'—'}</td>
+          <td>${p.feeNode||'—'}</td>
+          <td class="${al.lv==='red'?'nm-cell-warn':(al.lv==='yellow'?'':'')}">${p.nextFee||'—'}</td>
+          <td>${p.feeAmount?sbFmtMoney(p.feeAmount):'—'}</td><td>${p.protectTo||'—'}</td><td>${p.agent||'—'}</td>
+          <td>${p.attachment?`<span class="ip-cert-link" onclick="window.open('${p.attachment}','_blank')">查看证书</span>`:'<span class="nm-cell-dim">未上传</span>'}</td>
+          <td class="${p.note&&p.note.includes('⚠')?'ip-note-risk':''}">${p.note||'—'}</td>
+          <td><span class="ip-badge ${al.lv==='none'?'green':al.lv}">${p.status==='失效'?'已失效':(al.txt||'正常')}</span></td>
+          <td><button class="ip-icon-btn" onclick="ipToggleTimeline('${p.id}')" title="时间线">${IP.timeline===p.id?'▲':'▼'}</button></td>
+          <td><div class="ip-row-actions"><button class="ip-icon-btn" onclick="ipEdit('pt','${p.id}')" title="编辑">✎</button><button class="ip-icon-btn" onclick="ipDelete('pt','${p.id}')" title="删除">✕</button></div></td>
+        </tr>${tl?`<tr><td colspan="16" style="padding:0 12px 10px;">${tl}</td></tr>`:''}`;
+      }).join('');
+    }
+    h += '</tbody></table>';
+    if(!list.length) h = '<div class="nm-empty">该筛选下暂无记录</div>';
+    wrap.innerHTML = h;
+    // 筛选下拉
+    const fsel = document.getElementById('ipFilterSel');
+    if(fsel){
+      const opts = isTM? ['all',...TM_STATUS,'warn'] : ['all',...PT_STATUS,'warn'];
+      const lbl = {all:'全部状态',warn:'⚠️ 仅看临期'};
+      fsel.innerHTML = opts.map(o=>`<option value="${o}" ${o===filter?'selected':''}>${lbl[o]||o}</option>`).join('');
+    }
+    const cnt = document.getElementById('ipTableCount'); if(cnt) cnt.textContent = list.length+' 条';
+  }
+  function ipSetTab(tab){ IP.TAB=tab; IP.timeline=''; ipRenderTable(); }
+  function ipSetFilter(v){ if(IP.TAB==='tm') IP.tmFilter=v; else IP.ptFilter=v; ipRenderTable(); }
+  function ipToggleTimeline(id){ IP.timeline = IP.timeline===id?'':id; ipRenderTable(); }
+  function ipSetStatus(type, id, v){
+    const arr = type==='tm'?ipTM:ipPT;
+    const it = arr.find(x=>x.id===id); if(it){ it.status=v; }
+    (type==='tm'?ipSaveTM:ipSavePT)(); ipRefresh();
+  }
+  function ipDelete(type, id){
+    if(!confirm('确定删除这条记录？')) return;
+    if(type==='tm'){ ipTM=ipTM.filter(x=>x.id!==id); ipSaveTM(); }
+    else { ipPT=ipPT.filter(x=>x.id!==id); ipSavePT(); }
+    ipRefresh();
+  }
+  let ipEditing = null;
+  function ipEdit(type, id){
+    const isNew = id==='__new__';
+    ipEditing = {type, id: isNew?'':id};
+    const isTM = type==='tm';
+    const it = isNew ? (isTM?{status:TM_STATUS[0]}:{status:PT_STATUS[0]}) : (isTM?ipTM:ipPT).find(x=>x.id===id);
+    if(!it) return;
+    document.getElementById('ipModalTitle').textContent = (isNew?'新增':'编辑')+(isTM?'商标':'外观专利');
+    const f = (label, key, type2='text') => {
+      if(type2==='textarea') return `<div class="nm-form-field full"><label>${label}</label><textarea id="ipF_${key}">${it[key]||''}</textarea></div>`;
+      return `<div class="nm-form-field"><label>${label}</label><input type="${type2}" id="ipF_${key}" value="${it[key]||''}"></div>`;
+    };
+    const sel = (label,key,opts)=>`<div class="nm-form-field"><label>${label}</label><select id="ipF_${key}">${opts.map(o=>`<option ${o===it[key]?'selected':''}>${o}</option>`).join('')}</select></div>`;
+    let html = '<div class="nm-modal-scroll"><div class="nm-form-grid">';
+    if(isTM){
+      html += f('商标名称/品牌','name')+f('类别（如 14 类首饰）','cls')+f('申请号','appNo')+f('申请日期','appDate','date');
+      html += sel('当前状态','status',TM_STATUS)+f('状态节点时间','nodeDate','date')+f('证书编号','certNo')+f('有效期起始','validFrom','date');
+      html += f('有效期到期日','validTo','date')+f('后续计划（续展/撤三）','plan')+f('代理对接人','agent')+f('证书扫描件链接','attachment','url');
+      IP_FLOW_FIELDS.forEach((x,i)=>{ html += f(x.label+(i===0?'（申请日）':''),'flow'+(i+1),'date'); });
+      html += f('备注（风险）','note','textarea');
+    } else {
+      html += f('专利名称（款式）','name')+f('专利申请号','appNo')+f('申请日','appDate','date');
+      html += sel('当前状态','status',PT_STATUS)+f('授权下证日期','grantDate','date')+f('证书编号','certNo')+f('年费缴费节点','feeNode');
+      html += f('下期年费截止日','nextFee','date')+f('年费金额','feeAmount','number')+f('保护到期日','protectTo','date')+f('代理对接人','agent');
+      html += f('证书扫描件链接','attachment','url')+f('备注（风险）','note','textarea');
+    }
+    html += '</div></div>';
+    document.getElementById('ipModalBody').innerHTML = html;
+    document.getElementById('ipModal').classList.add('open');
+  }
+  function ipAdd(){ ipEditing = {type: IP.TAB, id:''}; ipEdit(IP.TAB, '__new__'); }
+  function ipSave(){
+    if(!ipEditing) return;
+    const isTM = ipEditing.type==='tm';
+    const get = k => document.getElementById('ipF_'+k) ? document.getElementById('ipF_'+k).value.trim() : '';
+    const data = {};
+    const keys = isTM
+      ? ['name','cls','appNo','appDate','status','nodeDate','certNo','validFrom','validTo','plan','agent','attachment','flow1','flow2','flow3','flow4','flow5','note']
+      : ['name','appNo','appDate','status','grantDate','certNo','feeNode','nextFee','feeAmount','protectTo','agent','attachment','note'];
+    keys.forEach(k=>{ data[k]=get(k); });
+    if(isTM) data.feeAmount = 0;
+    else data.feeAmount = +data.feeAmount||0;
+    if(!data.name){ alert('请填写名称'); return; }
+    const arr = isTM?ipTM:ipPT;
+    if(ipEditing.id && ipEditing.id!=='__new__'){
+      const idx = arr.findIndex(x=>x.id===ipEditing.id);
+      if(idx>=0) arr[idx] = Object.assign({}, arr[idx], data);
+    } else {
+      arr.unshift(Object.assign({id:(isTM?'tm':'pt')+'_'+Date.now()}, data));
+    }
+    (isTM?ipSaveTM:ipSavePT)();
+    document.getElementById('ipModal').classList.remove('open');
+    ipRefresh();
+  }
+  function ipCloseModal(){ document.getElementById('ipModal').classList.remove('open'); }
+
+  /* ═══════════════════════════════════════════════════════
+     初始化：注册分类 + 首次渲染（防御性：DOM 已就绪）
+     ═══════════════════════════════════════════════════════ */
+  function nmEnsureCategory(id, label, icon, img, pos){
+    const idx = categories.findIndex(c=>c.id===id);
+    if(idx<0){
+      const cat = {id, label, icon, img, fixed:false, count:0};
+      if(typeof pos==='number' && pos<categories.length) categories.splice(pos,0,cat);
+      else categories.push(cat);
+      saveCategories();
+    }
+  }
+  // 排布顺序：门店看板业务核心置顶（紧跟工作台），知识产权第二
+  nmEnsureCategory('ipboard','知识产权进度台账','📜',11,1);
+  nmEnsureCategory('storeboard','线下门店经营数据看板','📈',10,1);
+  // 扩展计数
+  const __origCountCards = countCards;
+  countCards = function(catId){
+    if(catId==='storeboard') return sbShopList().length;
+    if(catId==='ipboard') return ipTM.length + ipPT.length;
+    return __origCountCards(catId);
+  };
+  // 首次数据装载与渲染
+  sbRows = sbLoad();
+  sbRenderShopChips();
+  sbRefresh();
+  ipRefresh();
+
 
   // ── Init ──
   renderSidebar();
