@@ -2702,6 +2702,33 @@
     .sd2-toolbar { flex-direction:column; align-items:stretch; }
     .sd2-switch { justify-content:flex-start; }
   }
+
+  /* ═══ v11 趋势图门店维度 / 矩阵 ═══ */
+  .sb-chart-mode { display:flex; align-items:center; gap:8px; margin:16px 0 2px; flex-wrap:wrap; }
+  .sb-chart-mode .nm-seg button { font-size:12px; }
+  .sb-lg-item { cursor:pointer; padding:2px 6px; border-radius:6px; border:1px solid transparent; transition:.12s; }
+  .sb-lg-item:hover { background:#F1F5F9; }
+  .sb-lg-item.on { border-color:#E2E8F0; background:#fff; color:var(--text-primary); }
+  .sb-lg-item.off { opacity:.38; text-decoration:line-through; }
+  .sb-conv-note { background:#F0FDF4; border:1px solid #BBF7D0; color:#166534;
+                  border-radius:8px; padding:8px 11px; font-size:11px; line-height:1.7; margin:8px 0; }
+  .sb-conv-note b { color:#065F46; }
+  .sb-conv-note.bad { background:#FFFBEB; border-color:#FDE68A; color:#92400E; }
+  .sb-conv-note.bad b { color:#78350F; }
+  .sb-conv-warn { margin-top:6px; padding-top:6px; border-top:1px dashed #FCD34D; color:#B45309; font-weight:600; }
+  .sb-mx-wrap { max-height:420px; overflow:auto; }
+  .sb-mx { border-collapse:separate; border-spacing:0; font-size:11px; }
+  .sb-mx th, .sb-mx td { padding:5px 8px; text-align:right; white-space:nowrap;
+                          border-bottom:1px solid #F1F5F9; }
+  .sb-mx th { position:sticky; top:0; background:#F8FAFC; z-index:2; font-weight:700; color:#475569; }
+  .sb-mx .sb-mx-date { position:sticky; left:0; background:#fff; z-index:1; text-align:left;
+                       border-right:1px solid #E2E8F0; color:#475569; }
+  .sb-mx th.sb-mx-date { z-index:3; background:#F8FAFC; }
+  .sb-mx tr.sb-hl td { background:#FCE7F3 !important; color:#9D174D; font-weight:700; }
+  .sb-mx tr.sb-hl td.sb-mx-date { background:#FBCFE8 !important; }
+  .sb-mx td.sb-hl-col { outline:2px solid #BE185D; outline-offset:-2px; }
+  .sb-mx td.sb-mx-warn { color:#DC2626; font-weight:700; }
+  @media (max-width:768px) { .sb-mx-wrap { max-height:340px; } }
 </style>
 </head>
 <body>
@@ -3451,21 +3478,50 @@
     </div>
     <div class="nm-hint" style="margin-top:8px;">💡 逐日流水来自伯俊零售明细；「款式明细」列点「明细 →」可跳转到「款式经营 → 每日销售款式明细」查看该店该日逐款成交（款号/品类/件数/金额/件单价）。手工录入的行可点 ✕ 删除。</div>
 
-      <div class="sd-charts sb-charts-single" style="margin-top:16px;">
+    <!-- v11 合计 / 按门店对比 -->
+    <div class="sb-chart-mode" id="sbChartModeBar">
+      <span class="sd-filter-label">趋势视图</span>
+      <div class="nm-seg">
+        <button class="active" data-m="total" onclick="sbSetChartMode('total')">合计</button>
+        <button data-m="compare" onclick="sbSetChartMode('compare')">按门店对比</button>
+      </div>
+      <span class="nm-hint">选中单个门店时自动切为该店逐日走势</span>
+    </div>
+      <div class="sd-charts sb-charts-single" style="margin-top:8px;">
         <div class="sd-chart-card">
-          <div class="sd-chart-title">近 30 天经营趋势</div>
+          <div class="sd-chart-title" id="sbTrendTitle">近 30 天经营趋势</div>
           <div class="sd-chart-sub" id="sbTrendSub">近30天销售额与连带率 · hover 看数值 · 点击跳当日明细</div>
           <div id="sbTrend"></div>
           <div class="sd-legend" id="sbTrendLegend"></div>
         </div>
         <div class="sd-chart-card">
-          <div class="sd-chart-title">客流与转化率走势</div>
-          <div class="sd-chart-sub">飞书 Base「进店客流组」· 未录入日期断开 · hover 看数值 · 点击跳当日明细</div>
+          <div class="sd-chart-title" id="fsTrendTitle">客流与转化率走势</div>
+          <div class="sd-chart-sub" id="fsTrendSub">飞书 Base「进店客流组」· 未录入日期断开 · hover 看数值 · 点击跳当日明细</div>
           <div class="fs-missing-note" id="fsMissingNote"></div>
           <div id="fsTrend"></div>
           <div class="sd-legend" id="fsTrendLegend"></div>
+          <div class="sb-conv-note" id="sbConvNote"></div>
         </div>
       </div>
+
+    <!-- v11 日期 × 门店矩阵 -->
+    <div class="sd-section-title" style="margin-top:22px;">📅 日期 × 门店明细 <span class="badge" id="sbMatrixBadge"></span></div>
+    <div class="nm-toolbar">
+      <span class="sd-filter-label">指标</span>
+      <div class="nm-seg" id="sbMatrixSeg">
+        <button class="active" data-m="sales" onclick="sbSetMatrixMetric('sales')">销售额</button>
+        <button data-m="attach" onclick="sbSetMatrixMetric('attach')">连带率</button>
+        <button data-m="traffic" onclick="sbSetMatrixMetric('traffic')">客流</button>
+        <button data-m="conv" onclick="sbSetMatrixMetric('conv')">转化率</button>
+      </div>
+    </div>
+    <div class="nm-hint" id="sbMatrixHint" style="margin-bottom:8px;"></div>
+    <div class="sd-table-wrap sb-mx-wrap">
+      <table class="nm-table sb-mx" id="sbMatrixTable">
+        <thead id="sbMatrixHead"></thead>
+        <tbody id="sbMatrixBody"></tbody>
+      </table>
+    </div>
     </div>
 
     <div class="sb-pane" id="sbPaneStyle">
@@ -3601,7 +3657,7 @@
       <div class="nm-form-card"><div id="fsDataSource"></div></div>
     </div>
 
-d="ssTableBody"></tbody>
+</tbody>
       </table>
     </div>
 
@@ -7529,6 +7585,362 @@ d="ssTableBody"></tbody>
 
   // 初始化（v9 的 sbRefresh 已执行过，这里补渲染新模块）
   sdRender();
+
+  /* ══════════════════════════════════════════════════════════════
+     v11 · 趋势图门店维度 / 合计·按店对比 / 日期×门店矩阵 / 转化率同口径
+     ══════════════════════════════════════════════════════════════ */
+
+  // ── 统一转化率口径：只统计「客流与笔数都有值」的门店行，分子分母同源 ──
+  function sbConvOf(rows){
+    const cov=(rows||[]).filter(r=>r && !r.trafficMissing && +r.traffic>0 && +r.txns>0);
+    const traffic=cov.reduce((s,r)=>s+(+r.traffic||0),0);
+    const txns=cov.reduce((s,r)=>s+(+r.txns||0),0);
+    if(!traffic) return null;
+    return { v:txns/traffic, traffic, txns, covered:cov.length,
+             missing:(rows||[]).length-cov.length };
+  }
+  // 覆盖 v7 的同名函数，KPI 卡 / 主表 / 合计行一律走同口径
+  fsConvOf = sbConvOf;
+
+  // 覆盖聚合器：conv 不再用「全店笔数 ÷ 有客流店客流」
+  sbAggregate = function(rows){
+    const a={sales:0,txns:0,items:0,traffic:0,styleTotal:0,n:0};
+    rows.forEach(r=>{
+      a.sales+=+r.sales||0; a.txns+=+r.txns||0; a.items+=+r.items||0;
+      a.traffic+=+r.traffic||0; a.styleTotal+=+r.styleCount||(+r.styles||[]).length||0; a.n++;
+    });
+    const c=sbConvOf(rows);
+    a.conv=c?c.v:0;
+    a.attach=a.txns?a.items/a.txns:0;
+    a.aov=a.txns?a.sales/a.txns:0;
+    return a;
+  };
+  // 监察板块同口径（按门店分组后再算，避免跨店分子污染）
+  mnAggBy = function(rows){
+    const m={}, groups={};
+    rows.forEach(r=>{
+      if(!m[r.shop]){ m[r.shop]={sales:0,txns:0,items:0,traffic:0}; groups[r.shop]=[]; }
+      m[r.shop].sales+=+r.sales||0; m[r.shop].txns+=+r.txns||0;
+      m[r.shop].items+=+r.items||0; m[r.shop].traffic+=+r.traffic||0;
+      groups[r.shop].push(r);
+    });
+    Object.keys(m).forEach(s=>{
+      const a=m[s], c=sbConvOf(groups[s]);
+      a.conv=c?c.v:0; a.attach=a.txns?a.items/a.txns:0; a.aov=a.txns?a.sales/a.txns:0;
+    });
+    return m;
+  };
+
+  // ── 图表状态 ──
+  SB.chart = { mode:'total', on:[], onKey:'', metric:'sales' };
+  SB.hoverDate = '';
+  const SB_COLORS=['#BE185D','#3B82F6','#10B981','#F59E0B','#8B5CF6',
+                   '#06B6D4','#EC4899','#F97316','#6366F1','#84CC16'];
+  function sbShopColor(s,shops){ return SB_COLORS[Math.max(0,shops.indexOf(s))%SB_COLORS.length]; }
+
+  // 门店×日期聚合（跟随门店筛选；趋势图沿用「近30个有数据日」不受周期过滤）
+  function sbChartData(){
+    const shops=sbSelectedShops();
+    const set=new Set();
+    sbRows.filter(r=>shops.includes(r.shop)).forEach(r=>set.add(r.date));
+    const dates=[...set].sort().slice(-30);
+    const by={}; dates.forEach(d=>by[d]={});
+    sbRows.filter(r=>shops.includes(r.shop)&&by[r.date]).forEach(r=>{
+      const b=by[r.date];
+      if(!b[r.shop]) b[r.shop]={sales:0,txns:0,items:0,traffic:0,hasTraffic:false,n:0};
+      const c=b[r.shop];
+      c.sales+=+r.sales||0; c.txns+=+r.txns||0; c.items+=+r.items||0; c.n++;
+      if(!r.trafficMissing && +r.traffic>0){ c.traffic+=+r.traffic; c.hasTraffic=true; }
+    });
+    return {shops,dates,by};
+  }
+  // 单日同口径转化率（分子分母都只取「有客流且有笔数」的门店）
+  function sbDayConv(day,shops){
+    const cov=shops.map(s=>day[s]).filter(c=>c && c.hasTraffic && +c.txns>0);
+    const traffic=cov.reduce((s,c)=>s+c.traffic,0), txns=cov.reduce((s,c)=>s+c.txns,0);
+    return { v:traffic?txns/traffic:null, traffic, txns,
+             missing:shops.length-cov.length, covered:cov.length };
+  }
+  function sbDayVal(day,shops,key){
+    if(key==='sales') return shops.reduce((s,x)=>s+(day[x]?day[x].sales:0),0);
+    if(key==='traffic'){
+      const cov=shops.map(x=>day[x]).filter(c=>c&&c.hasTraffic);
+      return cov.length?cov.reduce((s,c)=>s+c.traffic,0):null;
+    }
+    if(key==='attach'){
+      const t=shops.reduce((s,x)=>s+(day[x]?day[x].txns:0),0);
+      const i=shops.reduce((s,x)=>s+(day[x]?day[x].items:0),0);
+      return t?i/t:null;
+    }
+    return sbDayConv(day,shops).v;   // conv
+  }
+
+  // ── 对外交互 ──
+  function sbSetChartMode(m){
+    SB.chart.mode=(m==='compare'?'compare':'total');
+    document.querySelectorAll('#sbChartModeBar button').forEach(b=>b.classList.toggle('active',b.dataset.m===SB.chart.mode));
+    sbRenderCharts();
+  }
+  function sbToggleChartShop(s){
+    const i=SB.chart.on.indexOf(s);
+    if(i>=0) SB.chart.on.splice(i,1); else SB.chart.on.push(s);
+    sbRenderCharts();
+  }
+  function sbSetMatrixMetric(m){
+    SB.chart.metric=['sales','attach','traffic','conv'].includes(m)?m:'sales';
+    document.querySelectorAll('#sbMatrixSeg button').forEach(b=>b.classList.toggle('active',b.dataset.m===SB.chart.metric));
+    sbRenderMatrix();
+  }
+  function sbHoverDate(d){
+    SB.hoverDate=d||'';
+    document.querySelectorAll('#sbMatrixBody tr[data-date]').forEach(tr=>{
+      tr.classList.toggle('sb-hl', !!d && tr.dataset.date===d);
+    });
+    sbRenderConvNote(d);
+  }
+  function sbUnhoverDate(){ SB.hoverDate=''; sbHoverDate(''); }
+  function sbHoverShop(s){
+    document.querySelectorAll('#sbMatrixBody td[data-shop]').forEach(td=>{
+      td.classList.toggle('sb-hl-col', !!s && td.dataset.shop===s);
+    });
+  }
+  function sbUnhoverShop(){
+    document.querySelectorAll('#sbMatrixBody td.sb-hl-col').forEach(td=>td.classList.remove('sb-hl-col'));
+  }
+
+  // ── 图注：未录入门店数 + 数据质量警示 ──
+  function sbRenderConvNote(hoverDate){
+    const el=document.getElementById('sbConvNote'); if(!el) return;
+    const {shops,dates,by}=sbChartData();
+    // 优先 hover 日 → 当日模式选中日 → 最近有数据日，保证「当天」与用户所看一致
+    const sel=(SB.PERIOD==='day'&&!FS.month)?sbPeriodRange().start:'';
+    let d=hoverDate || (sel&&by[sel]?sel:'') || dates[dates.length-1];
+    if(d&&!by[d]) d=dates[dates.length-1];
+    if(!d||!by[d]){ el.className='sb-conv-note'; el.innerHTML=''; return; }
+    const c=sbDayConv(by[d],shops);
+    let html='📌 <b>转化率口径</b>：分子分母都只取「客流与笔数都有值」的门店行，客流缺失门店当天不进入聚合。'+
+      '<b>'+d+'：'+c.missing+' 家门店客流未录入，未计入转化率</b>'+
+      (c.traffic?('（同口径 '+c.txns+' 笔 ÷ '+c.traffic+' 人 = <b>'+(c.v*100).toFixed(1)+'%</b>）'):'（当日无可比门店，转化率显示「—」）');
+    if(c.v!==null && c.v>1){
+      html+='<div class="sb-conv-warn">⚠️ 该日转化率 &gt;100%：即使同口径仍 &gt;100%，说明飞书「进店客流组」登记口径与成交笔数不匹配（可能为接待组数 / 仅登记部分客流），并非聚合计算错误。请到飞书门店销售业绩跟踪系统核对该字段口径，不建议直接用于经营决策。</div>';
+    }
+    el.className='sb-conv-note'+(c.v!==null&&c.v>1?' bad':'');
+    el.innerHTML=html;
+  }
+
+  // ── tooltip（支持合计/单店指标 + 对比模式各店值 + 矩阵高亮）──
+  sbShowTip = function(ev,kind,i){
+    const t=document.getElementById('sbChartTip'); if(!t) return;
+    const x=(SB.trend[kind]||[])[i]; if(!x) return;
+    let html='<b>'+x.date+'</b>';
+    (x.lines||[]).forEach(l=>{
+      html+='<br><span style="color:'+l.color+'">●</span> '+l.label+' <b>'+l.value+'</b>';
+    });
+    if(x.missing) html+='<br><span style="color:#F59E0B;">⚠ '+x.missing+' 家门店客流未录入，未计入转化率</span>';
+    if(x.warn) html+='<br><span style="color:#FCA5A5;">⚠ '+x.warn+'</span>';
+    html+='<br><span style="opacity:.72;">点击跳转到该日明细 · 下方矩阵高亮该日</span>';
+    t.innerHTML=html; t.style.display='block';
+    const px=ev.clientX||0, py=ev.clientY||0;
+    t.style.left=Math.min(px+14,(window.innerWidth||1200)-230)+'px';
+    t.style.top=Math.max(8,py-14)+'px';
+    sbHoverDate(x.date);
+  };
+  sbHideTip = function(){
+    const t=document.getElementById('sbChartTip'); if(t) t.style.display='none';
+    sbUnhoverDate();
+  };
+
+  // ── 两张趋势图（合计 / 单店 / 按店对比）──
+  sbRenderCharts = function(){
+    const {shops,dates,by}=sbChartData();
+    const single=shops.length===1?shops[0]:null;
+    const isMulti=shops.length>1;
+    // 门店筛选变化时，对比模式默认重置为前 3 家
+    const key=shops.join('|');
+    if(SB.chart.onKey!==key){ SB.chart.onKey=key; SB.chart.on=shops.slice(0,3); }
+    const mode=isMulti?SB.chart.mode:'total';
+
+    // 标题 / 模式切换条
+    const t1=document.getElementById('sbTrendTitle'), t2=document.getElementById('fsTrendTitle');
+    if(t1) t1.textContent=single?('近 30 天经营趋势 · '+single):'近 30 天经营趋势';
+    if(t2) t2.textContent=single?('客流与转化率走势 · '+single):'客流与转化率走势';
+    const bar=document.getElementById('sbChartModeBar');
+    if(bar) bar.style.display=isMulti?'':'none';
+    const sub=document.getElementById('sbTrendSub');
+    if(sub) sub.textContent=single?('该店近30天销售额与连带率 · hover 看数值 · 点击跳当日明细')
+      : mode==='compare'?'按门店分线 · 默认开前 3 家 · 点图例开关各店 · hover 看数值'
+      :'全店合计 · hover 看数值 · 点击跳当日明细';
+    const fsub=document.getElementById('fsTrendSub');
+    if(fsub) fsub.textContent=mode==='compare'&&isMulti
+      ?'飞书 Base「进店客流组」· 按门店分线 · 未录入日期断开 · 点图例开关各店'
+      :'飞书 Base「进店客流组」· 未录入日期断开不连线 · hover 看数值 · 点击跳当日明细';
+
+    const w=620,h=230,pad=32;
+    const X=i=>pad+(dates.length>1?i*(w-pad*2)/(dates.length-1):0);
+    const Y=(v,max)=>h-pad-(max?(v/max)*(h-pad*2):0);
+    let grid=''; for(let g=0;g<=3;g++){const y=pad+g*(h-pad*2)/3;grid+=`<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#F1F5F9" stroke-width="1"/>`;}
+    const labelIdx=[0,Math.floor(dates.length/2),dates.length-1].filter((v,i,a)=>a.indexOf(v)===i&&dates.length);
+    const xl=labelIdx.map(i=>`<text x="${X(i)}" y="${h-8}" font-size="10" fill="#94A3B8" text-anchor="middle">${dates[i]?dates[i].slice(5):''}</text>`).join('');
+    const selDate=sbPeriodRange().start, selI=dates.indexOf(selDate);
+    const marker=(selI>=0&&SB.PERIOD==='day'&&!FS.month)
+      ? `<line x1="${X(selI)}" y1="${pad}" x2="${X(selI)}" y2="${h-pad}" stroke="#BE185D" stroke-width="1.5" stroke-dasharray="4 3" opacity=".65"/>
+         <text x="${X(selI)}" y="${pad-10}" font-size="10" fill="#BE185D" text-anchor="middle">选中日</text>` : '';
+    // 透明列矩形：鼠标移到该天任意高度都能触发 tooltip + 矩阵行高亮
+    const step=dates.length>1?(w-pad*2)/(dates.length-1):(w-pad*2);
+    const hit=(i,kind)=>`<rect x="${(X(i)-Math.min(step/2,20)).toFixed(1)}" y="${pad}" width="${Math.min(step,40).toFixed(1)}" height="${h-pad*2}" fill="transparent" class="sb-hit"
+      onmouseenter="sbShowTip(event,'${kind}',${i})" onmousemove="sbShowTip(event,'${kind}',${i})"
+      onmouseleave="sbHideTip()" onclick="sbJumpToDate('${dates[i]}')"/>`;
+
+    // 逐日序列
+    const sales=dates.map(d=>sbDayVal(by[d],shops,'sales'));
+    const attach=dates.map(d=>sbDayVal(by[d],shops,'attach'));
+    const traffic=dates.map(d=>sbDayVal(by[d],shops,'traffic'));
+    const conv=dates.map(d=>sbDayVal(by[d],shops,'conv'));
+    const convs=dates.map(d=>sbDayConv(by[d],shops));
+    const maxS=Math.max(1,...sales), maxA=Math.max(1,...attach);
+    const maxT=Math.max(1,...traffic.filter(v=>v!==null));
+    const maxC=Math.max(0.01,...conv.filter(v=>v!==null));
+
+    // tooltip 数据
+    const compare=mode==='compare'&&isMulti;
+    const onShops=compare?SB.chart.on:[];
+    SB.trend.sales=dates.map((d,i)=>({
+      date:d,
+      lines:compare?onShops.map(s=>({label:s,value:sbFmtMoney(by[d][s]?by[d][s].sales:0),color:sbShopColor(s,shops)}))
+                   :[{label:'销售额',value:sbFmtMoney(sales[i]),color:'#BE185D'},
+                     {label:'连带率',value:attach[i]===null?'—':attach[i].toFixed(2),color:'#3B82F6'}],
+      missing:compare?0:0
+    }));
+    SB.trend.fs=dates.map((d,i)=>({
+      date:d,
+      lines:compare?onShops.map(s=>{
+        const c=by[d][s];
+        return {label:s,value:(c&&c.hasTraffic)?Math.round(c.traffic)+' 人':'未录入',color:sbShopColor(s,shops)};
+      }):[{label:'进店客流组',value:traffic[i]===null?'未录入':Math.round(traffic[i])+' 人',color:'#F59E0B'},
+          {label:'成交转化率',value:conv[i]===null?'—':(conv[i]*100).toFixed(1)+'%',color:'#06B6D4'}],
+      missing:compare?0:convs[i].missing,
+      warn:(!compare&&conv[i]!==null&&conv[i]>1)?'转化率 >100%，客流字段口径疑似异常':null
+    }));
+
+    // 经营趋势图
+    const trend=document.getElementById('sbTrend');
+    if(trend){
+      let paths='', dots='';
+      if(compare){
+        const all=onShops.map(s=>sales.map((_,i)=>by[dates[i]][s]?by[dates[i]][s].sales:0));
+        const cmax=Math.max(1,...all.flat());
+        onShops.forEach((s,j)=>{
+          const vals=all[j], col=sbShopColor(s,shops);
+          paths+=`<path d="${sbLinePath(vals,w,h,pad,cmax)}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" opacity=".9"/>`;
+          dots+=vals.map((v,i)=>i%1===0?`<circle cx="${X(i)}" cy="${Y(v,cmax).toFixed(1)}" r="2.6" fill="${col}" pointer-events="none"/>`:'').join('');
+        });
+      } else {
+        paths=`<path d="${sbLinePath(sales,w,h,pad,maxS)}" fill="none" stroke="#BE185D" stroke-width="2.5" stroke-linejoin="round"/>
+               <path d="${sbLinePath(attach,w,h,pad,maxA)}" fill="none" stroke="#3B82F6" stroke-width="2" stroke-dasharray="5 4"/>`;
+        dots=sales.map((v,i)=>`<circle cx="${X(i)}" cy="${Y(v,maxS).toFixed(1)}" r="3.2" fill="#BE185D" pointer-events="none"/>`).join('');
+      }
+      const hdots=dates.map((_,i)=>hit(i,'sales')).join('');
+      trend.innerHTML=dates.length?`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">${grid}${marker}${paths}${xl}${dots}${hdots}
+        <text x="${pad}" y="${pad-10}" font-size="10" fill="#BE185D">${compare?'各店销售额 峰值 ':''}¥${Math.round(compare?Math.max(1,...onShops.flatMap(s=>sales.map((_,i)=>by[dates[i]][s]?by[dates[i]][s].sales:0))):maxS).toLocaleString()}</text>
+        ${compare?'':`<text x="${w-pad}" y="${pad-10}" font-size="10" fill="#3B82F6" text-anchor="end">连带 ${maxA.toFixed(2)}</text>`}</svg>`
+        :'<div class="nm-empty">暂无趋势数据</div>';
+      const lg=document.getElementById('sbTrendLegend');
+      if(lg){
+        lg.innerHTML=compare
+          ? shops.map(s=>`<span class="sb-lg-item ${SB.chart.on.includes(s)?'on':'off'}" onclick="sbToggleChartShop('${s.replace(/'/g,"\\'")}')" onmouseenter="sbHoverShop('${s.replace(/'/g,"\\'")}')" onmouseleave="sbUnhoverShop()"><i style="background:${sbShopColor(s,shops)}"></i>${s}</span>`).join('')+'<span class="nm-hint">（点击开关 · 默认前 3 家）</span>'
+          : '<span><i style="background:#BE185D"></i>销售额</span><span><i style="background:#3B82F6"></i>连带率</span><span style="opacity:.7;">hover 看数值 · 点击跳当日明细</span>';
+      }
+    }
+
+    // 客流与转化率走势图
+    const ft=document.getElementById('fsTrend');
+    if(ft){
+      let paths='', dots='';
+      if(compare){
+        const all=onShops.map(s=>traffic.map((_,i)=>{
+          const c=by[dates[i]][s]; return (c&&c.hasTraffic)?c.traffic:null;
+        }));
+        const cmax=Math.max(1,...all.flat().filter(v=>v!==null));
+        onShops.forEach((s,j)=>{
+          const vals=all[j], col=sbShopColor(s,shops);
+          paths+=`<path d="${sbSegPath(vals,cmax,X,Y)}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round" opacity=".9"/>`;
+          dots+=vals.map((v,i)=>v===null?'':`<circle cx="${X(i)}" cy="${Y(v,cmax).toFixed(1)}" r="2.6" fill="${col}" pointer-events="none"/>`).join('');
+        });
+      } else {
+        paths=`<path d="${sbSegPath(traffic,maxT,X,Y)}" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+               <path d="${sbSegPath(conv,maxC,X,Y)}" fill="none" stroke="#06B6D4" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>`;
+        dots=traffic.map((v,i)=>v===null?'':`<circle cx="${X(i)}" cy="${Y(v,maxT).toFixed(1)}" r="3.2" fill="#F59E0B" pointer-events="none"/>`).join('');
+      }
+      const hdots=dates.map((_,i)=>hit(i,'fs')).join('');
+      ft.innerHTML=dates.length?`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">${grid}${marker}${paths}${xl}${dots}${hdots}
+        <text x="${pad}" y="${pad-10}" font-size="10" fill="#F59E0B">客流 ${Math.round(maxT)}</text>
+        ${compare?'':`<text x="${w-pad}" y="${pad-10}" font-size="10" fill="#06B6D4" text-anchor="end">转化 ${(maxC*100).toFixed(0)}%</text>`}</svg>`
+        :'<div class="nm-empty">暂无客流数据</div>';
+      const lg=document.getElementById('fsTrendLegend');
+      if(lg){
+        lg.innerHTML=compare
+          ? shops.map(s=>`<span class="sb-lg-item ${SB.chart.on.includes(s)?'on':'off'}" onclick="sbToggleChartShop('${s.replace(/'/g,"\\'")}')" onmouseenter="sbHoverShop('${s.replace(/'/g,"\\'")}')" onmouseleave="sbUnhoverShop()"><i style="background:${sbShopColor(s,shops)}"></i>${s}</span>`).join('')+'<span class="nm-hint">（点图例开关 · 未录入日期断开）</span>'
+          : '<span><i style="background:#F59E0B"></i>进店客流组</span><span><i style="background:#06B6D4"></i>成交转化率</span><span style="opacity:.7;">未录入日期断开</span>';
+      }
+    }
+
+    // 保留原有客流断档黄条
+    const note=document.getElementById('fsMissingNote');
+    if(note){
+      const since=fsMissingSince();
+      if(since){
+        note.classList.add('on');
+        note.innerHTML='⚠️ <b>客流自 '+since.slice(5)+' 起未录入，请到飞书门店销售业绩跟踪系统补录</b>。有数据的日期走势正常绘制；未录入日期断开、不按 0 连线（单店 / 按店对比视图同样生效）。';
+      } else { note.classList.remove('on'); note.innerHTML=''; }
+    }
+    sbRenderConvNote();
+    sbRenderMatrix();
+  };
+
+  // ── 日期 × 门店矩阵 ──
+  function sbRenderMatrix(){
+    const head=document.getElementById('sbMatrixHead'), body=document.getElementById('sbMatrixBody');
+    if(!head||!body) return;
+    const {shops,dates,by}=sbChartData();
+    const m=SB.chart.metric;
+    const unit={sales:'销售额',attach:'连带率',traffic:'进店客流组',conv:'成交转化率'}[m];
+    const badge=document.getElementById('sbMatrixBadge');
+    if(badge) badge.textContent=dates.length+' 天 × '+shops.length+' 店 · '+unit;
+    const hint=document.getElementById('sbMatrixHint');
+    if(hint) hint.textContent='行=日期 · 列=门店 · hover 趋势图某天高亮该日期整行；hover 图例门店高亮该店列。客流/转化率未录入显示「—」。';
+
+    head.innerHTML='<tr><th class="sb-mx-date">日期</th>'+shops.map(s=>
+      `<th title="${s}">${s.length>7?s.slice(0,7)+'…':s}</th>`).join('')+'</tr>';
+    const rev=dates.slice().reverse();
+    let maxV=0;
+    if(m==='sales') rev.forEach(d=>shops.forEach(s=>{const c=by[d][s];if(c)maxV=Math.max(maxV,c.sales);}));
+    body.innerHTML=rev.map(d=>{
+      const tds=shops.map(s=>{
+        const c=by[d][s];
+        let txt='—', heat='';
+        if(m==='sales'&&c&&c.sales){
+          txt=sbFmtMoney(c.sales);
+          heat=' style="background:rgba(190,24,93,'+(0.05+0.28*(c.sales/(maxV||1))).toFixed(2)+')"';
+        } else if(m==='attach'&&c&&c.txns){
+          txt=(c.items/c.txns).toFixed(2);
+          const v=c.items/c.txns;
+          if(v<1.3) heat=' class="sb-mx-warn"';
+        } else if(m==='traffic'&&c&&c.hasTraffic){ txt=Math.round(c.traffic).toLocaleString('zh-CN'); }
+        else if(m==='conv'&&c&&c.hasTraffic&&c.txns>0){
+          const v=c.txns/c.traffic;
+          txt=(v*100).toFixed(1)+'%';
+          heat=v>1?' class="sb-mx-warn"':'';
+        }
+        return `<td data-shop="${s}"${heat} onmouseenter="sbHoverShop('${s.replace(/'/g,"\\'")}')" onmouseleave="sbUnhoverShop()">${txt}</td>`;
+      }).join('');
+      return `<tr data-date="${d}" onmouseenter="sbHoverDate('${d}')" onmouseleave="sbUnhoverDate()"><td class="sb-mx-date"><b>${d.slice(5)}</b></td>${tds}</tr>`;
+    }).join('')||'<tr><td colspan="'+(shops.length+1)+'" class="nm-empty">暂无数据</td></tr>';
+    // 恢复 hover 高亮
+    if(SB.hoverDate) sbHoverDate(SB.hoverDate);
+  }
+
+  // 初始化（v9/v10 的 sbRefresh 已跑过，这里补一次图表与矩阵）
+  sbRenderCharts();
 
   // ── Init ──
   renderSidebar();
