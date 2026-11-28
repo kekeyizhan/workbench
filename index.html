@@ -2573,6 +2573,58 @@
     .ip-sum-grid { grid-template-columns:repeat(2,1fr); }
   }
 
+
+  /* ═══ NEW MODULE 3: 数据变化监察 ═══ */
+  .mn-wrap { max-width:1400px; }
+  .mn-hero { background:linear-gradient(135deg,#FEF2F2,#FFF7ED 55%,#FFFBEB); border:1px solid #FECDD3; border-radius:16px; padding:18px 22px; margin-bottom:16px; }
+  .mn-hero h2 { font-size:20px; font-weight:800; color:#9D174D; display:flex; align-items:center; gap:8px; }
+  .mn-hero p { font-size:12px; color:#9D174D; opacity:.8; margin-top:5px; line-height:1.6; }
+  .mn-data-note { margin-top:12px; background:rgba(255,255,255,.7); border:1px solid #FECACA; border-radius:9px; padding:9px 12px; font-size:12px; color:#B91C1C; line-height:1.7; }
+
+  .mn-alert-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:18px; }
+  .mn-alert-card { background:#fff; border:1px solid var(--border); border-radius:13px; padding:15px 17px; box-shadow:var(--shadow-sm); border-left:4px solid var(--border); }
+  .mn-alert-card.lv-red { border-left-color:#EF4444; }
+  .mn-alert-card.lv-yellow { border-left-color:#F59E0B; }
+  .mn-alert-card.lv-green { border-left-color:#10B981; }
+  .mn-alert-head { font-size:14px; font-weight:800; color:var(--text-primary); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+  .mn-alert-list { display:flex; flex-direction:column; gap:7px; }
+  .mn-alert-line { display:flex; flex-wrap:wrap; align-items:center; gap:7px; font-size:12px; padding:7px 10px; background:#F8FAFC; border-radius:8px; }
+  .mn-alert-line .mn-tag { font-size:10px; font-weight:800; padding:2px 7px; border-radius:10px; flex-shrink:0; }
+  .mn-tag.up { background:#FEE2E2; color:#B91C1C; }
+  .mn-tag.down { background:#DBEAFE; color:#1D4ED8; }
+  .mn-tag.flat { background:#F1F5F9; color:#64748B; }
+  .mn-alert-line .mn-shop { font-weight:700; color:var(--text-primary); }
+  .mn-alert-line .mn-detail { color:var(--text-secondary); }
+
+  .mn-section-title { font-size:15px; font-weight:800; color:var(--text-primary); margin:20px 0 11px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .mn-section-title .badge { font-size:11px; font-weight:600; background:#F1F5F9; color:var(--text-secondary); padding:3px 9px; border-radius:12px; }
+
+  .mn-rank-table { min-width:900px; }
+  .mn-rank-change { font-weight:800; white-space:nowrap; }
+  .mn-rank-change.rise { color:#DC2626; }
+  .mn-rank-change.fall { color:#059669; }
+  .mn-rank-change.same { color:var(--text-muted); }
+  .mn-progress-cell { min-width:130px; }
+  .mn-progress-track { display:flex; align-items:center; gap:7px; }
+  .mn-progress-track .bar { flex:1; height:8px; background:#F1F5F9; border-radius:5px; overflow:hidden; position:relative; }
+  .mn-progress-track .bar i { display:block; height:100%; border-radius:5px; background:#10B981; }
+  .mn-progress-track .bar i.behind { background:#F59E0B; }
+  .mn-progress-track .bar i.bad { background:#EF4444; }
+  .mn-progress-track .bar .time-mark { position:absolute; top:-2px; height:12px; width:2px; background:#94A3B8; }
+  .mn-progress-num { font-size:12px; font-weight:700; min-width:38px; text-align:right; }
+
+  .mn-streak-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; }
+  .mn-streak-dot.red { background:#EF4444; }
+  .mn-streak-dot.orange { background:#F59E0B; }
+
+  @media (max-width:1100px) {
+    .mn-alert-grid { grid-template-columns:1fr; }
+  }
+  @media (max-width:768px) {
+    .mn-hero { padding:15px; }
+    .mn-alert-card { padding:12px 13px; }
+  }
+
 </style>
 </head>
 <body>
@@ -3401,6 +3453,63 @@
   </div>
 
 
+  <!-- ═══════════ NEW: 数据变化监察 ═══════════ -->
+  <div class="mn-wrap" id="monitorBoard" style="display:none;">
+    <div class="mn-hero">
+      <h2>🚨 数据变化监察</h2>
+      <p>不只看数，更盯「变化」——每日异动、排名涨跌、目标进度、连续异常，四类预警一屏掌握。</p>
+      <div class="mn-data-note">📌 数据源：门店每日流水（与经营看板共用）。当前用示例数据演示，接入伯俊后自动刷新即可生效。基准对比：最近有数据的两天。</div>
+    </div>
+
+    <div class="nm-toolbar">
+      <span class="sd-filter-label">异动阈值</span>
+      <span class="nm-hint">销售额涨跌 ≥</span><input class="nm-target-input" type="number" id="mnThreshSales" step="1" value="20" onchange="mnSetThresh('sales',this.value)" title="百分比">
+      <span class="nm-hint">% · 客流/转化 ≥</span><input class="nm-target-input" type="number" id="mnThreshTraffic" step="1" value="15" onchange="mnSetThresh('traffic',this.value)" title="百分比">
+      <span class="nm-hint">% · 连续异常 ≥</span><input class="nm-target-input" type="number" id="mnThreshDays" step="1" value="3" onchange="mnSetThresh('days',this.value)" title="天数">
+      <span class="nm-hint">天</span>
+    </div>
+
+    <div class="mn-alert-grid">
+      <div class="mn-alert-card" id="mnSalesCard">
+        <div class="mn-alert-head"><span>💰 销售额 / 客流异动</span><span class="ip-badge gray" id="mnSalesCnt">0 项</span></div>
+        <div class="mn-alert-list" id="mnSalesAlerts"></div>
+      </div>
+      <div class="mn-alert-card" id="mnConvCard">
+        <div class="mn-alert-head"><span>📉 转化率 / 连带率异动</span><span class="ip-badge gray" id="mnConvCnt">0 项</span></div>
+        <div class="mn-alert-list" id="mnConvAlerts"></div>
+      </div>
+      <div class="mn-alert-card" id="mnTargetCard">
+        <div class="mn-alert-head"><span>🎯 月度目标进度预警</span><span class="ip-badge gray" id="mnTargetCnt">0 项</span></div>
+        <div class="mn-alert-list" id="mnTargetAlerts"></div>
+      </div>
+      <div class="mn-alert-card" id="mnStreakCard">
+        <div class="mn-alert-head"><span>⚠️ 连续异常预警</span><span class="ip-badge gray" id="mnStreakCnt">0 项</span></div>
+        <div class="mn-alert-list" id="mnStreakAlerts"></div>
+      </div>
+    </div>
+
+    <div class="sd-section-title">📊 门店销售排名涨跌 <span class="badge">对比上一日</span> <span class="nm-hint" style="font-weight:400;">红涨绿跌 · 口径同国内习惯</span></div>
+    <div class="sd-table-wrap">
+      <table class="nm-table mn-rank-table">
+        <thead><tr><th>排名</th><th>门店</th><th>本期销售额</th><th>上期销售额</th><th>环比</th><th>排名变化</th><th>客流环比</th><th>转化率环比</th></tr></thead>
+        <tbody id="mnRankBody"></tbody>
+      </table>
+    </div>
+
+    <div class="sd-section-title">🎯 月度目标达成进度 <span class="badge" id="mnMonthLabel">本月</span> <span class="nm-hint" style="font-weight:400;">灰竖线 = 当前时间进度，进度条落后即预警</span></div>
+    <div class="sd-table-wrap">
+      <table class="nm-table mn-rank-table">
+        <thead><tr><th>门店</th><th>月度目标</th><th>本月累计</th><th>达成率</th><th>时间进度</th><th>进度对比</th><th>剩余天数</th></tr></thead>
+        <tbody id="mnTargetBody"></tbody>
+      </table>
+    </div>
+
+    <div class="nm-hint" style="margin-top:12px;line-height:1.8;">
+      ⚙️ 口径说明：环比 =（本期 − 上期）÷ 上期；销售额异动阈值默认 ±20%，客流/转化 ±15%；连续异常指连续 N 天转化率或连带率低于经营看板设定的阈值；目标进度按自然日折算时间进度。所有阈值可在上方调整。
+    </div>
+  </div>
+
+
 </div>
 
 <script>
@@ -3529,7 +3638,20 @@
     if (storeBoard) storeBoard.style.display = 'none';
     if (ipBoard) ipBoard.style.display = 'none';
 
-    if (catId === 'storeboard') {
+    const monitorBoard = document.getElementById('monitorBoard');
+    if (monitorBoard) monitorBoard.style.display = 'none';
+
+    if (catId === 'monitorboard') {
+      cardGrid.style.display = 'none';
+      ideaBoard.style.display = 'none';
+      finBoard.style.display = 'none';
+      todoBoard.style.display = 'none';
+      const dbC = document.getElementById('dashboardBoard'); if (dbC) dbC.style.display = 'none';
+      const hwC = document.getElementById('homeWelcome'); if (hwC) hwC.style.display = 'none';
+      const qcC = document.getElementById('quoteCard'); if (qcC) qcC.style.display = 'none';
+      if (monitorBoard) monitorBoard.style.display = '';
+      mnRefresh();
+    } else if (catId === 'storeboard') {
       cardGrid.style.display = 'none';
       ideaBoard.style.display = 'none';
       finBoard.style.display = 'none';
@@ -5738,6 +5860,232 @@
   sbRenderShopChips();
   sbRefresh();
   ipRefresh();
+
+
+
+  /* ═══════════════════════════════════════════════════════
+     NEW MODULE 3: 数据变化监察 (monitorboard)
+     数据源复用 sbRows / sbTargets / sbThresh，不新建存储
+     ═══════════════════════════════════════════════════════ */
+  const MN = {
+    KEY: 'wb_monitor_thresholds',
+  };
+  let mnThresh = JSON.parse(localStorage.getItem(MN.KEY) || 'null') || { sales:20, traffic:15, days:3 };
+  function mnSaveThresh(){ localStorage.setItem(MN.KEY, JSON.stringify(mnThresh)); }
+  function mnSetThresh(k,v){ mnThresh[k]=Math.max(1,+v||1); mnSaveThresh(); mnRefresh(); }
+
+  // 取最近两个有数据的日期
+  function mnRecentDates(){
+    const set = {};
+    sbRows.forEach(r=>{ set[r.date]=1; });
+    return Object.keys(set).sort();
+  }
+  // 按门店+日期聚合（支持同一天多店多行）
+  function mnAggBy(rows){
+    const m = {};
+    rows.forEach(r=>{
+      if(!m[r.shop]) m[r.shop]={sales:0,txns:0,items:0,traffic:0};
+      m[r.shop].sales+=+r.sales||0; m[r.shop].txns+=+r.txns||0;
+      m[r.shop].items+=+r.items||0; m[r.shop].traffic+=+r.traffic||0;
+    });
+    Object.values(m).forEach(a=>{
+      a.conv=a.traffic?a.txns/a.traffic:0;
+      a.attach=a.txns?a.items/a.txns:0;
+      a.aov=a.txns?a.sales/a.txns:0;
+    });
+    return m;
+  }
+  function mnRate(cur, prev){ return prev ? (cur-prev)/prev : 0; }
+  function mnPct(x){ return (x>=0?'+':'')+(x*100).toFixed(1)+'%'; }
+
+  // 计算所有监察数据（纯计算，不碰DOM）
+  function mnCompute(){
+    const dates = mnRecentDates();
+    const curDate = dates[dates.length-1], prevDate = dates[dates.length-2];
+    if(!curDate || !prevDate) return {ok:false};
+    const cur = mnAggBy(sbRows.filter(r=>r.date===curDate));
+    const prev = mnAggBy(sbRows.filter(r=>r.date===prevDate));
+    const shops = Array.from(new Set([...Object.keys(cur),...Object.keys(prev)]));
+
+    // 1) 销售额/客流异动
+    const salesAlerts = [];
+    shops.forEach(shop=>{
+      const c=cur[shop], p=prev[shop]; if(!c||!p) return;
+      const sr = mnRate(c.sales,p.sales), tr = mnRate(c.traffic,p.traffic);
+      if(Math.abs(sr)*100>=mnThresh.sales || Math.abs(tr)*100>=mnThresh.traffic){
+        salesAlerts.push({shop, sr, tr});
+      }
+    });
+    salesAlerts.sort((a,b)=>Math.abs(b.sr)-Math.abs(a.sr));
+
+    // 2) 转化率/连带率异动
+    const convAlerts = [];
+    shops.forEach(shop=>{
+      const c=cur[shop], p=prev[shop]; if(!c||!p) return;
+      const cr = mnRate(c.conv,p.conv), ar = mnRate(c.attach,p.attach);
+      const cDrop = cr*100<=-mnThresh.traffic, aDrop = ar*100<=-mnThresh.traffic;
+      if(cDrop||aDrop) convAlerts.push({shop, cr, ar, cDrop, aDrop});
+    });
+    convAlerts.sort((a,b)=>a.cr-b.cr);
+
+    // 3) 排名变化
+    const rankCur = shops.filter(s=>cur[s]).sort((a,b)=>cur[b].sales-cur[a].sales);
+    const rankPrev = shops.filter(s=>prev[s]).sort((a,b)=>prev[b].sales-prev[a].sales);
+    const rankMap = {};
+    rankPrev.forEach((s,i)=>rankMap[s]=i+1);
+    const ranks = rankCur.map((s,i)=>({
+      shop:s, rank:i+1, prevRank:rankMap[s]||null,
+      change: rankMap[s] ? rankMap[s]-(i+1) : null,
+      cur:cur[s], prev:prev[s]
+    }));
+
+    // 4) 月度目标进度
+    const now = sbNow();
+    const y=now.getFullYear(), m=now.getMonth()+1;
+    const daysInMonth = new Date(y,m,0).getDate();
+    const dayOfMonth = now.getDate();
+    const timeProgress = dayOfMonth/daysInMonth;
+    const monthStr = `${y}-${String(m).padStart(2,'0')}`;
+    const monthRows = sbRows.filter(r=>r.date.startsWith(monthStr));
+    const monthAgg = mnAggBy(monthRows);
+    const targets = [];
+    shops.forEach(shop=>{
+      const target = +sbTargets[shop]||0;
+      if(!target) return;
+      const cum = monthAgg[shop]?monthAgg[shop].sales:0;
+      const rate = cum/target;
+      targets.push({shop, target, cum, rate, gap: rate-timeProgress, daysLeft:daysInMonth-dayOfMonth});
+    });
+    targets.sort((a,b)=>a.gap-b.gap);
+
+    // 5) 连续异常（按日期倒序，检查每店连续N天是否低于阈值）
+    const dailyByShop = {};
+    sbRows.forEach(r=>{
+      if(!dailyByShop[r.shop]) dailyByShop[r.shop]={};
+      dailyByShop[r.shop][r.date]=r;
+    });
+    const streaks = [];
+    shops.forEach(shop=>{
+      const dm = dailyByShop[shop]||{};
+      let convStreak=0, attachStreak=0;
+      for(let i=dates.length-1;i>=0;i--){
+        const r=dm[dates[i]]; if(!r) break;
+        const cv=r.traffic?r.txns/r.traffic:0;
+        const at=r.txns?r.items/r.txns:0;
+        if(cv<sbThresh.conv) convStreak++; else break;
+      }
+      for(let i=dates.length-1;i>=0;i--){
+        const r=dm[dates[i]]; if(!r) break;
+        const at=r.txns?r.items/r.txns:0;
+        if(at<sbThresh.attach) attachStreak++; else break;
+      }
+      if(convStreak>=mnThresh.days || attachStreak>=mnThresh.days)
+        streaks.push({shop, convStreak, attachStreak});
+    });
+    streaks.sort((a,b)=>Math.max(b.convStreak,b.attachStreak)-Math.max(a.convStreak,a.attachStreak));
+
+    return {ok:true, curDate, prevDate, cur, prev, salesAlerts, convAlerts, ranks, targets, streaks, timeProgress, daysLeft:daysInMonth-dayOfMonth, monthStr};
+  }
+
+  // 统一刷新入口
+  function mnRefresh(){
+    mnRenderAlerts();
+    mnRenderRank();
+    mnRenderTargets();
+  }
+  function mnSetBadge(id, text, lv){
+    const el=document.getElementById(id); if(!el) return;
+    el.textContent=text; el.className='ip-badge '+(lv||'gray');
+  }
+  function mnRenderAlerts(){
+    const d = mnCompute();
+    const cards = [
+      ['mnSalesCard','mnSalesCnt','mnSalesAlerts',d.salesAlerts, d.ok?d.salesAlerts.length:0],
+      ['mnConvCard','mnConvCnt','mnConvAlerts',d.convAlerts, d.ok?d.convAlerts.length:0],
+      ['mnTargetCard','mnTargetCnt','mnTargetAlerts',d.ok?d.targets.filter(t=>t.gap<-0.05):[], d.ok?d.targets.filter(t=>t.gap<-0.05).length:0],
+      ['mnStreakCard','mnStreakCnt','mnStreakAlerts',d.streaks, d.ok?d.streaks.length:0],
+    ];
+    cards.forEach(([cardId,badgeId,listId,list,cnt])=>{
+      const card=document.getElementById(cardId), box=document.getElementById(listId);
+      if(!card||!box) return;
+      card.className='mn-alert-card '+(cnt>0?'lv-red':'lv-green');
+      mnSetBadge(badgeId, cnt+' 项', cnt>0?'red':'green');
+      if(!d.ok){ box.innerHTML='<div class="nm-hint">数据不足，至少需要两天的流水</div>'; return; }
+      if(!list.length){ box.innerHTML='<div class="nm-hint">✅ 无异常</div>'; return; }
+      if(listId==='mnSalesAlerts'){
+        box.innerHTML=list.map(a=>`<div class="mn-alert-line">
+          <span class="mn-tag ${a.sr>=0?'up':'down'}">销售 ${mnPct(a.sr)}</span>
+          <span class="mn-shop">${a.shop}</span>
+          <span class="mn-detail">客流 ${mnPct(a.tr)}</span></div>`).join('');
+      } else if(listId==='mnConvAlerts'){
+        box.innerHTML=list.map(a=>`<div class="mn-alert-line">
+          ${a.cDrop?`<span class="mn-tag down">转化 ${mnPct(a.cr)}</span>`:''}
+          ${a.aDrop?`<span class="mn-tag down">连带 ${mnPct(a.ar)}</span>`:''}
+          <span class="mn-shop">${a.shop}</span></div>`).join('');
+      } else if(listId==='mnTargetAlerts'){
+        box.innerHTML=list.map(t=>`<div class="mn-alert-line">
+          <span class="mn-tag down">落后 ${Math.abs(t.gap*100).toFixed(0)}%</span>
+          <span class="mn-shop">${t.shop}</span>
+          <span class="mn-detail">达成 ${(t.rate*100).toFixed(0)}% / 时间 ${(d.timeProgress*100).toFixed(0)}%</span></div>`).join('');
+      } else if(listId==='mnStreakAlerts'){
+        box.innerHTML=list.map(s=>`<div class="mn-alert-line">
+          <span class="mn-tag down">连续 ${Math.max(s.convStreak,s.attachStreak)} 天</span>
+          <span class="mn-shop">${s.shop}</span>
+          <span class="mn-detail">${s.convStreak>0?'转化低于阈值 '+s.convStreak+' 天':''}${s.attachStreak>0?' · 连带低于阈值 '+s.attachStreak+' 天':''}</span></div>`).join('');
+      }
+    });
+  }
+  function mnRenderRank(){
+    const el=document.getElementById('mnRankBody'); if(!el) return;
+    const d=mnCompute();
+    if(!d.ok){ el.innerHTML='<tr><td colspan="8" class="nm-empty">数据不足</td></tr>'; return; }
+    el.innerHTML=d.ranks.map(r=>{
+      const sr=mnRate(r.cur.sales,r.prev?r.prev.sales:0);
+      const tr=mnRate(r.cur.traffic,r.prev?r.prev.traffic:0);
+      const cr=mnRate(r.cur.conv,r.prev?r.prev.conv:0);
+      const changeCls = r.change===null?'same':(r.change>0?'rise':(r.change<0?'fall':'same'));
+      const changeTxt = r.change===null?'新上榜':(r.change>0?'↑'+r.change:(r.change<0?'↓'+(-r.change):'—'));
+      return `<tr>
+        <td>${r.rank}</td><td>${r.shop}</td>
+        <td>${sbFmtMoney(r.cur.sales)}</td><td>${r.prev?sbFmtMoney(r.prev.sales):'—'}</td>
+        <td class="${sr<0?'nm-cell-warn':'nm-cell-good'}">${mnPct(sr)}</td>
+        <td><span class="mn-rank-change ${changeCls}">${changeTxt}</span></td>
+        <td class="${tr<0?'nm-cell-warn':''}">${mnPct(tr)}</td>
+        <td class="${cr<0?'nm-cell-warn':''}">${mnPct(cr)}</td>
+      </tr>`;
+    }).join('');
+  }
+  function mnRenderTargets(){
+    const el=document.getElementById('mnTargetBody'); if(!el) return;
+    const d=mnCompute();
+    const lbl=document.getElementById('mnMonthLabel'); if(lbl&&d.ok) lbl.textContent=d.monthStr;
+    if(!d.ok){ el.innerHTML='<tr><td colspan="7" class="nm-empty">数据不足</td></tr>'; return; }
+    const sorted=d.targets.slice().sort((a,b)=>b.gap-a.gap);
+    if(!sorted.length){ el.innerHTML='<tr><td colspan="7" class="nm-empty">未设置月度目标，请在经营看板对比表末列填写</td></tr>'; return; }
+    el.innerHTML=sorted.map(t=>{
+      const cls=t.gap< -0.1?'bad':(t.gap<-0.03?'behind':'');
+      const barW=Math.min(100,Math.round(t.rate*100));
+      const markPct=Math.min(100,Math.round(d.timeProgress*100));
+      const gapTxt=t.gap>=0?'超前':'落后';
+      return `<tr>
+        <td>${t.shop}</td><td>${sbFmtMoney(t.target)}</td><td>${sbFmtMoney(t.cum)}</td>
+        <td class="${t.gap<-0.05?'nm-cell-warn':'nm-cell-good'}">${(t.rate*100).toFixed(0)}%</td>
+        <td>${(d.timeProgress*100).toFixed(0)}%</td>
+        <td class="mn-progress-cell"><div class="mn-progress-track">
+          <span class="bar"><i class="${cls}" style="width:${barW}%"></i><span class="time-mark" style="left:${markPct}%"></span></span>
+          <span class="mn-progress-num" style="color:${t.gap<-0.05?'#DC2626':'#059669'}">${gapTxt}<br>${Math.abs(t.gap*100).toFixed(0)}%</span>
+        </div></td>
+        <td>${t.daysLeft} 天</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // 初始化：注册分类 + 首次渲染
+  nmEnsureCategory('monitorboard','数据变化监察','🚨',12,2);
+  document.getElementById('mnThreshSales').value=mnThresh.sales;
+  document.getElementById('mnThreshTraffic').value=mnThresh.traffic;
+  document.getElementById('mnThreshDays').value=mnThresh.days;
+  mnRefresh();
 
 
   // ── Init ──
