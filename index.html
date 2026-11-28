@@ -2668,6 +2668,40 @@
               border-radius:10px; padding:10px 14px; font-size:12px;
               line-height:1.75; margin-top:16px; }
   .sy-range b { color:#065F46; }
+
+  /* ═══ v10 每日销售款式明细 ═══ */
+  .sd2-toolbar { margin-bottom:10px; }
+  .sd2-switch { display:inline-flex; align-items:center; gap:6px; font-size:12px;
+                color:#475569; cursor:pointer; white-space:nowrap; }
+  .sd2-switch input { accent-color:#BE185D; width:15px; height:15px; }
+  .sd2-th { cursor:pointer; user-select:none; white-space:nowrap; }
+  .sd2-th:hover { background:#F1F5F9; color:#BE185D; }
+  .sd2-arrow { color:#BE185D; font-size:10px; }
+  .sd2-link { color:#BE185D; text-decoration:underline; text-decoration-style:dotted;
+              cursor:pointer; font-weight:600; white-space:nowrap; }
+  .sd2-link:hover { color:#9D174D; }
+  .sd2-active { background:#FDF2F8 !important; }
+  .sd2-total td { font-weight:700; background:#F8FAFC; border-top:2px solid #E2E8F0; }
+  .sd2-scope { background:#EFF6FF; border:1px solid #BFDBFE; color:#1E40AF;
+               border-radius:10px; padding:9px 14px; font-size:12px;
+               line-height:1.7; margin-bottom:10px; }
+  .sd2-scope b { color:#1E3A8A; }
+  .sd2-recon { background:#F0FDF4; border:1px solid #BBF7D0; color:#166534;
+               border-radius:10px; padding:9px 14px; font-size:12px;
+               line-height:1.7; margin-top:10px; }
+  .sd2-recon.bad { background:#FEF2F2; border-color:#FECACA; color:#991B1B; }
+  .sd2-drill { background:#FFFBEB; border:1px solid #FDE68A; border-radius:10px;
+               padding:12px 14px; margin-top:12px; }
+  .sd2-drill-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+                    font-size:13px; margin-bottom:10px; color:#92400E; }
+  .sd2-entry { border:1px solid #FBCFE8; background:#FDF2F8; color:#BE185D;
+               border-radius:6px; padding:2px 8px; font-size:11px;
+               cursor:pointer; white-space:nowrap; }
+  .sd2-entry:hover { background:#FCE7F3; }
+  @media (max-width:768px) {
+    .sd2-toolbar { flex-direction:column; align-items:stretch; }
+    .sd2-switch { justify-content:flex-start; }
+  }
 </style>
 </head>
 <body>
@@ -3410,12 +3444,12 @@
     <div class="sd-table-wrap">
       <table class="nm-table" style="min-width:1500px;">
         <thead><tr>
-          <th>日期</th><th>门店</th><th>销售金额</th><th>笔数</th><th>件数</th><th>连带率</th><th>客流</th><th>转化率</th><th>单单价格</th><th>退货金额</th><th>退款理由</th><th>成交款式清单</th><th>来源</th>
+          <th>日期</th><th>门店</th><th>销售金额</th><th>笔数</th><th>件数</th><th>连带率</th><th>客流</th><th>转化率</th><th>单单价格</th><th>退货金额</th><th>退款理由</th><th>款式明细</th><th>来源</th>
         </tr></thead>
         <tbody id="sbDetailBody"></tbody>
       </table>
     </div>
-    <div class="nm-hint" style="margin-top:8px;">💡 逐日流水来自伯俊零售明细；款式清单为该店当日实际成交款名，热销/滞销 TOP 按出现天数统计。手工录入的行可点 ✕ 删除。</div>
+    <div class="nm-hint" style="margin-top:8px;">💡 逐日流水来自伯俊零售明细；「款式明细」列点「明细 →」可跳转到「款式经营 → 每日销售款式明细」查看该店该日逐款成交（款号/品类/件数/金额/件单价）。手工录入的行可点 ✕ 删除。</div>
 
       <div class="sd-charts sb-charts-single" style="margin-top:16px;">
         <div class="sd-chart-card">
@@ -3437,6 +3471,38 @@
     <div class="sb-pane" id="sbPaneStyle">
       <div class="sy-range" id="syRange"></div>
       <span class="badge" id="syScopeBadge" style="display:none;"></span>
+
+    <!-- v10 · 每日销售款式明细：一行 = 门店 + 日期 + 款号 -->
+    <div class="sd-section-title" style="margin-top:20px;">📅 每日销售款式明细
+      <span class="badge" id="sd2Count">一行 = 门店 + 日期 + 款号</span>
+      <span class="nm-hint" style="font-weight:400;">默认按成交金额降序 · 点表头排序 · 点款号下钻逐日成交</span>
+    </div>
+    <div class="sd2-scope" id="sd2Scope"></div>
+    <div class="nm-toolbar sd2-toolbar">
+      <label class="sd2-switch" id="sd2GroupWrap"><input type="checkbox" id="sd2GroupChk" onchange="sdSetGroup(this.checked)"> 按款汇总（同店同款跨天合并）</label>
+      <input class="nm-select" type="text" id="sd2Search" placeholder="搜索款号 / 款名 / 品类 / 门店…" oninput="sdSearch(this.value)" style="flex:1;min-width:190px;">
+      <select class="nm-select" id="sd2CatFilter" onchange="sdSetCat(this.value)"><option value="">全部品类</option></select>
+      <button class="nm-btn nm-btn-ghost" id="sd2MoreBtn" onclick="sdToggleAll()" style="display:none;font-size:12px;padding:3px 10px;"></button>
+    </div>
+    <div class="sd-table-wrap">
+      <table class="nm-table" style="min-width:1000px;">
+        <thead><tr>
+          <th class="sd2-th" id="sd2ThDate" onclick="sdSort('date')">日期<span class="sd2-arrow" id="sd2Arrow_date"></span></th>
+          <th class="sd2-th" onclick="sdSort('shop')">门店<span class="sd2-arrow" id="sd2Arrow_shop"></span></th>
+          <th class="sd2-th" onclick="sdSort('code')">款号<span class="sd2-arrow" id="sd2Arrow_code"></span></th>
+          <th class="sd2-th" onclick="sdSort('name')">款名<span class="sd2-arrow" id="sd2Arrow_name"></span></th>
+          <th class="sd2-th" onclick="sdSort('cat')">品类<span class="sd2-arrow" id="sd2Arrow_cat"></span></th>
+          <th class="sd2-th" onclick="sdSort('qty')">成交件数<span class="sd2-arrow" id="sd2Arrow_qty"></span></th>
+          <th class="sd2-th" onclick="sdSort('amt')">成交金额<span class="sd2-arrow" id="sd2Arrow_amt"></span></th>
+          <th class="sd2-th" onclick="sdSort('unitPrice')">件单价<span class="sd2-arrow" id="sd2Arrow_unitPrice"></span></th>
+        </tr></thead>
+        <tbody id="sd2Body"></tbody>
+        <tfoot id="sd2Foot"></tfoot>
+      </table>
+    </div>
+    <div class="sd2-drill" id="sd2Drill" style="display:none;"></div>
+    <div class="sd2-recon" id="sd2Recon"></div>
+
     <!-- 分店经营实绩（伯俊真实数据） -->
     <div class="sd-section-title" style="margin-top:26px;border-top:2px solid var(--border-light);padding-top:20px;">📊 分店经营实绩 <span class="badge" id="smStoreCount">伯俊真实数据</span> <span class="nm-hint" style="font-weight:400;">笔数 / 件数 / 连带率 / 单单价格 / 门店品类占比</span></div>
     <div class="nm-hint" id="smNote" style="margin-bottom:12px;line-height:1.8;"></div>
@@ -5620,7 +5686,7 @@ d="ssTableBody"></tbody>
         <td class="${sbCellClass(attach,'attach')}">${attach.toFixed(2)}</td>
         <td>${sbFmtMoney(aov)}</td><td>${sbFmtMoney(itemPrice)}</td>
         <td class="nm-cell-dim">${mainCat}</td>
-        <td class="nm-cell-dim" title="${styleTxt}">${styleTxt}</td>
+        <td><button class="sd2-entry" onclick="sdFocusDetail('${r.date}','${r.shop}')" title="到「款式经营 → 每日销售款式明细」查看该店该日逐款成交">明细 →</button></td>
         <td>${r.real?'<span class="nm-hint" title="伯俊真实数据">伯俊</span>':`<button class="ip-icon-btn" onclick="sbDeleteRow('${r.id}')" title="删除">✕</button>`}</td>
       </tr>`;
     }).join('');
@@ -6685,7 +6751,7 @@ d="ssTableBody"></tbody>
         <td>${sbFmtMoney(aov)}</td>
         <td>${r.refund?('<span style="color:#DC2626;">-'+sbFmtMoney(r.refund)+'</span>'):'—'}</td>
         <td class="nm-cell-dim" title="${reason.replace(/"/g,'&quot;')}">${reason?reason.slice(0,14)+(reason.length>14?'…':''):'—'}</td>
-        <td class="nm-cell-dim" title="${styleTxt}">${styleTxt}</td>
+        <td><button class="sd2-entry" onclick="sdFocusDetail('${r.date}','${r.shop}')" title="到「款式经营 → 每日销售款式明细」查看该店该日逐款成交">明细 →</button></td>
         <td>${r.real?'<span class="nm-hint">伯俊</span>':`<button class="ip-icon-btn" onclick="sbDeleteRow('${r.id}')" title="删除">✕</button>`}</td>
       </tr>`;
     }).join('');
@@ -7235,6 +7301,234 @@ d="ssTableBody"></tbody>
   sbDetailShowAll = true;
   syBuild();
   sbRefresh();
+
+  /* ══════════════════════════════════════════════════════════════
+     v10 · 「每日销售款式明细」
+     数据源：v9 的 STYLE_DAILY（款号×门店×日期），与 SB_REAL 同源同口径
+     一行 = 某店 + 某日 + 某款；跟随顶部周期/日期/门店筛选实时过滤
+     ══════════════════════════════════════════════════════════════ */
+  const SD = {
+    sortKey:'amt', sortDir:-1, group:false, search:'', cat:'',
+    drill:-1, collapse:false, limit:150,
+    base:[], rows:[], sig:''
+  };
+  // 默认全量逐日逐款展开，不做默认截断；limit 仅用于「收起」后的轻量视图
+  function sdMoney(n){ return '¥'+Math.round(n||0).toLocaleString('zh-CN'); }
+  function sdEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function sdRange(){ return sbPeriodRange(); }
+  function sdShops(){ return sbSelectedShops(); }
+  function sdScopeLabel(){
+    const {start,end}=sdRange();
+    const p = FS.month ? ('月表 '+FS.month)
+            : SB.PERIOD==='day' ? ('当日 '+start)
+            : SB.PERIOD==='week' ? ('本周 '+start.slice(5)+' ~ '+end.slice(5))
+            : ('本月 '+start.slice(0,7));
+    const all=sbShopList(), sel=sdShops();
+    return p+' · '+(sel.length===all.length?('全部门店 '+sel.length+' 家'):('已选 '+sel.length+' 家：'+sel.join('、')));
+  }
+
+  // 周期/门店签名变化时清掉下钻与折叠态，避免展示上一次的旧数据
+  function sdSig(){
+    return [SB.PERIOD, SB.dayOverride||'', FS.month||'', sdShops().join('|'),
+            SB.detailShop||''].join('#');
+  }
+
+  // 取当前周期 + 门店下的款级日流水（与款式经营其他模块完全同源）
+  function sdBaseRows(){
+    const {start,end}=sdRange(), shops=sdShops();
+    return SY.rows.filter(r=>r.date>=start && r.date<=end && shops.includes(r.shop));
+  }
+
+  // 按款汇总：同店同款跨天合并
+  function sdGroupRows(rows){
+    const m={};
+    rows.forEach(r=>{
+      const k=r.shop+'|'+r.code;
+      if(!m[k]) m[k]={date:'', dateTxt:'', shop:r.shop, code:r.code, name:r.name,
+                       cat:r.cat, price:r.price, qty:0, amt:0, days:[]};
+      const g=m[k]; g.qty+=r.qty; g.amt+=r.amt; g.days.push(r.date);
+    });
+    return Object.values(m).map(g=>{
+      const ds=[...new Set(g.days)].sort();
+      g.dateTxt = ds.length===1 ? ds[0]
+                : ds[0].slice(5)+' ~ '+ds[ds.length-1].slice(5)+'（'+ds.length+'天）';
+      g.date=ds[0];
+      g.unitPrice=g.qty?g.amt/g.qty:0;
+      return g;
+    });
+  }
+
+  function sdSortVal(r,k){
+    if(k==='unitPrice') return r.qty?r.amt/r.qty:0;
+    if(k==='date') return r.date||'';
+    return r[k];
+  }
+  function sdSorted(rows){
+    const k=SD.sortKey, d=SD.sortDir;
+    return rows.slice().sort((a,b)=>{
+      const x=sdSortVal(a,k), y=sdSortVal(b,k);
+      if(typeof x==='number' && typeof y==='number') return (x-y)*d;
+      return String(x).localeCompare(String(y),'zh')*d;
+    });
+  }
+
+  function sdRender(){
+    const body=document.getElementById('sd2Body'); if(!body) return;
+
+    // 签名变化 → 复位交互状态
+    const sig=sdSig();
+    if(sig!==SD.sig){ SD.sig=sig; SD.drill=-1; SD.collapse=false; }
+    // 当日模式不提供「按款汇总」
+    const isDay=(SB.PERIOD==='day' && !FS.month);
+    const gw=document.getElementById('sd2GroupWrap');
+    if(gw) gw.style.display=isDay?'none':'';
+    if(isDay) SD.group=false;
+    const chk=document.getElementById('sd2GroupChk'); if(chk) chk.checked=SD.group;
+
+    SD.base=sdBaseRows();
+    const {start,end}=sdRange();
+
+    // 品类下拉（口径与「全店鞋类品类结构」一致：均为 SY.rows 的 cat，来自伯俊中类）
+    const sel=document.getElementById('sd2CatFilter');
+    if(sel){
+      const cur=SD.cat;
+      const cats=[...new Set(SD.base.map(r=>r.cat))].sort();
+      sel.innerHTML='<option value="">全部品类</option>'+cats.map(c=>`<option value="${sdEsc(c)}">${sdEsc(c)}</option>`).join('');
+      sel.value=cats.includes(cur)?cur:'';
+      SD.cat=sel.value;
+    }
+
+    // 过滤（搜索 / 品类）
+    const q=SD.search.trim().toLowerCase();
+    let rows=SD.base.filter(r=>{
+      if(SD.cat && r.cat!==SD.cat) return false;
+      if(q && !((r.code||'').toLowerCase().includes(q)||(r.name||'').toLowerCase().includes(q)||
+                (r.cat||'').toLowerCase().includes(q)||(r.shop||'').toLowerCase().includes(q))) return false;
+      return true;
+    });
+    if(SD.group) rows=sdGroupRows(rows);
+    else rows=rows.map(r=>({...r, dateTxt:r.date, unitPrice:r.qty?r.amt/r.qty:0, days:[r.date]}));
+    SD.rows=sdSorted(rows);
+
+    // 表头：日期列在汇总模式下改文案
+    const thDate=document.getElementById('sd2ThDate');
+    if(thDate) thDate.firstChild.nodeValue = SD.group?'日期区间':'日期';
+    // 排序箭头
+    ['date','shop','code','name','cat','qty','amt','unitPrice'].forEach(k=>{
+      const e=document.getElementById('sd2Arrow_'+k);
+      if(e) e.textContent = (k===SD.sortKey) ? (SD.sortDir<0?' ▼':' ▲') : '';
+    });
+
+    // 合计（按全量过滤结果，不受折叠影响）
+    const tQty=SD.rows.reduce((s,r)=>s+r.qty,0), tAmt=SD.rows.reduce((s,r)=>s+r.amt,0);
+    // 默认全量展开（用户明确要求逐日逐款展开、不默认截断）；仅点「收起」后限制条数
+    const shown=SD.collapse?SD.rows.slice(0,SD.limit):SD.rows;
+
+    body.innerHTML = shown.map((r,i)=>{
+      const active=SD.drill===i;
+      return `<tr class="${active?'sd2-active':''}">
+        <td>${sdEsc(SD.group?r.dateTxt:r.date)}</td>
+        <td>${sdEsc(r.shop)}</td>
+        <td><span class="sd2-link" onclick="sdDrill(${i})" title="点击查看该款在所选周期内的逐日成交">${sdEsc(r.code)}</span></td>
+        <td class="nm-cell-dim" title="${sdEsc(r.name)}">${sdEsc(r.name.length>18?r.name.slice(0,18)+'…':r.name)}</td>
+        <td><span class="ip-badge blue">${sdEsc(r.cat)}</span></td>
+        <td>${r.qty}</td>
+        <td><b>${sdMoney(r.amt)}</b></td>
+        <td>${sdMoney(r.unitPrice)}</td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="8" class="nm-empty">该周期 / 筛选条件下暂无款式成交数据</td></tr>';
+
+    // 合计行
+    const foot=document.getElementById('sd2Foot');
+    if(foot) foot.innerHTML = SD.rows.length ? `<tr class="sd2-total">
+      <td colspan="5">合计 · ${SD.rows.length} 行${SD.group?'（按款汇总）':''}</td>
+      <td>${tQty}</td><td>${sdMoney(tAmt)}</td><td>${sdMoney(tQty?tAmt/tQty:0)}</td></tr>` : '';
+
+    // 生效范围条
+    const scope=document.getElementById('sd2Scope');
+    if(scope) scope.innerHTML='📅 <b>'+sdEsc(sdScopeLabel())+'</b> · 生效区间 '+start+' ~ '+end+
+      ' · 共 <b>'+SD.base.length+'</b> 条款级流水'+
+      (SD.group?' · 已合并为 <b>'+SD.rows.length+'</b> 行（同店同款跨天合计）':'')+
+      ' · 默认按成交金额降序'+
+      (!shown.length?'':(shown.length<SD.rows.length?' · 当前显示前 '+shown.length+' 行':''));
+
+    // 收起 / 展开按钮（数据量大时才出现）
+    const more=document.getElementById('sd2MoreBtn');
+    if(more){
+      more.style.display=SD.rows.length>SD.limit?'':'none';
+      more.textContent=SD.collapse?('展开全部 '+SD.rows.length+' 行'):('收起（仅看前 '+SD.limit+' 行）');
+    }
+
+    // 对账：本模块合计 ≡ 店级明细合计（同源伯俊零售明细）
+    const shops=sdShops();
+    const dRows=sbRows.filter(r=>r.real && r.date>=start && r.date<=end && shops.includes(r.shop));
+    const dAmt=dRows.reduce((s,r)=>s+(+r.sales||0),0);
+    const dQty=dRows.reduce((s,r)=>s+(+r.items||0),0);
+    const okAmt=Math.abs(tAmt-dAmt)<1, okQty=(tQty===dQty);
+    const recon=document.getElementById('sd2Recon');
+    if(recon){
+      recon.className='sd2-recon'+(okAmt&&okQty?'':' bad');
+      recon.innerHTML='🧮 <b>口径对账</b>：本模块「'+SD.base.length+' 条款级流水」合计 '+
+        sdMoney(tAmt)+' / '+tQty+' 件；「数据经营 → 单店每日明细」同期同店 '+dRows.length+' 行合计 '+
+        sdMoney(dAmt)+' / '+dQty+' 件 → '+
+        (okAmt&&okQty?'<b style="color:#059669;">✓ 完全一致</b>（同为伯俊零售明细，剔除赠品/退货/非鞋类）':
+         '<b style="color:#DC2626;">⚠ 存在差异</b>，请检查是否含手工录入行或筛选条件不一致')+
+        '。品类取自伯俊零售明细「中类」字段，与上方「全店鞋类品类结构」同源。';
+    }
+
+    sdRenderDrill();
+  }
+
+  // 点某款下钻：该款在所选周期内逐日成交
+  function sdRenderDrill(){
+    const box=document.getElementById('sd2Drill'); if(!box) return;
+    const r=SD.rows[SD.drill];
+    if(!r){ box.style.display='none'; box.innerHTML=''; return; }
+    const {start,end}=sdRange(), shops=sdShops();
+    const days=SY.rows.filter(x=>x.code===r.code && x.shop===r.shop &&
+                                 x.date>=start && x.date<=end && shops.includes(x.shop))
+                      .sort((a,b)=>a.date.localeCompare(b.date));
+    const q=days.reduce((s,x)=>s+x.qty,0), a=days.reduce((s,x)=>s+x.amt,0);
+    box.style.display='';
+    box.innerHTML=`<div class="sd2-drill-head">🔍 下钻：<b>${sdEsc(r.code)} · ${sdEsc(r.name)}</b>
+        <span class="nm-hint">${sdEsc(r.shop)} · ${sdEsc(sdScopeLabel())}</span>
+        <button class="nm-btn nm-btn-ghost" style="margin-left:auto;font-size:12px;padding:3px 10px;" onclick="sdCloseDrill()">✕ 关闭下钻</button></div>
+      <div class="sd-table-wrap"><table class="nm-table" style="min-width:620px;">
+        <thead><tr><th>日期</th><th>门店</th><th>品类</th><th>成交件数</th><th>成交金额</th><th>件单价</th></tr></thead>
+        <tbody>${days.map(x=>`<tr><td>${x.date}</td><td>${sdEsc(x.shop)}</td>
+          <td><span class="ip-badge blue">${sdEsc(x.cat)}</span></td><td>${x.qty}</td>
+          <td>${sdMoney(x.amt)}</td><td>${sdMoney(x.qty?x.amt/x.qty:0)}</td></tr>`).join('')}</tbody>
+        <tfoot><tr class="sd2-total"><td colspan="3">合计 · ${days.length} 天</td><td>${q}</td><td>${sdMoney(a)}</td><td>${sdMoney(q?a/q:0)}</td></tr></tfoot>
+      </table></div>`;
+  }
+  function sdDrill(i){ SD.drill=(SD.drill===i?-1:i); sdRender(); }
+  function sdCloseDrill(){ SD.drill=-1; sdRender(); }
+  function sdSort(k){ if(SD.sortKey===k) SD.sortDir*=-1; else { SD.sortKey=k; SD.sortDir=-1; } SD.drill=-1; sdRender(); }
+  function sdSetGroup(v){ SD.group=!!v; SD.drill=-1; SD.sig=''; sdRender(); }
+  function sdSearch(v){ SD.search=v||''; SD.drill=-1; sdRender(); }
+  function sdSetCat(v){ SD.cat=v||''; SD.drill=-1; sdRender(); }
+  function sdToggleAll(){ SD.collapse=!SD.collapse; sdRender(); }
+
+  // 从「数据经营 → 单店每日明细」的款式入口跳过来：定位到该店该日
+  function sdFocusDetail(date, shop){
+    SB.PERIOD='day'; SB.dayOverride=date; FS.month='';
+    try{ sbSyncDayPicker(); fsRenderStatus(); }catch(e){}
+    sbSetTab('style');
+    SD.search=shop||''; SD.cat=''; SD.group=false; SD.drill=-1; SD.collapse=false; SD.sig='';
+    const s=document.getElementById('sd2Search'); if(s) s.value=SD.search;
+    sbRefresh();
+    try{
+      const el=document.getElementById('sd2Block');
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth', block:'start'});
+    }catch(e){}
+  }
+
+  // 挂到 v9 的统一调度链：切周期 / 换日期 / 换门店 / 切页签 全部自动刷新
+  const __v9SyRenderAll = syRenderAll;
+  syRenderAll = function(){ __v9SyRenderAll(); sdRender(); };
+
+  // 初始化（v9 的 sbRefresh 已执行过，这里补渲染新模块）
+  sdRender();
 
   // ── Init ──
   renderSidebar();
