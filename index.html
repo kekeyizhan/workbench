@@ -2650,6 +2650,18 @@
     .sb-tab-note { display:none; }
     .sd-charts.sb-charts-single { grid-template-columns:1fr; }
   }
+
+  /* ═══ v8 周期联动 / 趋势交互 ═══ */
+  .sb-day-picker { display:none; width:152px; }
+  .sb-day-picker.on { display:inline-block; }
+  .fs-missing-note { display:none; font-size:11px; line-height:1.7; color:#92400E;
+                     background:#FFFBEB; border:1px solid #FDE68A; border-radius:7px;
+                     padding:7px 10px; margin-bottom:9px; }
+  .fs-missing-note.on { display:block; }
+  .sb-tip { position:fixed; display:none; z-index:99999; pointer-events:none;
+            background:rgba(30,41,59,.96); color:#fff; font-size:11px; line-height:1.75;
+            padding:8px 11px; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,.22); white-space:nowrap; }
+  .sb-hit { cursor:pointer; }
 </style>
 </head>
 <body>
@@ -3347,10 +3359,11 @@
       <div class="sd-filter-row" style="margin-bottom:11px;">
         <span class="sd-filter-label">统计周期</span>
         <div class="nm-seg" id="sbPeriodSeg">
-          <button data-p="day" onclick="sbSetPeriod('day')">当日</button>
+          <button class="active" data-p="day" onclick="sbSetPeriod('day')">当日</button>
           <button data-p="week" onclick="sbSetPeriod('week')">本周</button>
-          <button class="active" data-p="month" onclick="sbSetPeriod('month')">本月</button>
+          <button data-p="month" onclick="sbSetPeriod('month')">本月</button>
         </div>
+        <input type="date" class="nm-select sb-day-picker" id="sbDayPicker" onchange="sbSetDay(this.value)" title="选择当日日期，默认今天">
         <span class="sd-filter-label" style="margin-left:auto;">月表</span>
         <select class="nm-select" id="fsMonthSel" onchange="fsSetMonth(this.value)" title="按月份选表，默认自动取最新月表"></select>
         <button class="nm-btn nm-btn-ghost" onclick="fsManualRefresh()">🔄 刷新数据</button>
@@ -3361,6 +3374,8 @@
       </div>
       <div class="fs-status" id="fsStatus"></div>
     </div>
+
+    <div class="sb-tip" id="sbChartTip"></div>
 
     <div class="sb-tabs" id="sbTabs">
       <button class="active" data-tab="ops" onclick="sbSetTab('ops')">📊 数据经营</button>
@@ -3399,13 +3414,14 @@
       <div class="sd-charts sb-charts-single" style="margin-top:16px;">
         <div class="sd-chart-card">
           <div class="sd-chart-title">近 30 天经营趋势</div>
-          <div class="sd-chart-sub" id="sbTrendSub">销售额与连带率走势 · 伯俊真实数据</div>
+          <div class="sd-chart-sub" id="sbTrendSub">近30天销售额与连带率 · hover 看数值 · 点击跳当日明细</div>
           <div id="sbTrend"></div>
           <div class="sd-legend" id="sbTrendLegend"></div>
         </div>
         <div class="sd-chart-card">
           <div class="sd-chart-title">客流与转化率走势</div>
-          <div class="sd-chart-sub">飞书 Base「进店客流组」· 客流为空不计入</div>
+          <div class="sd-chart-sub">飞书 Base「进店客流组」· 未录入日期断开 · hover 看数值 · 点击跳当日明细</div>
+          <div class="fs-missing-note" id="fsMissingNote"></div>
           <div id="fsTrend"></div>
           <div class="sd-legend" id="fsTrendLegend"></div>
         </div>
@@ -6748,6 +6764,221 @@ d="ssTableBody"></tbody>
     if(!['ops','style','manage'].includes(t)) t='ops';
     sbSetTab(t);
   })();
+
+  /* ═══ v8: 周期联动 / 客流断档 / 趋势图交互 ═══ */
+  SB.PERIOD = 'day';          // 默认当日
+  SB.dayOverride = '';        // 当日日期选择器选中的日期
+  SB.trend = {sales:[], fs:[]};
+
+  function sbToday(){ return sbDateStr(sbNow()); }
+
+  // ── 周期：当日(可选日期) / 本周一~今天 / 本月1日~今天 ──
+  sbPeriodRange = function(){
+    if(FS.month){
+      const p=FS.month.split('-'), y=+p[0], m=+p[1];
+      const last=new Date(y,m,0).getDate();
+      return {start:FS.month+'-01', end:FS.month+'-'+String(last).padStart(2,'0')};
+    }
+    const today=sbToday();
+    if(SB.PERIOD==='day'){
+      const d=SB.dayOverride||today;
+      return {start:d, end:d};
+    }
+    let start;
+    if(SB.PERIOD==='week'){
+      const n=sbNow(), dow=n.getDay(), diff=(dow===0?6:dow-1);   // 本周一
+      const m=new Date(n); m.setDate(n.getDate()-diff);
+      start=sbDateStr(m);
+    } else {
+      const n=sbNow(); start=sbDateStr(new Date(n.getFullYear(),n.getMonth(),1));
+    }
+    return {start, end:today};
+  };
+
+  function sbSyncDayPicker(){
+    const p=document.getElementById('sbDayPicker');
+    if(p){
+      const on=(SB.PERIOD==='day' && !FS.month);
+      p.classList.toggle('on', on);
+      if(on) p.value=SB.dayOverride||sbToday();
+    }
+    document.querySelectorAll('#sbPeriodSeg button').forEach(b=>{
+      b.classList.toggle('active', b.dataset.p===SB.PERIOD && !FS.month);
+    });
+    const sel=document.getElementById('fsMonthSel');
+    if(sel) sel.value=FS.month||'';
+  }
+  sbSetPeriod = function(p){
+    SB.PERIOD=p; FS.month=''; SB.dayOverride='';
+    sbSyncDayPicker(); fsRenderStatus(); sbRefresh();
+  };
+  function sbSetDay(v){
+    SB.dayOverride=v||''; SB.PERIOD='day'; FS.month='';
+    sbSyncDayPicker(); fsRenderStatus(); sbRefresh();
+  }
+  function sbJumpToDate(date){
+    SB.PERIOD='day'; SB.dayOverride=date; FS.month='';
+    sbSyncDayPicker(); fsRenderStatus(); sbRefresh();
+    try{
+      const el=document.getElementById('sbDetailBody');
+      const box=el && el.closest('.sd-table-wrap');
+      if(box && box.scrollIntoView) box.scrollIntoView({behavior:'smooth', block:'center'});
+    }catch(e){}
+  }
+
+  // ── 主表：当日模式只列「当天有数据」的门店，避免看起来像月维度 ──
+  const __v7Compare = sbRenderCompare;
+  sbRenderCompare = function(){
+    if(SB.PERIOD!=='day' || FS.month){ __v7Compare(); return; }
+    const all=sbRows;
+    sbRows=all.filter(r=>sbInPeriod(r));
+    try{ __v7Compare(); } finally { sbRows=all; }
+  };
+
+  // ── 明细：当日显示当天全部有数据门店、按销售额降序、不截断 ──
+  const __v7Detail = sbRenderDetail;
+  sbRenderDetail = function(){
+    if(SB.PERIOD!=='day' || FS.month){ __v7Detail(); return; }
+    const all=sbRows, day=sbPeriodRange().start, oldShow=sbDetailShowAll;
+    const rows=all.filter(r=>r.date===day).sort((a,b)=>(+b.sales||0)-(+a.sales||0));
+    sbRows=rows; sbDetailShowAll=true;
+    try{ __v7Detail(); } finally { sbRows=all; sbDetailShowAll=oldShow; }
+    const cnt=document.getElementById('sbDetailCount');
+    if(cnt) cnt.textContent=day+' · 共 '+rows.length+' 家门店有数据 · 按销售额降序（已全部显示）';
+    const btn=document.getElementById('sbDetailMoreBtn');
+    if(btn) btn.style.display='none';
+  };
+
+  // ── 客流断档起点：最后一个「至少半数门店有客流」的日期之次日 ──
+  function fsMissingSince(){
+    const by={};
+    (FS_DATA.rows||[]).forEach(r=>{
+      const d=r[1], iso=d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6,8);
+      if(!by[iso]) by[iso]={n:0,has:0};
+      by[iso].n++;
+      if(r[2]!==null && +r[2]>0) by[iso].has++;
+    });
+    const dates=Object.keys(by).sort();
+    if(!dates.length) return null;
+    const threshold=Math.max(1,Math.ceil((FS_DATA.shops||[]).length/2));
+    let lastGood=null;
+    dates.forEach(d=>{ if(by[d].has>=threshold) lastGood=d; });
+    const last=dates[dates.length-1];
+    if(!lastGood || lastGood>=last) return null;
+    const dt=new Date(lastGood+'T00:00:00'); dt.setDate(dt.getDate()+1);
+    return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+  }
+
+  // ── tooltip ──
+  function sbShowTip(ev, kind, i){
+    const t=document.getElementById('sbChartTip'); if(!t) return;
+    const x=(SB.trend[kind]||[])[i]; if(!x) return;
+    let html='<b>'+x.date+'</b>';
+    if(kind==='sales'){
+      html+='<br>销售额 ¥'+Math.round(x.sales).toLocaleString('zh-CN')+'<br>连带率 '+x.attach.toFixed(2);
+    } else {
+      html+='<br>进店客流组 '+(x.traffic===null?'<span style="color:#FCA5A5;">未录入</span>':Math.round(x.traffic))+
+            '<br>成交转化率 '+(x.conv===null?'—':(x.conv*100).toFixed(1)+'%');
+    }
+    html+='<br><span style="opacity:.72;">点击跳转到该日明细</span>';
+    t.innerHTML=html; t.style.display='block';
+    const px=ev.clientX||0, py=ev.clientY||0;
+    t.style.left=Math.min(px+14,(window.innerWidth||1200)-200)+'px';
+    t.style.top=Math.max(8,py-14)+'px';
+  }
+  function sbHideTip(){ const t=document.getElementById('sbChartTip'); if(t) t.style.display='none'; }
+
+  function sbSegPath(vals, max, X, Y){
+    let p='', pen=false;
+    vals.forEach((v,i)=>{
+      if(v===null||v===undefined){ pen=false; return; }
+      p+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(v,max).toFixed(1)+' ';
+      pen=true;
+    });
+    return p;
+  }
+
+  // ── 趋势图：近30天（不受周期过滤），点可 hover / 点击，客流为空断开 ──
+  sbRenderCharts = function(){
+    const shops=sbSelectedShops();
+    const by={};
+    sbRows.filter(r=>shops.includes(r.shop)).forEach(r=>{
+      if(!by[r.date]) by[r.date]={sales:0,txns:0,items:0,traffic:0,txnsCov:0,has:false};
+      const b=by[r.date];
+      b.sales+=+r.sales||0; b.txns+=+r.txns||0; b.items+=+r.items||0;
+      if(!r.trafficMissing && +r.traffic>0){
+        b.traffic+=+r.traffic; b.txnsCov+=+r.txns||0; b.has=true;
+      }
+    });
+    const dates=Object.keys(by).sort().slice(-30);
+    const sales=dates.map(d=>by[d].sales);
+    const attach=dates.map(d=>by[d].txns?by[d].items/by[d].txns:0);
+    const traffic=dates.map(d=>by[d].has?by[d].traffic:null);
+    const conv=dates.map(d=>(by[d].has&&by[d].traffic)?by[d].txnsCov/by[d].traffic:null);
+    SB.trend.sales=dates.map((d,i)=>({date:d,sales:sales[i],attach:attach[i]}));
+    SB.trend.fs=dates.map((d,i)=>({date:d,traffic:traffic[i],conv:conv[i]}));
+
+    const w=620,h=230,pad=32;
+    const X=i=>pad+(dates.length>1?i*(w-pad*2)/(dates.length-1):0);
+    const Y=(v,max)=>h-pad-(max?(v/max)*(h-pad*2):0);
+    const maxS=Math.max(1,...sales), maxA=Math.max(1,...attach);
+    const maxT=Math.max(1,...traffic.filter(v=>v!==null));
+    const maxC=Math.max(0.01,...conv.filter(v=>v!==null));
+    let grid=''; for(let i=0;i<=3;i++){const y=pad+i*(h-pad*2)/3;grid+=`<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#F1F5F9" stroke-width="1"/>`;}
+    const labelIdx=[0,Math.floor(dates.length/2),dates.length-1].filter((v,i,a)=>a.indexOf(v)===i&&dates.length);
+    const xl=labelIdx.map(i=>`<text x="${X(i)}" y="${h-8}" font-size="10" fill="#94A3B8" text-anchor="middle">${dates[i]?dates[i].slice(5):''}</text>`).join('');
+    const selDate=sbPeriodRange().start;
+    const selI=dates.indexOf(selDate);
+    const marker=(selI>=0&&SB.PERIOD==='day'&&!FS.month)
+      ? `<line x1="${X(selI)}" y1="${pad}" x2="${X(selI)}" y2="${h-pad}" stroke="#BE185D" stroke-width="1.5" stroke-dasharray="4 3" opacity=".65"/>
+         <text x="${X(selI)}" y="${pad-10}" font-size="10" fill="#BE185D" text-anchor="middle">选中日</text>` : '';
+
+    const hit=(i,y,kind,color)=>`<circle cx="${X(i)}" cy="${y.toFixed(1)}" r="3.2" fill="${color}" pointer-events="none"/>
+      <circle cx="${X(i)}" cy="${y.toFixed(1)}" r="11" fill="transparent" class="sb-hit"
+        onmouseenter="sbShowTip(event,'${kind}',${i})" onmousemove="sbShowTip(event,'${kind}',${i})"
+        onmouseleave="sbHideTip()" onclick="sbJumpToDate('${dates[i]}')"/>`;
+
+    const trend=document.getElementById('sbTrend');
+    if(trend){
+      const dots=sales.map((v,i)=>hit(i,Y(v,maxS),'sales','#BE185D')).join('');
+      trend.innerHTML=dates.length?`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">${grid}${marker}
+        <path d="${sbLinePath(sales,w,h,pad,maxS)}" fill="none" stroke="#BE185D" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="${sbLinePath(attach,w,h,pad,maxA)}" fill="none" stroke="#3B82F6" stroke-width="2" stroke-dasharray="5 4"/>
+        ${xl}${dots}
+        <text x="${pad}" y="${pad-10}" font-size="10" fill="#BE185D">销售 ¥${Math.round(maxS).toLocaleString()}</text>
+        <text x="${w-pad}" y="${pad-10}" font-size="10" fill="#3B82F6" text-anchor="end">连带 ${maxA.toFixed(2)}</text></svg>`
+        :'<div class="nm-empty">暂无趋势数据</div>';
+      const lg=document.getElementById('sbTrendLegend');
+      if(lg) lg.innerHTML='<span><i style="background:#BE185D"></i>销售额</span><span><i style="background:#3B82F6"></i>连带率</span><span style="opacity:.7;">hover 看数值 · 点击跳当日明细</span>';
+    }
+
+    const ft=document.getElementById('fsTrend');
+    if(ft){
+      const dots=traffic.map((v,i)=>v===null?'':hit(i,Y(v,maxT),'fs','#F59E0B')).join('');
+      ft.innerHTML=dates.length?`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">${grid}${marker}
+        <path d="${sbSegPath(traffic,maxT,X,Y)}" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="${sbSegPath(conv,maxC,X,Y)}" fill="none" stroke="#06B6D4" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>
+        ${xl}${dots}
+        <text x="${pad}" y="${pad-10}" font-size="10" fill="#F59E0B">客流 ${Math.round(maxT)}</text>
+        <text x="${w-pad}" y="${pad-10}" font-size="10" fill="#06B6D4" text-anchor="end">转化 ${(maxC*100).toFixed(0)}%</text></svg>`
+        :'<div class="nm-empty">暂无客流数据</div>';
+      const lg=document.getElementById('fsTrendLegend');
+      if(lg) lg.innerHTML='<span><i style="background:#F59E0B"></i>进店客流组</span><span><i style="background:#06B6D4"></i>成交转化率</span><span style="opacity:.7;">未录入日期断开</span>';
+    }
+
+    const note=document.getElementById('fsMissingNote');
+    if(note){
+      const since=fsMissingSince();
+      if(since){
+        note.classList.add('on');
+        note.innerHTML='⚠️ <b>客流自 '+since.slice(5)+' 起未录入，请到飞书门店销售业绩跟踪系统补录</b>。有数据的日期走势正常绘制；未录入日期断开、不按 0 连线。';
+      } else { note.classList.remove('on'); note.innerHTML=''; }
+    }
+  };
+
+  // ── 初始化：默认当日 + 日期选择器 + 重渲染 ──
+  sbSyncDayPicker();
+  sbRefresh();
 
   // ── Init ──
   renderSidebar();
