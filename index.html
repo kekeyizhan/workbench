@@ -3382,10 +3382,29 @@
       </div>
     </div>
 
+
+    <!-- 分店经营实绩（伯俊真实数据） -->
+    <div class="sd-section-title" style="margin-top:26px;border-top:2px solid var(--border-light);padding-top:20px;">📊 分店经营实绩 <span class="badge" id="smStoreCount">伯俊真实数据</span> <span class="nm-hint" style="font-weight:400;">笔数 / 件数 / 连带率 / 单单价格 / 门店品类占比</span></div>
+    <div class="nm-hint" id="smNote" style="margin-bottom:12px;line-height:1.8;"></div>
+    <div class="sd-table-wrap">
+      <table class="nm-table" style="min-width:1150px;">
+        <thead><tr><th>门店</th><th>笔数</th><th>件数</th><th>成交金额</th><th>连带率</th><th>单单价格</th><th>件单价</th><th>品类数</th><th>TOP 品类占比</th></tr></thead>
+        <tbody id="smStoreBody"></tbody>
+      </table>
+    </div>
+
+    <div class="sd-section-title" style="margin-top:20px;">👟 全店鞋类品类结构 <span class="badge">按成交金额</span></div>
+    <div class="sd-table-wrap" style="max-width:560px;">
+      <table class="nm-table" style="min-width:420px;">
+        <thead><tr><th>品类</th><th>成交金额</th><th>占比</th><th>结构</th></tr></thead>
+        <tbody id="smCatBody"></tbody>
+      </table>
+    </div>
+
     <!-- 售卖款式经营分析（嵌入门店看板） -->
     <div class="sd-section-title" style="margin-top:26px;border-top:2px solid var(--border-light);padding-top:20px;">👟 售卖款式经营分析 <span class="badge">伯俊销售数据</span> <span class="nm-hint" style="font-weight:400;">品类占比 · 售罄率 · 热销/滞销 · 件单价</span></div>
     <div class="nm-hint" style="margin-bottom:12px;line-height:1.8;">
-      📌 数据来源：伯俊「商品零售排行榜」（近30天，全店汇总）。口径：件单价 = 成交金额 ÷ 零售数量；售罄率 = 零售数量 ÷（零售数量+库存数量）。<b>分门店品类占比、单客客单价、成交笔数连带率</b>需伯俊分店销售报表，当前报表不提供这些字段，接入后补齐。
+      📌 数据来源：伯俊「商品零售排行榜」近30天全店汇总（TOP40 款号）。口径：件单价 = 成交金额 ÷ 零售数量；售罄率 = 零售数量 ÷（零售数量+库存数量）。<b>分门店品类占比、单单价格、连带率</b>已在上方「分店经营实绩」用零售单+零售明细真实数据给出。
     </div>
     <div class="sd-kpis" id="ssKpis" style="grid-template-columns:repeat(5,1fr);"></div>
 
@@ -6206,6 +6225,66 @@
     const c=document.getElementById('ssStyleCount');if(c)c.textContent=list.length+' 款';
   }
   ssInit();
+
+
+
+  /* ═══ 伯俊真实分店经营指标（零售单笔数 + 零售明细件数） ═══ */
+  const SM_DATA = {"stores":[["南京德基店",351,503,864318.5,1.43,2462.45,1718.33,7,[["靴子",41.1],["单鞋",20.2],["乐福鞋",17.8],["玛丽珍",17.3]]],["北京SKP店-1店",239,325,555101,1.36,2322.6,1708.0,5,[["靴子",51.5],["乐福鞋",20.9],["玛丽珍",14.2],["单鞋",12.7]]],["杭州IN77店",224,318,430269,1.42,1920.84,1353.05,10,[["靴子",38.5],["玛丽珍",22.6],["乐福鞋",17.2],["单鞋",15.7]]],["成都万象城",178,222,361823,1.25,2032.71,1629.83,6,[["靴子",36.1],["玛丽珍",22.3],["单鞋",22.2],["乐福鞋",15.7]]],["北京SKP店-2店",153,186,322351,1.22,2106.87,1733.07,6,[["靴子",54.7],["乐福鞋",24.9],["单鞋",10.8],["玛丽珍",8.4]]],["杭州恒隆店",140,175,294421,1.25,2103.01,1682.41,6,[["靴子",39.8],["单鞋",23.1],["乐福鞋",22.0],["玛丽珍",10.6]]],["武汉SKP店",102,176,266486.5,1.73,2612.61,1514.13,5,[["靴子",37.6],["玛丽珍",27.0],["单鞋",19.5],["乐福鞋",14.8]]],["成都SKP",63,81,131135,1.29,2081.51,1618.95,4,[["靴子",36.0],["单鞋",26.4],["玛丽珍",22.7],["乐福鞋",14.9]]],["西安SKP店",44,64,99586,1.45,2263.32,1556.03,6,[["靴子",38.3],["玛丽珍",26.7],["单鞋",17.3],["乐福鞋",13.6]]],["北京国贸店",12,15,25282,1.25,2106.83,1685.47,3,[["靴子",41.8],["单鞋",35.2],["乐福鞋",23.0]]]],"allCats":[["靴子",1426983.0,42.6],["乐福鞋",624080.0,18.6],["单鞋",608304.98,18.2],["玛丽珍",592963.02,17.7],["浅口单鞋/勃肯玛丽珍",57408.0,1.7],["穆勒鞋/包头拖鞋",18639.0,0.6],["毛毛凉鞋",12351.0,0.4],["男鞋",6504.0,0.2],["凉鞋",2850.0,0.1],["浅口单鞋/高跟鞋",690.0,0.0]],"totalOrders":1506,"totalQty":2065,"totalAmt":3350773.0,"excluded":965,"sourceLines":3028};
+  const SM = {stores:[],allCats:[]};
+  function smInit(){
+    SM.stores = SM_DATA.stores.map(a=>({store:a[0],orders:a[1],qty:a[2],amt:a[3],attach:a[4],aov:a[5],itemPrice:a[6],catCount:a[7],cats:a[8]}));
+    SM.allCats = SM_DATA.allCats.map(a=>({cat:a[0],amt:a[1],share:a[2]}));
+    SM.totalOrders=SM_DATA.totalOrders; SM.totalQty=SM_DATA.totalQty; SM.totalAmt=SM_DATA.totalAmt;
+    smRenderAll();
+  }
+  function smRenderAll(){ smRenderStoreTable(); smRenderCatTable(); smRenderNote(); }
+  function smMoney(n){ return '¥'+Math.round(n||0).toLocaleString('zh-CN'); }
+  function smRenderStoreTable(){
+    const el=document.getElementById('smStoreBody');if(!el)return;
+    el.innerHTML=SM.stores.map(s=>{
+      const attachWarn=s.attach<1.3?'nm-cell-warn':(s.attach>=1.5?'nm-cell-good':'');
+      const top=s.cats.slice(0,3).map(c=>c[0]+' '+c[1]+'%').join(' · ');
+      return `<tr><td><b>${s.store}</b></td>
+        <td>${s.orders}</td><td>${s.qty}</td><td>${smMoney(s.amt)}</td>
+        <td class="${attachWarn}">${s.attach.toFixed(2)}</td>
+        <td>${smMoney(s.aov)}</td><td>${smMoney(s.itemPrice)}</td>
+        <td class="nm-cell-dim">${s.catCount}</td>
+        <td class="nm-cell-dim" title="${top}">${top}</td></tr>`;
+    }).join('')+`<tr class="nm-total"><td>合计 / 整体</td><td>${SM.totalOrders}</td><td>${SM.totalQty}</td>
+      <td>${smMoney(SM.totalAmt)}</td><td>${(SM.totalQty/SM.totalOrders).toFixed(2)}</td>
+      <td>${smMoney(SM.totalAmt/SM.totalOrders)}</td><td>${smMoney(SM.totalAmt/SM.totalQty)}</td>
+      <td colspan="2"></td></tr>`;
+    const cnt=document.getElementById('smStoreCount');if(cnt)cnt.textContent=SM.stores.length+' 家门店';
+  }
+  function smRenderCatTable(){
+    const el=document.getElementById('smCatBody');if(!el)return;
+    el.innerHTML=SM.allCats.map(c=>`<tr><td><b>${c.cat}</b></td><td>${smMoney(c.amt)}</td>
+      <td>${c.share}%</td><td><div class="mn-progress-track"><span class="bar"><i style="width:${Math.min(100,c.share*2)}%"></i></span></div></td></tr>`).join('');
+  }
+  function smRenderNote(){
+    const el=document.getElementById('smNote');if(!el)return;
+    el.innerHTML=`📌 数据来源：伯俊「订单中心 → 零售单」(笔数) + 「零售明细查询」(件数)，共 ${SM_DATA.sourceLines.toLocaleString()} 行明细，剔除 ${SM_DATA.excluded.toLocaleString()} 行。<b>剔除口径</b>：赠品、退货/负数冲销、袜子、钱包/卡包、零钱包、物料/鞋油、腰带、包类、发饰等非鞋类商品。<b>计算口径</b>：笔数 = 零售单据数（去重）；件数 = 有效鞋类明细数量合计；连带率 = 件数 ÷ 笔数；单单价格（客单价）= 成交金额 ÷ 笔数；件单价 = 成交金额 ÷ 件数；品类占比 = 该品类成交金额 ÷ 该店鞋类总金额。数据周期：近30天。`;
+  }
+  // 覆盖门店看板顶部KPI：改用伯俊真实数据
+  const __origSbRenderHero = sbRenderHero;
+  sbRenderHero = function(){
+    const el=document.getElementById('sbKpis');if(!el)return;
+    const attach=SM.totalQty/SM.totalOrders;
+    const kpis=[
+      ['成交金额',smMoney(SM.totalAmt),'#BE185D'],
+      ['成交笔数',SM.totalOrders.toLocaleString('zh-CN')+' 笔','#3B82F6'],
+      ['销售件数',SM.totalQty.toLocaleString('zh-CN')+' 件','#10B981'],
+      ['整体连带率',attach.toFixed(2),'#8B5CF6'],
+      ['单单价格',smMoney(SM.totalAmt/SM.totalOrders),'#F59E0B'],
+      ['件单价',smMoney(SM.totalAmt/SM.totalQty),'#06B6D4'],
+      ['经营门店',SM.stores.length+' 家','#EC4899'],
+      ['鞋类品类',SM.allCats.length+' 类','#F97316'],
+    ];
+    el.innerHTML=kpis.map(k=>`<div class="sd-kpi" style="--kpi-c:${k[2]}"><div class="sd-kpi-label">${k[0]}</div><div class="sd-kpi-val">${k[1]}</div></div>`).join('');
+    const pn=document.getElementById('sbPeriodNote');
+    if(pn)pn.textContent='伯俊真实数据 · 近30天 · '+SM.stores.length+' 家门店';
+  };
+  smInit();
 
 
   // ── Init ──
